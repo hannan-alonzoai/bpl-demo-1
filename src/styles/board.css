@@ -126,18 +126,41 @@ body{
 /* ================= DASHBOARD SCREEN ================= */
 #dashboard-screen{display:none;}
 header.dash-header{
-  background:linear-gradient(90deg, var(--navy) 0%, var(--navy-2) 100%);
-  padding:13px 28px;
+  background:#4b9cd3;
+  padding:0 24px;
+  height:68px;
   display:flex;
   align-items:center;
   justify-content:space-between;
 }
-header.dash-header .brand{border-left:4px solid var(--blue);padding-left:12px;}
-header.dash-header .brand .company{color:#8fc4ef;font-size:12.5px;font-weight:700;}
+header.dash-header .brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+header.dash-header .dash-logo{
+  height:44px;
+  width:auto;
+  display:block;
+  object-fit:contain;
+}
 header.dash-header .brand .title{font-size:15px;font-weight:700;color:#fff;}
 .header-right{display:flex;align-items:center;gap:18px;}
-header.dash-header .signout{color:#c7d6e8;font-size:13.5px;text-decoration:none;cursor:pointer;}
-header.dash-header .signout:hover{color:#fff;}
+header.dash-header .signout{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 14px;
+  border:none;
+  border-radius:6px;
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  font-family:inherit;
+  cursor:pointer;
+  transition:background .15s ease;
+}
+header.dash-header .signout:hover{background:rgba(255,255,255,0.22);}
 
 .theme-toggle{
   display:flex;

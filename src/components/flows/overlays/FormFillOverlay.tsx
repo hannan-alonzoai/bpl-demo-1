@@ -1,17 +1,40 @@
-import { useState } from 'react';
-import { getFormTitle } from '../../../data/forms';
+import { useEffect, useMemo, useState } from 'react';
+import { DUMMY_SUBMISSIONS, getFormTitle } from '../../../data/forms';
+import { FORM_SAMPLE_DATA } from '../../../data/formSampleData';
+import { FormLayout } from '../form/FormLayout';
 
 interface Props {
   formId: string;
+  mode: 'create' | 'view';
+  recordId?: number | null;
   onBack: () => void;
 }
 
-export function FormFillOverlay({ formId, onBack }: Props) {
-  const [layout, setLayout] = useState<'a' | 'b'>('a');
+export function FormFillOverlay({ formId, mode, recordId, onBack }: Props) {
+  const readonly = mode === 'view';
+  const submission = useMemo(() => {
+    if (!recordId) return null;
+    return (DUMMY_SUBMISSIONS[formId] ?? []).find(r => r.id === recordId) ?? null;
+  }, [formId, recordId]);
+
+  const [layout, setLayout] = useState<'a' | 'b'>(submission?.layout ?? 'a');
   const title = getFormTitle(formId);
 
+  useEffect(() => {
+    setLayout(submission?.layout ?? 'a');
+  }, [submission]);
+
+  useEffect(() => {
+    document.body.classList.add('form-mode');
+    document.body.classList.remove('dashboard-mode');
+    return () => {
+      document.body.classList.remove('form-mode');
+      document.body.classList.add('dashboard-mode');
+    };
+  }, []);
+
   return (
-    <div className="form-view active">
+    <div className={`form-view active${readonly ? ' readonly' : ''}`}>
       <header className="topbar">
         <div className="topbar-brand">
           <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="topbar-logo" />
@@ -20,10 +43,12 @@ export function FormFillOverlay({ formId, onBack }: Props) {
       </header>
       <div className="form-toolbar">
         <div className="form-breadcrumb">
-          <button type="button" className="btn-link" onClick={onBack}>Forms</button>
+          <button type="button" className="action-link" onClick={onBack}>Forms</button>
           {' / '}
           <span>{title}</span>
-          <span className="mode-tag">Create</span>
+          <span className={`mode-tag${readonly ? ' view' : ''}`}>
+            {readonly ? 'View (read-only)' : 'Create'}
+          </span>
         </div>
         <div className="layout-switch">
           <button type="button" className={layout === 'a' ? 'active' : ''} onClick={() => setLayout('a')}>Form A</button>
@@ -31,49 +56,15 @@ export function FormFillOverlay({ formId, onBack }: Props) {
         </div>
       </div>
       <div className="form-body">
-        <div className={`form-grid-${layout}`}>
-          <div className="form-quadrant">
-            <div className="block-label">Airway</div>
-            <div className="check-grid">
-              <label className="check"><input type="checkbox" defaultChecked /> LMA</label>
-              <label className="check"><input type="checkbox" defaultChecked /> ETT Oral</label>
-              <label className="check"><input type="checkbox" /> Rapid Sequence</label>
-              <label className="check"><input type="checkbox" defaultChecked /> Endotracheal</label>
-            </div>
-          </div>
-          <div className="form-quadrant">
-            <div className="block-label">Monitoring</div>
-            <div className="check-grid cols-3">
-              <label className="check"><input type="checkbox" defaultChecked /> NIBP</label>
-              <label className="check"><input type="checkbox" defaultChecked /> SpO₂</label>
-              <label className="check"><input type="checkbox" defaultChecked /> EtCO₂</label>
-              <label className="check"><input type="checkbox" defaultChecked /> ABP</label>
-              <label className="check"><input type="checkbox" defaultChecked /> ECG</label>
-              <label className="check"><input type="checkbox" defaultChecked /> Temp</label>
-            </div>
-          </div>
-          <div className="form-quadrant">
-            <div className="block-label">Technique</div>
-            <div className="input-grid">
-              <div className="field-item">
-                <span className="field-label">Depth (cm)</span>
-                <input type="text" defaultValue="22" />
-              </div>
-              <div className="field-item">
-                <span className="field-label">ETT Size</span>
-                <input type="text" defaultValue="7.5" />
-              </div>
-            </div>
-          </div>
-          <div className="form-quadrant">
-            <div className="block-label">Notes</div>
-            <textarea rows={4} defaultValue="Pre-anesthesia assessment completed. Patient stable for GA." style={{ width: '100%' }} />
-          </div>
-        </div>
+        <FormLayout layout={layout} data={FORM_SAMPLE_DATA} readonly={readonly} />
       </div>
       <footer className="form-footer">
-        <button type="button" className="btn btn-submit">Submit</button>
-        <button type="button" className="btn btn-reset">Reset</button>
+        {!readonly && (
+          <>
+            <button type="button" className="btn btn-submit">Submit</button>
+            <button type="button" className="btn btn-reset">Reset</button>
+          </>
+        )}
         <button type="button" className="btn btn-back" onClick={onBack}>Go Back</button>
       </footer>
     </div>

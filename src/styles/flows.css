@@ -255,17 +255,29 @@
   }
   .patient-badge .status-dot { width: 7px; height: 7px; }
 
-  .shell { display: flex; min-height: 480px; }
+  .shell { display: flex; min-height: 480px; width: 100%; flex: 1; }
   .tab-content {
     display: none;
+    flex-direction: column;
     margin: 0 20px 20px; background: var(--white);
     border: 1px solid var(--gray-200); border-top: none;
     border-radius: 0 0 var(--radius) var(--radius);
     min-height: 560px;
+    width: calc(100% - 40px);
   }
   .tab-content.active { display: flex; }
   #tabForm .shell, #tabForm .main { background: var(--white); }
-  #tabForm .table-wrap { border: none; border-radius: 0; margin: 0 20px 20px; }
+  #tabForm .shell { flex: 1; min-height: 0; }
+  #tabForm .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #tabForm .table-wrap {
+    flex: 1;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    min-height: 0;
+    width: 100%;
+  }
+  #tabForm .empty-state { width: 100%; min-height: 360px; }
   #tabScore .scores-shell { background: var(--white); }
   #tabScore .scores-main { background: var(--white); }
   #tabScore .scores-body { background: var(--gray-100); border-radius: var(--radius); margin-bottom: 0; }
@@ -879,7 +891,11 @@
   /* Form A — 4-quadrant (cleaned) */
   .form-grid-a {
     display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    max-width: 1200px; margin: 0 auto;
+    max-width: 1400px; width: 100%; margin: 0 auto;
+  }
+  .form-view .form-body {
+    display: flex;
+    justify-content: center;
   }
   .quadrant {
     background: var(--white); border: 1px solid var(--gray-200);
@@ -936,3 +952,50 @@
   .field-item .field-label {
     font-size: 12px; font-weight: 500; color: var(--gray-500);
   }
+  .field-item input[type="text"],
+  .field-item input[type="number"],
+  .field-item select {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+    font-size: 13px; background: var(--white); outline: none;
+    color: var(--gray-900);
+  }
+  .field-item input:focus, .field-item select:focus {
+    border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--blue-100);
+  }
+
+  .inline-fields {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 24px;
+  }
+  .inline-fields .field-item { min-width: 100px; flex: 1; max-width: 180px; }
+
+  .radio-group {
+    display: flex; flex-wrap: wrap; gap: 16px 24px; padding: 4px 0;
+  }
+  .radio-group .group-label {
+    width: 100%; font-size: 12px; font-weight: 500; color: var(--gray-500);
+    margin-bottom: 2px;
+  }
+
+  .form-view.readonly input, .form-view.readonly select {
+    pointer-events: none; background: var(--gray-100); border-color: var(--gray-200); color: var(--gray-700);
+  }
+  .form-view.readonly label.check, .form-view.readonly label.radio,
+  .form-view.readonly .check-label { cursor: default; }
+  .form-view.readonly label.check-with-input { background: var(--gray-100); }
+
+  .form-footer {
+    position: sticky; bottom: 0; z-index: 20;
+    padding: 12px 20px; background: var(--white); border-top: 1px solid var(--gray-200);
+    display: flex; justify-content: center; gap: 10px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  }
+  .btn-submit { background: var(--accent); color: var(--white); min-width: 90px; }
+  .btn-reset { background: var(--gray-200); color: var(--gray-700); min-width: 90px; }
+  .btn-back { background: var(--accent); color: var(--white); min-width: 90px; }
+
+  .form-breadcrumb .action-link {
+    color: var(--blue-600); text-decoration: none; font-weight: 500; cursor: pointer;
+    background: none; border: none; font-size: 12px; padding: 0;
+  }
+  .form-breadcrumb .action-link:hover { text-decoration: underline; }

@@ -19,6 +19,8 @@ export function PatientFlowsPage() {
   const [tab, setTab] = useState<FlowTab>('record');
   const [overlay, setOverlay] = useState<OverlayView>(null);
   const [formId, setFormId] = useState('pre-anesthesia');
+  const [formMode, setFormMode] = useState<'create' | 'view'>('create');
+  const [formRecordId, setFormRecordId] = useState<number | null>(null);
 
   useEffect(() => {
     document.body.classList.add('dashboard-mode');
@@ -38,7 +40,14 @@ export function PatientFlowsPage() {
     return <MedicationsOverlay patient={patient} onBack={() => setOverlay(null)} />;
   }
   if (overlay === 'form') {
-    return <FormFillOverlay formId={formId} onBack={() => setOverlay(null)} />;
+    return (
+      <FormFillOverlay
+        formId={formId}
+        mode={formMode}
+        recordId={formRecordId}
+        onBack={() => setOverlay(null)}
+      />
+    );
   }
 
   return (
@@ -58,11 +67,21 @@ export function PatientFlowsPage() {
       <div className={`tab-content${tab === 'score' ? ' active' : ''}`}>
         {tab === 'score' && <ScoreTab />}
       </div>
-      <div className={`tab-content${tab === 'form' ? ' active' : ''}`}>
+      <div id="tabForm" className={`tab-content${tab === 'form' ? ' active' : ''}`}>
         {tab === 'form' && (
           <FormTab
-            onNewEntry={id => { setFormId(id); setOverlay('form'); }}
-            onViewEntry={id => { setFormId(id); setOverlay('form'); }}
+            onNewEntry={id => {
+              setFormId(id);
+              setFormMode('create');
+              setFormRecordId(null);
+              setOverlay('form');
+            }}
+            onViewEntry={(id, recordId) => {
+              setFormId(id);
+              setFormMode('view');
+              setFormRecordId(recordId);
+              setOverlay('form');
+            }}
           />
         )}
       </div>

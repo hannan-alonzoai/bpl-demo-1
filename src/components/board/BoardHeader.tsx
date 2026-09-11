@@ -15,7 +15,7 @@ export function BoardHeader() {
   return (
     <header className="dash-header">
       <div className="brand">
-        <div className="company">BPL Medical Technologies</div>
+        <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="dash-logo" />
         <div className="title">BPL Cortex OT · Monitoring Dashboard</div>
       </div>
       <div className="header-right">

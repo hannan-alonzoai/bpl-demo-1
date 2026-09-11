@@ -11,7 +11,6 @@ export function BoardPage() {
 
   return (
     <>
-      <div className="top-strip" />
       <div id="dashboard-screen" style={{ display: 'block' }}>
         <BoardHeader />
         <div className="dash-body">

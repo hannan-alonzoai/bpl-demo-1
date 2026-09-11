@@ -3,11 +3,11 @@ import { DUMMY_SUBMISSIONS, FORM_LIST, getFormTitle } from '../../../data/forms'
 
 interface Props {
   onNewEntry: (formId: string) => void;
-  onViewEntry: (formId: string) => void;
+  onViewEntry: (formId: string, recordId: number) => void;
 }
 
 export function FormTab({ onNewEntry, onViewEntry }: Props) {
-  const [selectedId, setSelectedId] = useState('pre-anesthesia');
+  const [selectedId, setSelectedId] = useState('critical-care');
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(
@@ -75,11 +75,15 @@ export function FormTab({ onNewEntry, onViewEntry }: Props) {
                     <td>{i + 1}</td>
                     <td>{row.date}</td>
                     <td>{row.time}</td>
-                    <td>{getFormTitle(selectedId)}</td>
-                    <td>{row.by}</td>
-                    <td>{row.attach ?? '—'}</td>
                     <td>
-                      <button type="button" className="btn-link" onClick={() => onViewEntry(selectedId)}>View</button>
+                      {getFormTitle(selectedId)}
+                      {' '}
+                      <span className="layout-badge">{row.layout === 'a' ? 'A' : 'B'}</span>
+                    </td>
+                    <td>{row.by}</td>
+                    <td>{row.attach ? <span className="attach-link">{row.attach}</span> : '—'}</td>
+                    <td>
+                      <button type="button" className="action-link" onClick={() => onViewEntry(selectedId, row.id)}>View</button>
                     </td>
                   </tr>
                 ))}
