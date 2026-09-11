@@ -1,0 +1,74 @@
+import { useEffect, useState } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
+import { FormFillOverlay } from '../components/flows/overlays/FormFillOverlay';
+import { FluidsOverlay } from '../components/flows/overlays/FluidsOverlay';
+import { MedicationsOverlay } from '../components/flows/overlays/MedicationsOverlay';
+import { PatientHeader } from '../components/flows/PatientHeader';
+import { FormTab } from '../components/flows/form/FormTab';
+import { RecordTab } from '../components/flows/record/RecordTab';
+import { ScoreTab } from '../components/flows/score/ScoreTab';
+import { SectionTabs } from '../components/flows/SectionTabs';
+import { Topbar } from '../components/flows/Topbar';
+import { getPatient } from '../data/patients';
+import { getRoom } from '../data/rooms';
+import type { FlowTab, OverlayView } from '../types';
+import '../styles/flows.css';
+
+export function PatientFlowsPage() {
+  const { roomId } = useParams<{ roomId: string }>();
+  const [tab, setTab] = useState<FlowTab>('record');
+  const [overlay, setOverlay] = useState<OverlayView>(null);
+  const [formId, setFormId] = useState('pre-anesthesia');
+
+  useEffect(() => {
+    document.body.classList.add('dashboard-mode');
+    return () => document.body.classList.remove('dashboard-mode');
+  }, []);
+
+  if (!roomId || !getRoom(roomId)) {
+    return <Navigate to="/board" replace />;
+  }
+
+  const patient = getPatient(roomId);
+
+  if (overlay === 'fluids') {
+    return <FluidsOverlay patient={patient} onBack={() => setOverlay(null)} />;
+  }
+  if (overlay === 'medications') {
+    return <MedicationsOverlay patient={patient} onBack={() => setOverlay(null)} />;
+  }
+  if (overlay === 'form') {
+    return <FormFillOverlay formId={formId} onBack={() => setOverlay(null)} />;
+  }
+
+  return (
+    <div className="dashboard-view">
+      <Topbar />
+      <PatientHeader patient={patient} />
+      <SectionTabs active={tab} onChange={setTab} patient={patient} />
+
+      <div className={`tab-content${tab === 'record' ? ' active' : ''}`}>
+        {tab === 'record' && (
+          <RecordTab
+            onOpenFluids={() => setOverlay('fluids')}
+            onOpenMedications={() => setOverlay('medications')}
+          />
+        )}
+      </div>
+      <div className={`tab-content${tab === 'score' ? ' active' : ''}`}>
+        {tab === 'score' && <ScoreTab />}
+      </div>
+      <div className={`tab-content${tab === 'form' ? ' active' : ''}`}>
+        {tab === 'form' && (
+          <FormTab
+            onNewEntry={id => { setFormId(id); setOverlay('form'); }}
+            onViewEntry={id => { setFormId(id); setOverlay('form'); }}
+          />
+        )}
+      </div>
+      <div className={`tab-content${tab === 'report' ? ' active' : ''}`}>
+        {tab === 'report' && <div className="tab-placeholder">Report view — final report</div>}
+      </div>
+    </div>
+  );
+}
