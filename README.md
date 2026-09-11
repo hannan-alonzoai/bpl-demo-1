@@ -4,6 +4,13 @@ React demo app for the BPL Medical Technologies OT monitoring workflow: **Login 
 
 Built from the HTML prototypes (`bpl_ot_chart_1.html` and `ot_flows_updated.html`) as a modular React + TypeScript + Vite application.
 
+**Repository:** [github.com/hannan-alonzoai/bpl-demo-1](https://github.com/hannan-alonzoai/bpl-demo-1)
+
+```bash
+git clone https://github.com/hannan-alonzoai/bpl-demo-1.git
+cd bpl-demo-1
+```
+
 ## Routes
 
 | Route | Description |
