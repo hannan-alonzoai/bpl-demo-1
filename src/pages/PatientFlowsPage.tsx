@@ -6,6 +6,7 @@ import { MedicationsOverlay } from '../components/flows/overlays/MedicationsOver
 import { PatientHeader } from '../components/flows/PatientHeader';
 import { FormTab } from '../components/flows/form/FormTab';
 import { RecordTab } from '../components/flows/record/RecordTab';
+import { ReportTab } from '../components/flows/report/ReportTab';
 import { ScoreTab } from '../components/flows/score/ScoreTab';
 import { SectionTabs } from '../components/flows/SectionTabs';
 import { Topbar } from '../components/flows/Topbar';
@@ -85,8 +86,8 @@ export function PatientFlowsPage() {
           />
         )}
       </div>
-      <div className={`tab-content${tab === 'report' ? ' active' : ''}`}>
-        {tab === 'report' && <div className="tab-placeholder">Report view — final report</div>}
+      <div id="tabReport" className={`tab-content${tab === 'report' ? ' active' : ''}`}>
+        {tab === 'report' && <ReportTab patient={patient} />}
       </div>
     </div>
   );

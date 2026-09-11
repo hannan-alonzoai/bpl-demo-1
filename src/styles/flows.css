@@ -287,6 +287,107 @@
     color: var(--gray-500); font-size: 14px; background: var(--gray-100);
   }
 
+  /* Report tab */
+  #tabReport.tab-content { background: var(--gray-100); }
+  .report-view {
+    width: 100%;
+    padding: 24px;
+    background: var(--gray-100);
+  }
+  .report-card {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px 32px 32px;
+  }
+  .report-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 24px;
+  }
+  .report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .report-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .report-field label,
+  .report-field .report-field-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+  }
+  .report-field select,
+  .report-field input[type="date"] {
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--gray-900);
+    background: var(--gray-100);
+    outline: none;
+    font-family: inherit;
+  }
+  .report-field select:focus,
+  .report-field input[type="date"]:focus {
+    border-color: var(--blue-500);
+    background: var(--white);
+    box-shadow: 0 0 0 2px var(--blue-100);
+  }
+  .report-datetime-row {
+    display: flex;
+    gap: 12px;
+    max-width: 420px;
+  }
+  .report-datetime-row input[type="date"] { flex: 1.2; max-width: none; }
+  .report-datetime-row select { flex: 1; max-width: none; }
+  .report-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .btn-report-submit {
+    background: var(--blue-600);
+    color: var(--white);
+    padding: 9px 20px;
+  }
+  .btn-report-submit:hover { background: var(--blue-700); }
+  .btn-report-cancel {
+    background: var(--white);
+    color: var(--blue-600);
+    border: 1px solid var(--blue-600);
+    padding: 9px 20px;
+  }
+  .btn-report-cancel:hover { background: var(--blue-50); }
+  .report-notes {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .report-notes h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue-700);
+    margin: 0 0 12px;
+  }
+  .report-notes ol {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--blue-600);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .report-notes li { margin-bottom: 4px; }
+
   /* Record tab */
   .record-view {
     width: 100%; padding: 20px;
