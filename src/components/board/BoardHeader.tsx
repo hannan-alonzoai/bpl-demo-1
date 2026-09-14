@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -19,6 +19,9 @@ export function BoardHeader() {
         <div className="title">BPL Cortex OT · Monitoring Dashboard</div>
       </div>
       <div className="header-right">
+        <Link to="/layouts" className="header-layouts-link">
+          Layout gallery
+        </Link>
         <div className="theme-toggle" title="Light / dark theme">
           <button type="button" className={theme === 'light' ? 'active' : ''} onClick={() => setTheme('light')}>☀</button>
           <button type="button" className={theme === 'dark' ? 'active' : ''} onClick={() => setTheme('dark')}>☾</button>

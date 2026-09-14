@@ -146,6 +146,19 @@ header.dash-header .dash-logo{
 }
 header.dash-header .brand .title{font-size:15px;font-weight:700;color:#fff;}
 .header-right{display:flex;align-items:center;gap:18px;}
+header.dash-header .header-layouts-link{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+  font-size:12px;
+  font-weight:600;
+  text-decoration:none;
+  transition:background .15s ease;
+}
+header.dash-header .header-layouts-link:hover{background:rgba(255,255,255,0.22);}
 header.dash-header .signout{
   display:inline-flex;
   align-items:center;
