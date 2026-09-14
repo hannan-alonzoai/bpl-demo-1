@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { BoardHeader } from '../components/board/BoardHeader';
+import { OTDetailModal } from '../components/board/OTDetailModal';
 import { OTGrid } from '../components/board/OTGrid';
 import { RangesPanel } from '../components/board/RangesPanel';
-import type { ViewMode } from '../types';
+import type { Room, ViewMode } from '../types';
 import '../styles/board.css';
 
 export function BoardPage() {
   const [view, setView] = useState<ViewMode>('rings');
   const [rangesOpen, setRangesOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   return (
     <>
@@ -28,9 +30,17 @@ export function BoardPage() {
             </div>
           </div>
           <RangesPanel open={rangesOpen} />
-          <OTGrid view={view} />
+          <OTGrid onViewDetails={setSelectedRoom} />
         </div>
       </div>
+      {selectedRoom && (
+        <OTDetailModal
+          room={selectedRoom}
+          view={view}
+          open={!!selectedRoom}
+          onClose={() => setSelectedRoom(null)}
+        />
+      )}
     </>
   );
 }

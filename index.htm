@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BPL Cortex OT · Monitoring Dashboard</title>
+  <style>
+:root{
+  --navy:#0d2846;--navy-2:#123a68;--blue:#0ea5e9;--blue-dark:#0369a1;
+  --ink:#16213a;--ink-soft:#5b6b85;--line:#d3ddec;--bg:#dfe6f0;--card:#f8fafc;
+  --ring-track:#eef1f6;--track:#eef1f6;
+  --critical:#e0122e;--critical-bg:#fbd2da;
+  --attention:#a8760a;--attention-bg:#f9e6ae;
+  --caution:#bb4c12;--caution-bg:#f6d8bf;
+  --stable:#0f7a4e;--stable-bg:#cdefdd;--priority:#a63fc7;
+}
+html[data-theme="dark"]{
+  --navy:#0a1a30;--blue:#38bdf8;--blue-dark:#0ea5e9;
+  --ink:#eef3fa;--ink-soft:#93a8c2;--line:#223a58;--bg:#0a1626;--card:#102640;
+  --ring-track:#1c3350;--track:#1c3350;
+  --critical:#ff7b81;--critical-bg:rgba(217,45,67,.22);
+  --attention:#ffcc5c;--attention-bg:rgba(184,134,11,.28);
+  --caution:#ff9d5c;--caution-bg:rgba(193,90,31,.28);
+  --stable:#55d99a;--stable-bg:rgba(28,138,92,.28);--priority:#c96be0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.top-strip{height:4px;background:linear-gradient(90deg,var(--navy) 0%,var(--blue) 100%)}
+header.dash-header{background:#4b9cd3;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
+header.dash-header .brand{display:flex;align-items:center;gap:16px}
+header.dash-header .dash-logo{height:44px;width:auto;display:block}
+header.dash-header .brand .title{font-size:15px;font-weight:700;color:#fff}
+.header-right{display:flex;align-items:center;gap:18px}
+header.dash-header .signout{display:inline-flex;align-items:center;padding:7px 14px;border:none;border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer}
+header.dash-header .signout:hover{background:rgba(255,255,255,.22)}
+.theme-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px}
+.theme-toggle button{border:none;background:transparent;color:#c7d6e8;width:28px;height:24px;border-radius:16px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+.theme-toggle button.active{background:#fff;color:var(--navy)}
+.dash-body{padding:20px 28px 40px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.toolbar .toolbar-label{font-size:12.5px;color:var(--ink-soft)}
+.toolbar-right{display:flex;align-items:center;gap:10px}
+.view-toggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.view-toggle button{padding:6px 14px;font-size:12.5px;font-weight:600;background:transparent;border:none;color:var(--ink-soft);cursor:pointer;border-left:1px solid var(--line);font-family:inherit}
+.view-toggle button:first-child{border-left:none}
+.view-toggle button.active{background:var(--blue);color:#fff}
+.ranges-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink-soft);cursor:pointer;font-family:inherit}
+.ranges-btn.active{color:var(--blue-dark);border-color:var(--blue)}
+.ranges-panel{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s,opacity .2s,margin .3s}
+.ranges-panel.open{max-height:600px;opacity:1;margin-bottom:16px}
+.ranges-card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.ranges-card h3{margin:0 0 4px;font-size:14px;color:var(--ink)}
+.ranges-card .ranges-sub{margin:0 0 14px;font-size:12px;color:var(--ink-soft)}
+table.ranges-table{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ranges-table th{text-align:left;font-size:11px;color:var(--ink-soft);font-weight:600;padding:6px 10px;border-bottom:1px solid var(--line)}
+table.ranges-table td{padding:6px 10px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap}
+table.ranges-table td.param{font-weight:700}
+table.ranges-table td.low{color:var(--caution)}
+table.ranges-table td.high{color:var(--critical)}
+table.ranges-table td.base{color:var(--blue-dark)}
+.ranges-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--ink-soft)}
+.ranges-legend span{display:inline-flex;align-items:center;gap:6px}
+.ranges-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.ranges-foot{margin-top:12px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
+.grid{display:flex;flex-direction:column;gap:24px}
+.row{display:flex;gap:24px;align-items:stretch}
+.card-flip{flex:1 1 0;min-width:0;height:420px;perspective:1000px;cursor:pointer}
+.card-flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1)}
+.card-flip:hover .card-flip-inner{transform:rotateY(180deg)}
+.card-flip:hover{z-index:2;position:relative}
+.card-face{position:absolute;inset:0;background:var(--card);border-radius:8px;border:1px solid var(--line);border-left:8px solid var(--line);box-shadow:0 1px 2px rgba(20,30,50,.05);padding:18px 22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s}
+.card-flip:hover .card-face{box-shadow:0 10px 26px rgba(13,40,70,.16)}
+.card-flip[data-status="critical"] .card-face{border-left-color:var(--critical)}
+.card-flip[data-status="attention"] .card-face{border-left-color:var(--attention)}
+.card-flip[data-status="caution"] .card-face{border-left-color:var(--caution)}
+.card-flip[data-status="stable"] .card-face{border-left-color:var(--stable)}
+.card-front{overflow-x:hidden;overflow-y:auto}
+.card-front>*{flex-shrink:0}
+.card-back{transform:rotateY(180deg)}
+.card-back .detail-inner{flex:1;min-height:0;overflow-y:auto;margin-top:10px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.card-back .detail-group h4{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.4px;color:var(--critical)}
+.detail-group.vent h4{color:var(--blue-dark)}
+.detail-group.temp h4{color:var(--caution)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.card-id{font-size:17px;font-weight:700;color:var(--ink);white-space:nowrap}
+.status-pill{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.status-critical{color:var(--critical);background:var(--critical-bg)}
+.status-attention{color:var(--attention);background:var(--attention-bg)}
+.status-caution{color:var(--caution);background:var(--caution-bg)}
+.status-stable{color:var(--stable);background:var(--stable-bg)}
+.patient-line{margin-top:8px;font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.procedure-line{margin-top:4px;font-size:13.5px;color:var(--ink-soft);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vitals-row{display:flex;gap:28px;margin-top:14px;flex-shrink:0}
+.vital{min-width:48px;flex-shrink:0}
+.vital .label{font-size:12px;color:var(--ink-soft);margin-bottom:3px}
+.vital .value{font-size:18px;font-weight:700;color:var(--blue-dark)}
+.vclass-normal{--vc:var(--blue-dark)}.vclass-caution{--vc:var(--caution)}.vclass-critical{--vc:var(--critical)}
+.vital .value.vclass-normal,.vital .value.vclass-caution,.vital .value.vclass-critical,.num-value.vclass-normal,.num-value.vclass-caution,.num-value.vclass-critical,.bar-row .bar-value.vclass-normal,.bar-row .bar-value.vclass-caution,.bar-row .bar-value.vclass-critical{color:var(--vc)}
+.ring-fg.vclass-normal,.ring-fg.vclass-caution,.ring-fg.vclass-critical{stroke:var(--vc)}
+.bar-fill.vclass-normal,.bar-fill.vclass-caution,.bar-fill.vclass-critical{background:var(--vc)}
+.alert-strip{margin-top:12px;background:var(--critical-bg);color:var(--critical);font-size:13px;font-weight:600;padding:8px 12px;border-radius:6px;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint{margin-top:10px;font-size:11.5px;color:#a7b0c2;letter-spacing:.2px;opacity:.9;white-space:nowrap}
+.card-front .hint{margin-top:auto;padding-top:10px}
+.hint-back{margin-top:auto;padding-top:8px}
+.completion{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px}
+.status-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.status-chip.on-track{background:var(--stable-bg);color:var(--stable)}
+.status-chip.watch{background:var(--attention-bg);color:var(--attention)}
+.priority-badge{width:20px;height:20px;border-radius:50%;background:var(--priority);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.completion-body{display:flex;flex-direction:column;gap:10px}
+.progress-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--ink-soft)}
+.progress-head b{color:var(--ink);font-size:15px;font-weight:800}
+.progress-track{height:9px;border-radius:5px;background:var(--track);overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;background:var(--blue)}
+.completion-info{font-size:12.5px}
+.ci-tagrow{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+.ci-tag{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--track);color:var(--ink-soft);white-space:nowrap}
+.ci-tag.risk{background:var(--attention-bg);color:var(--attention)}
+.ci-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;color:var(--ink-soft)}
+.ci-row:last-child{margin-bottom:0}
+.ci-row b{color:var(--ink);font-weight:700}
+.ci-delay{font-size:10px;font-weight:700;background:var(--attention-bg);color:var(--attention);padding:1px 7px;border-radius:8px;margin-left:6px}
+.ci-pill{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px}
+.ci-pill.ready{background:var(--stable-bg);color:var(--stable)}
+.ci-pill.notready{background:var(--track);color:var(--ink-soft)}
+.gauge-row{display:flex;gap:14px;flex-wrap:wrap}
+.gauge{text-align:center;width:60px}
+.gauge svg{width:60px;height:60px;display:block}
+.gauge .ring-bg{fill:none;stroke:var(--ring-track);stroke-width:6}
+.gauge .ring-fg{fill:none;stroke-width:6;stroke-linecap:round}
+.gauge-num{font-size:14px;font-weight:700;fill:var(--ink);font-family:inherit}
+.gauge .g-label{font-size:11px;color:var(--ink-soft);margin-top:5px}
+.gauge .g-unit{font-size:10px;color:#aab3c4}
+.bar-list{display:flex;flex-direction:column;gap:9px}
+.bar-row{display:grid;grid-template-columns:76px 1fr 56px;align-items:center;gap:10px}
+.bar-row .bar-label{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:7px;border-radius:4px;background:var(--track);overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-row .bar-value{font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap}
+.bar-row .bar-value small{font-weight:500;color:var(--ink-soft)}
+.num-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+.num-item{display:flex;flex-direction:column;gap:2px}
+.num-item .num-label{font-size:11px;color:var(--ink-soft)}
+.num-item .num-value{font-size:17px;font-weight:700}
+.num-item .num-value small{font-size:11px;font-weight:500;color:var(--ink-soft);margin-left:2px}
+@media(max-width:760px){
+  .dash-body{padding:16px}
+  header.dash-header{padding:14px 16px}
+  .grid{gap:18px}
+  .row{flex-wrap:wrap;gap:18px}
+  .card-flip{flex:1 1 100%;height:400px}
+}
+  </style>
+</head>
+<body>
+  <div class="top-strip"></div>
+  <header class="dash-header">
+    <div class="brand">
+      <svg class="dash-logo" viewBox="0 0 160 44" aria-hidden="true">
+        <rect x="0" y="6" width="36" height="32" rx="6" fill="#fff" opacity=".95"/>
+        <text x="8" y="28" fill="#0369a1" font-size="14" font-weight="700" font-family="Segoe UI,sans-serif">BPL</text>
+        <text x="44" y="20" fill="#fff" font-size="13" font-weight="700" font-family="Segoe UI,sans-serif">Cortex OT</text>
+        <text x="44" y="34" fill="rgba(255,255,255,.75)" font-size="10" font-family="Segoe UI,sans-serif">Monitoring</text>
+      </svg>
+      <div class="title">BPL Cortex OT · Monitoring Dashboard</div>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle" title="Light / dark theme">
+        <button type="button" id="theme-light" class="active">☀</button>
+        <button type="button" id="theme-dark">☾</button>
+      </div>
+      <button type="button" class="signout">Sign out</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+    <div class="toolbar">
+      <span class="toolbar-label">Vitals display</span>
+      <div class="toolbar-right">
+        <button type="button" class="ranges-btn" id="ranges-btn">ℹ Reference ranges</button>
+        <div class="view-toggle" id="view-toggle">
+          <button type="button" data-view="rings" class="active">Rings</button>
+          <button type="button" data-view="bars">Bars</button>
+          <button type="button" data-view="numbers">Numbers</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ranges-panel" id="ranges-panel">
+      <div class="ranges-card">
+        <h3>Clinical reference ranges</h3>
+        <p class="ranges-sub">Values used to colour-code every reading on the dashboard.</p>
+        <table class="ranges-table" id="ranges-table"></table>
+        <div class="ranges-legend">
+          <span><i style="background:var(--caution)"></i>Low / borderline</span>
+          <span><i style="background:var(--blue-dark)"></i>Normal</span>
+          <span><i style="background:var(--critical)"></i>High / severe</span>
+        </div>
+        <div class="ranges-foot">Heart rate 40–60 bpm is read as bradycardia (orange); 40 bpm or below is severe bradycardia (red).</div>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <script>
+    const RANGES = {
+      HR:{label:'Heart Rate',low:'<60',base:'60–100',avg:'70–80',high:'>100',unit:'bpm',min:60,max:100},
+      RR:{label:'Respiratory Rate',low:'<12',base:'12–18',avg:'14–16',high:'>20',unit:'breaths/min',min:12,max:18},
+      Temp:{label:'Temperature',low:'<36.5',base:'36.5–37.3',avg:'~37.0',high:'≥38.0',unit:'°C',min:36.5,max:37.3},
+      SpO2:{label:'SpO₂',low:'<95',base:'95–100',avg:'97–99',high:'N/A*',unit:'%',min:95,max:100,noHigh:true},
+      Pulse:{label:'Pulse',low:'<60',base:'60–100',avg:'70–80',high:'>100',unit:'bpm',min:60,max:100},
+      Ppeak:{label:'Ppeak',low:'<15',base:'15–25',avg:'~20',high:'>25–30',unit:'cmH₂O',min:15,max:25},
+      PEEP:{label:'PEEP',low:'<5',base:'5–10',avg:'~5',high:'>10–15',unit:'cmH₂O',min:5,max:10},
+      Pplat:{label:'Pplat',low:'<15',base:'15–25',avg:'20–25',high:'≥30',unit:'cmH₂O',min:15,max:25},
+      Pmean:{label:'Pmean',low:'<5',base:'5–15',avg:'8–12',high:'>15–20',unit:'cmH₂O',min:5,max:15},
+    };
+
+    const ROOMS = [
+      {id:'OT-01',status:'critical',statusLabel:'Critical',patient:'James · ASA I',procedure:'CABG',
+        vitals:[{l:'HR',v:90,key:'HR'},{l:'SpO2',v:98,key:'SpO2'},{l:'Temp1',v:25.6,key:'Temp'},{l:'PEEP',v:2,key:'PEEP'}],
+        alert:'Temp2 sensor fall off',
+        completion:{pct:62,status:'on-track',tag:'Surgery',priority:1,finish:'16:20',delay:null,nextReady:true},
+        detail:{
+          hemo:[{v:90,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:86,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:98,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:14,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:19,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:2,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.5,l:'MV',u:'L/min',max:15},{v:16,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:410,l:'VTi',u:'mL',max:800},{v:7,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:25.6,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:35.9,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-05',status:'attention',statusLabel:'Attention',patient:'Rahul · ASA IV',procedure:'Emergency laparotomy',
+        vitals:[{l:'HR',v:128,key:'HR'},{l:'SpO2',v:93,key:'SpO2'},{l:'Temp1',v:35.2,key:'Temp'},{l:'MAP',v:58}],
+        alert:'Low urine output',
+        completion:{pct:45,status:'watch',tag:'over-run risk',priority:1,finish:'17:40',delay:'+35m',nextReady:false},
+        detail:{
+          hemo:[{v:128,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:124,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:93,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:22,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:24,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:8.2,l:'MV',u:'L/min',max:15},{v:21,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:380,l:'VTi',u:'mL',max:800},{v:9,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:35.2,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.1,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-02',status:'caution',statusLabel:'Caution',patient:'Priya · ASA II',procedure:'Hip replacement',
+        vitals:[{l:'HR',v:112,key:'HR'},{l:'SpO2',v:96,key:'SpO2'},{l:'Temp1',v:36.8,key:'Temp'},{l:'MAP',v:64}],
+        alert:null,
+        completion:{pct:70,status:'watch',tag:'Surgery',priority:3,finish:'14:50',delay:null,nextReady:false},
+        detail:{
+          hemo:[{v:112,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:110,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:96,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:18,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:20,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.8,l:'MV',u:'L/min',max:15},{v:17,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:420,l:'VTi',u:'mL',max:800},{v:8,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:36.8,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.9,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-03',status:'stable',statusLabel:'Stable',patient:'Arun · ASA III',procedure:'Bowel resection',
+        vitals:[{l:'HR',v:78,key:'HR'},{l:'SpO2',v:99,key:'SpO2'},{l:'Temp1',v:37.1,key:'Temp'},{l:'MAP',v:82}],
+        alert:null,
+        completion:{pct:88,status:'watch',tag:'over-run risk',priority:2,finish:'15:05',delay:'+20m',nextReady:false},
+        detail:{
+          hemo:[{v:78,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:77,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:99,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:15,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:18,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.0,l:'MV',u:'L/min',max:15},{v:15,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:400,l:'VTi',u:'mL',max:800},{v:7,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:37.1,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:37.0,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-04',status:'stable',statusLabel:'Stable',patient:'Leela · ASA II',procedure:'Thyroidectomy',
+        vitals:[{l:'HR',v:70,key:'HR'},{l:'SpO2',v:99,key:'SpO2'},{l:'Temp1',v:36.9,key:'Temp'},{l:'MAP',v:78}],
+        alert:null,
+        completion:{pct:95,status:'on-track',tag:'Surgery',priority:4,finish:'13:10',delay:null,nextReady:true},
+        detail:{
+          hemo:[{v:70,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:69,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:99,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:13,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:17,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:4,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:5.6,l:'MV',u:'L/min',max:15},{v:14,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:390,l:'VTi',u:'mL',max:800},{v:6,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:36.9,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.8,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+    ];
+
+    let view = 'rings';
+
+    function classify(key, value) {
+      const r = key ? RANGES[key] : undefined;
+      if (!r || r.modeOnly || value == null) return 'vclass-normal';
+      const num = typeof value === 'number' ? value : parseFloat(String(value));
+      if (Number.isNaN(num)) return 'vclass-normal';
+      if (num < (r.min ?? 0)) {
+        if (key === 'HR' || key === 'Pulse') return num <= 40 ? 'vclass-critical' : 'vclass-caution';
+        return 'vclass-caution';
+      }
+      if (!r.noHigh && r.max != null && num > r.max) return 'vclass-critical';
+      return 'vclass-normal';
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function vitalGroup(items) {
+      if (view === 'bars') {
+        return '<div class="bar-list">' + items.map(g => {
+          const pct = Math.max(2, Math.min(100, (g.v / g.max) * 100));
+          const vc = classify(g.key, g.v);
+          return `<div class="bar-row"><span class="bar-label">${esc(g.l)}</span><div class="bar-track"><div class="bar-fill ${vc}" style="width:${pct}%"></div></div><span class="bar-value ${vc}">${g.v} <small>${esc(g.u)}</small></span></div>`;
+        }).join('') + '</div>';
+      }
+      if (view === 'numbers') {
+        return '<div class="num-grid">' + items.map(g => {
+          const vc = classify(g.key, g.v);
+          return `<div class="num-item"><span class="num-label">${esc(g.l)}</span><span class="num-value ${vc}">${g.v}<small>${esc(g.u)}</small></span></div>`;
+        }).join('') + '</div>';
+      }
+      return '<div class="gauge-row">' + items.map(g => {
+        const r = 24, c = 2 * Math.PI * r, pct = Math.max(0, Math.min(1, g.v / g.max)), offset = c - pct * c;
+        const vc = classify(g.key, g.v);
+        return `<div class="gauge"><svg viewBox="0 0 60 60"><g transform="rotate(-90 30 30)"><circle class="ring-bg" cx="30" cy="30" r="${r}"/><circle class="ring-fg ${vc}" cx="30" cy="30" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="30" y="30" text-anchor="middle" dominant-baseline="central" class="gauge-num">${g.v}</text></svg><div class="g-label">${esc(g.l)}</div><div class="g-unit">${esc(g.u)}</div></div>`;
+      }).join('') + '</div>';
+    }
+
+    function completionBlock(c) {
+      const statusLabel = c.status === 'on-track' ? 'on track' : 'watch';
+      const tagClass = c.tag === 'over-run risk' ? 'ci-tag risk' : 'ci-tag';
+      return `<div class="completion"><div class="completion-top"><span class="status-chip ${c.status}"><span class="dot"></span>${statusLabel}</span><span class="priority-badge">${c.priority}</span></div><div class="completion-body"><div><div class="progress-head"><span>Elapsed</span><b>${c.pct}%</b></div><div class="progress-track"><div class="progress-fill" style="width:${c.pct}%"></div></div></div><div class="completion-info"><div class="ci-tagrow"><span class="${tagClass}">${esc(c.tag)}</span></div><div class="ci-row"><span>Predicted finish</span><b>${esc(c.finish)}${c.delay ? `<span class="ci-delay">${esc(c.delay)}</span>` : ''}</b></div><div class="ci-row"><span>Next patient</span><span class="ci-pill ${c.nextReady ? 'ready' : 'notready'}">${c.nextReady ? 'ready' : 'not ready'}</span></div></div></div></div>`;
+    }
+
+    function renderCard(room) {
+      const vitals = room.vitals.map(v => {
+        const vc = classify(v.key, typeof v.v === 'number' ? v.v : undefined);
+        return `<div class="vital"><div class="label">${esc(v.l)}</div><div class="value ${vc}">${v.v}</div></div>`;
+      }).join('');
+      const alert = room.alert ? `<div class="alert-strip">⚠ ${esc(room.alert)}</div>` : '';
+      const detail = (group, title, cls) => `<div class="detail-group ${cls}"><h4>${title}</h4>${vitalGroup(room.detail[group])}</div>`;
+
+      return `<div class="card-flip card-clickable" data-status="${room.status}" tabindex="0" role="button">
+        <div class="card-flip-inner">
+          <div class="card-face card-front">
+            <div class="card-top"><div class="card-id">${esc(room.id)}</div><div class="status-pill status-${room.status}">${esc(room.statusLabel)}</div></div>
+            <div class="patient-line">${esc(room.patient)}</div>
+            <div class="procedure-line">${esc(room.procedure)}</div>
+            <div class="vitals-row">${vitals}</div>
+            ${alert}
+            ${completionBlock(room.completion)}
+            <div class="hint">hover to flip · click to open record</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-top"><div class="card-id">${esc(room.id)}</div><div class="status-pill status-${room.status}">${esc(room.statusLabel)}</div></div>
+            <div class="patient-line">${esc(room.patient)}</div>
+            <div class="detail-inner">
+              ${detail('hemo','HEMODYNAMICS','hemo')}
+              ${detail('vent','VENTILATION','vent')}
+              ${detail('temp','TEMPERATURE','temp')}
+            </div>
+            <div class="hint hint-back">click to open record</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderGrid() {
+      const perRow = window.innerWidth < 760 ? 1 : 2;
+      let html = '';
+      for (let i = 0; i < ROOMS.length; i += perRow) {
+        html += '<div class="row">' + ROOMS.slice(i, i + perRow).map(renderCard).join('') + '</div>';
+      }
+      document.getElementById('grid').innerHTML = html;
+    }
+
+    function renderRanges() {
+      const rows = Object.values(RANGES).map(r =>
+        `<tr><td class="param">${esc(r.label)}</td><td class="low">${esc(r.low)}</td><td class="base">${esc(r.base)}</td><td>${esc(r.avg)}</td><td class="high">${esc(r.high)}</td><td>${esc(r.unit)}</td></tr>`
+      ).join('');
+      document.getElementById('ranges-table').innerHTML =
+        '<thead><tr><th>Parameter</th><th>Low</th><th>Base / Normal range</th><th>Average / Typical</th><th>High</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody>';
+    }
+
+    document.getElementById('view-toggle').addEventListener('click', e => {
+      const btn = e.target.closest('[data-view]');
+      if (!btn) return;
+      view = btn.dataset.view;
+      document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+      renderGrid();
+    });
+
+    document.getElementById('ranges-btn').addEventListener('click', () => {
+      document.getElementById('ranges-panel').classList.toggle('open');
+      document.getElementById('ranges-btn').classList.toggle('active');
+    });
+
+    document.getElementById('theme-light').addEventListener('click', () => {
+      document.documentElement.removeAttribute('data-theme');
+      document.getElementById('theme-light').classList.add('active');
+      document.getElementById('theme-dark').classList.remove('active');
+    });
+    document.getElementById('theme-dark').addEventListener('click', () => {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('theme-dark').classList.add('active');
+      document.getElementById('theme-light').classList.remove('active');
+    });
+
+    window.addEventListener('resize', renderGrid);
+    renderRanges();
+    renderGrid();
+  </script>
+</body>
+</html>

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { rooms } from '../../data/rooms';
-import type { ViewMode } from '../../types';
+import type { Room } from '../../types';
 import { perRowForWidth } from '../../utils/classify';
 import { OTCard } from './OTCard';
 
 interface Props {
-  view: ViewMode;
+  onViewDetails: (room: Room) => void;
 }
 
-export function OTGrid({ view }: Props) {
+export function OTGrid({ onViewDetails }: Props) {
   const [perRow, setPerRow] = useState(3);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function OTGrid({ view }: Props) {
       {rows.map((chunk, i) => (
         <div className="row" key={i}>
           {chunk.map(room => (
-            <OTCard key={room.id} room={room} view={view} />
+            <OTCard key={room.id} room={room} onViewDetails={() => onViewDetails(room)} />
           ))}
         </div>
       ))}
