@@ -64,13 +64,13 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .ranges-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .ranges-foot{margin-top:12px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
 .grid{display:flex;flex-direction:column;gap:24px}
-.row{display:flex;gap:24px;align-items:stretch}
-.card-flip{flex:1 1 0;min-width:0;height:420px;perspective:1000px;cursor:pointer}
-.card-flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1)}
-.card-flip:hover .card-flip-inner{transform:rotateY(180deg)}
-.card-flip:hover{z-index:2;position:relative}
-.card-face{position:absolute;inset:0;background:var(--card);border-radius:8px;border:1px solid var(--line);border-left:8px solid var(--line);box-shadow:0 1px 2px rgba(20,30,50,.05);padding:18px 22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s}
-.card-flip:hover .card-face{box-shadow:0 10px 26px rgba(13,40,70,.16)}
+.row{display:flex;gap:18px;align-items:stretch}
+.card-flip{flex:1 1 0;min-width:0;height:340px;perspective:1200px;cursor:pointer}
+.card-flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .75s ease-in-out}
+.card-flip.is-flipped .card-flip-inner{transform:rotateY(180deg)}
+.card-flip.is-flipped{z-index:2;position:relative}
+.card-face{position:absolute;inset:0;background:var(--card);border-radius:8px;border:1px solid var(--line);border-left:8px solid var(--line);box-shadow:0 1px 2px rgba(20,30,50,.05);padding:14px 16px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .35s ease}
+.card-flip.is-flipped .card-face{box-shadow:0 6px 18px rgba(13,40,70,.12)}
 .card-flip[data-status="critical"] .card-face{border-left-color:var(--critical)}
 .card-flip[data-status="attention"] .card-face{border-left-color:var(--attention)}
 .card-flip[data-status="caution"] .card-face{border-left-color:var(--caution)}
@@ -78,7 +78,7 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .card-front{overflow-x:hidden;overflow-y:auto}
 .card-front>*{flex-shrink:0}
 .card-back{transform:rotateY(180deg)}
-.card-back .detail-inner{flex:1;min-height:0;overflow-y:auto;margin-top:10px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.card-back .detail-inner{flex:1;min-height:0;overflow-y:auto;margin-top:8px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .card-back .detail-group h4{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.4px;color:var(--critical)}
 .detail-group.vent h4{color:var(--blue-dark)}
 .detail-group.temp h4{color:var(--caution)}
@@ -89,28 +89,28 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .status-attention{color:var(--attention);background:var(--attention-bg)}
 .status-caution{color:var(--caution);background:var(--caution-bg)}
 .status-stable{color:var(--stable);background:var(--stable-bg)}
-.patient-line{margin-top:8px;font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.procedure-line{margin-top:4px;font-size:13.5px;color:var(--ink-soft);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.vitals-row{display:flex;gap:28px;margin-top:14px;flex-shrink:0}
-.vital{min-width:48px;flex-shrink:0}
+.patient-line{margin-top:6px;font-size:14px;color:var(--ink);font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.procedure-line{margin-top:2px;font-size:13px;color:var(--ink-soft);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vitals-row{display:flex;gap:12px;margin-top:10px;flex-shrink:0;flex-wrap:wrap}
+.vital{min-width:44px;flex:1 1 40px;flex-shrink:0}
 .vital .label{font-size:12px;color:var(--ink-soft);margin-bottom:3px}
 .vital .value{font-size:18px;font-weight:700;color:var(--blue-dark)}
 .vclass-normal{--vc:var(--blue-dark)}.vclass-caution{--vc:var(--caution)}.vclass-critical{--vc:var(--critical)}
 .vital .value.vclass-normal,.vital .value.vclass-caution,.vital .value.vclass-critical,.num-value.vclass-normal,.num-value.vclass-caution,.num-value.vclass-critical,.bar-row .bar-value.vclass-normal,.bar-row .bar-value.vclass-caution,.bar-row .bar-value.vclass-critical{color:var(--vc)}
 .ring-fg.vclass-normal,.ring-fg.vclass-caution,.ring-fg.vclass-critical{stroke:var(--vc)}
 .bar-fill.vclass-normal,.bar-fill.vclass-caution,.bar-fill.vclass-critical{background:var(--vc)}
-.alert-strip{margin-top:12px;background:var(--critical-bg);color:var(--critical);font-size:13px;font-weight:600;padding:8px 12px;border-radius:6px;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hint{margin-top:10px;font-size:11.5px;color:#a7b0c2;letter-spacing:.2px;opacity:.9;white-space:nowrap}
-.card-front .hint{margin-top:auto;padding-top:10px}
-.hint-back{margin-top:auto;padding-top:8px}
-.completion{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px}
+.alert-strip{margin-top:8px;background:var(--critical-bg);color:var(--critical);font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:6px;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint{margin-top:6px;font-size:11px;color:#a7b0c2;letter-spacing:.2px;opacity:.85;white-space:nowrap}
+.card-front .hint{margin-top:6px;padding-top:0}
+.hint-back{margin-top:auto;padding-top:6px}
+.completion{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);flex-shrink:0}
+.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:6px}
 .status-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
 .status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
 .status-chip.on-track{background:var(--stable-bg);color:var(--stable)}
 .status-chip.watch{background:var(--attention-bg);color:var(--attention)}
 .priority-badge{width:20px;height:20px;border-radius:50%;background:var(--priority);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
-.completion-body{display:flex;flex-direction:column;gap:10px}
+.completion-body{display:flex;flex-direction:column;gap:8px}
 .progress-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--ink-soft)}
 .progress-head b{color:var(--ink);font-size:15px;font-weight:800}
 .progress-track{height:9px;border-radius:5px;background:var(--track);overflow:hidden}
@@ -146,12 +146,17 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .num-item .num-label{font-size:11px;color:var(--ink-soft)}
 .num-item .num-value{font-size:17px;font-weight:700}
 .num-item .num-value small{font-size:11px;font-weight:500;color:var(--ink-soft);margin-left:2px}
+@media(min-width:761px){
+  .vital .value{font-size:16px}
+  .vital .label{font-size:11px}
+  .completion-info{font-size:12px}
+}
 @media(max-width:760px){
   .dash-body{padding:16px}
   header.dash-header{padding:14px 16px}
   .grid{gap:18px}
   .row{flex-wrap:wrap;gap:18px}
-  .card-flip{flex:1 1 100%;height:400px}
+  .card-flip{flex:1 1 100%;height:330px}
 }
   </style>
 </head>
@@ -328,7 +333,7 @@ table.ranges-table td.base{color:var(--blue-dark)}
             <div class="vitals-row">${vitals}</div>
             ${alert}
             ${completionBlock(room.completion)}
-            <div class="hint">hover to flip · click to open record</div>
+            <div class="hint">Click card to flip</div>
           </div>
           <div class="card-face card-back">
             <div class="card-top"><div class="card-id">${esc(room.id)}</div><div class="status-pill status-${room.status}">${esc(room.statusLabel)}</div></div>
@@ -338,20 +343,39 @@ table.ranges-table td.base{color:var(--blue-dark)}
               ${detail('vent','VENTILATION','vent')}
               ${detail('temp','TEMPERATURE','temp')}
             </div>
-            <div class="hint hint-back">click to open record</div>
+            <div class="hint hint-back">Click card to flip back</div>
           </div>
         </div>
       </div>`;
     }
 
+    function toggleFlip(card) {
+      if (!card) return;
+      const open = card.classList.contains('is-flipped');
+      document.querySelectorAll('.card-flip.is-flipped').forEach(c => c.classList.remove('is-flipped'));
+      if (!open) card.classList.add('is-flipped');
+    }
+
     function renderGrid() {
-      const perRow = window.innerWidth < 760 ? 1 : 2;
+      const perRow = window.innerWidth < 760 ? 1 : 3;
       let html = '';
       for (let i = 0; i < ROOMS.length; i += perRow) {
         html += '<div class="row">' + ROOMS.slice(i, i + perRow).map(renderCard).join('') + '</div>';
       }
       document.getElementById('grid').innerHTML = html;
     }
+
+    document.getElementById('grid').addEventListener('click', e => {
+      const card = e.target.closest('.card-flip');
+      if (card) toggleFlip(card);
+    });
+    document.getElementById('grid').addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('.card-flip');
+      if (!card) return;
+      e.preventDefault();
+      toggleFlip(card);
+    });
 
     function renderRanges() {
       const rows = Object.values(RANGES).map(r =>

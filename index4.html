@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OT Monitoring · Surgery Schedule Layout</title>
+  <style>
+:root{
+  --ink:#1a2332;--ink-soft:#6b7280;--line:#e5e7eb;--bg:#eef1f5;--card:#fff;
+  --ring-track:#eef1f6;--track:#e8ecf2;--blue:#0ea5e9;--blue-dark:#0369a1;
+  --critical:#dc2626;--critical-bg:#fee2e2;
+  --attention:#b45309;--attention-bg:#fef3c7;
+  --caution:#c2410c;--caution-bg:#ffedd5;
+  --stable:#059669;--stable-bg:#d1fae5;--priority:#9333ea;
+  --accent-top-critical:#ef4444;--accent-top-attention:#f59e0b;
+  --accent-top-caution:#f97316;--accent-top-stable:#22c55e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+.page{max-width:1280px;margin:0 auto;padding:28px 24px 40px}
+.page-title{margin:0 0 22px;font-size:26px;font-weight:700;letter-spacing:-0.3px;color:var(--ink)}
+
+.ot-strip-section{margin-bottom:20px}
+.ot-strip-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ot-search{
+  flex:1;min-width:180px;max-width:340px;
+  padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  font-family:inherit;font-size:13px;background:var(--card);color:var(--ink);
+}
+.ot-search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(14,165,233,.2)}
+.ot-count{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.ot-top-scroll{
+  overflow-x:auto;overflow-y:hidden;
+  padding-bottom:6px;margin:0 -4px;padding-left:4px;padding-right:4px;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+}
+.ot-top-scroll::-webkit-scrollbar{height:8px}
+.ot-top-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.ot-top-row{
+  display:flex;flex-wrap:nowrap;gap:12px;
+  min-width:min-content;padding-bottom:2px;
+}
+.ot-theatre-card{
+  flex:0 0 208px;
+  scroll-snap-align:start;
+  background:var(--card);
+  border-radius:10px;
+  border:1px solid var(--line);
+  border-top:4px solid var(--line);
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+  padding:14px 14px 12px;
+  cursor:pointer;
+  text-align:left;
+  font-family:inherit;
+  transition:box-shadow .15s,border-color .15s;
+}
+.ot-theatre-card:hover{box-shadow:0 6px 16px rgba(15,23,42,.1)}
+.ot-theatre-card.selected{
+  border-color:var(--blue);
+  box-shadow:0 0 0 2px rgba(14,165,233,.25);
+}
+.ot-theatre-card[data-status="critical"]{border-top-color:var(--accent-top-critical)}
+.ot-theatre-card[data-status="attention"]{border-top-color:var(--accent-top-attention)}
+.ot-theatre-card[data-status="caution"]{border-top-color:var(--accent-top-caution)}
+.ot-theatre-card[data-status="stable"]{border-top-color:var(--accent-top-stable)}
+
+.theatre-label{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px}
+.theatre-proc{margin:0;font-size:14px;font-weight:700;line-height:1.3;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.theatre-patient{margin:6px 0 0;font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theatre-foot{margin-top:12px}
+.theatre-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.theatre-bar-fill{height:100%;border-radius:3px;background:var(--stable)}
+.theatre-bar-fill.watch{background:var(--attention)}
+.theatre-meta{display:block;margin-top:6px;font-size:11px;color:var(--ink-soft)}
+.status-note{display:block;margin-top:8px;font-size:11px;font-weight:700}
+.status-note.delayed{color:var(--critical)}
+.status-note.scheduled{color:var(--blue-dark)}
+
+.detail-panel{
+  background:var(--card);
+  border-radius:12px;
+  border:1px solid var(--line);
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+}
+.detail-panel-head{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+}
+.detail-panel-head h2{margin:0;font-size:16px;font-weight:700}
+.detail-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:48px 24px;color:var(--ink-soft);font-size:14px;text-align:center;
+}
+.detail-body{padding:18px 20px 24px;overflow-y:auto;flex:1}
+
+.view-toggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.view-toggle button{padding:6px 12px;font-size:12px;font-weight:600;background:transparent;border:none;color:var(--ink-soft);cursor:pointer;border-left:1px solid var(--line);font-family:inherit}
+.view-toggle button:first-child{border-left:none}
+.view-toggle button.active{background:var(--blue);color:#fff}
+
+.detail-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card-id{font-size:20px;font-weight:700}
+.status-pill{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;white-space:nowrap}
+.status-critical{color:var(--critical);background:var(--critical-bg)}
+.status-attention{color:var(--attention);background:var(--attention-bg)}
+.status-caution{color:var(--caution);background:var(--caution-bg)}
+.status-stable{color:var(--stable);background:var(--stable-bg)}
+.patient-line{margin-top:8px;font-size:15px;font-weight:600}
+.procedure-line{margin-top:4px;font-size:13px;color:var(--ink-soft)}
+
+.detail-summary{display:flex;align-items:flex-start;gap:20px;margin-top:16px;flex-wrap:wrap}
+.vitals-row{display:flex;gap:24px;flex-wrap:wrap;flex:1}
+.vital .label{font-size:11px;color:var(--ink-soft);margin-bottom:2px}
+.vital .value{font-size:18px;font-weight:700;color:var(--blue-dark)}
+.vclass-normal{--vc:var(--blue-dark)}.vclass-caution{--vc:var(--caution)}.vclass-critical{--vc:var(--critical)}
+.vital .value.vclass-normal,.vital .value.vclass-caution,.vital .value.vclass-critical,.num-value.vclass-normal,.num-value.vclass-caution,.num-value.vclass-critical,.bar-row .bar-value.vclass-normal,.bar-row .bar-value.vclass-caution,.bar-row .bar-value.vclass-critical{color:var(--vc)}
+.ring-fg.vclass-normal,.ring-fg.vclass-caution,.ring-fg.vclass-critical{stroke:var(--vc)}
+.bar-fill.vclass-normal,.bar-fill.vclass-caution,.bar-fill.vclass-critical{background:var(--vc)}
+
+.compact-pie{flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.compact-pie svg{width:56px;height:56px;display:block}
+.compact-pie .pie-bg{fill:none;stroke:var(--track);stroke-width:7}
+.compact-pie .pie-fg{fill:none;stroke:var(--blue);stroke-width:7;stroke-linecap:round}
+.compact-pie .pie-num{font-size:11px;font-weight:800;fill:var(--ink);font-family:inherit}
+.compact-pie-label{margin-top:3px;font-size:10px;color:var(--ink-soft)}
+
+.alert-strip{margin-top:14px;background:var(--critical-bg);color:var(--critical);font-size:13px;font-weight:600;padding:8px 12px;border-radius:6px}
+.completion{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px}
+.status-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.status-chip.on-track{background:var(--stable-bg);color:var(--stable)}
+.status-chip.watch{background:var(--attention-bg);color:var(--attention)}
+.priority-badge{width:20px;height:20px;border-radius:50%;background:var(--priority);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.progress-head{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);margin-bottom:6px}
+.progress-head b{color:var(--ink);font-size:14px}
+.progress-track{height:8px;border-radius:4px;background:var(--track);overflow:hidden}
+.progress-fill{height:100%;background:var(--blue);border-radius:4px}
+.completion-info{font-size:12.5px;margin-top:10px}
+.ci-tagrow{margin-bottom:7px}
+.ci-tag{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--track);color:var(--ink-soft)}
+.ci-tag.risk{background:var(--attention-bg);color:var(--attention)}
+.ci-row{display:flex;justify-content:space-between;margin-bottom:5px;color:var(--ink-soft);font-size:12.5px}
+.ci-row b{color:var(--ink)}
+.ci-delay{font-size:10px;font-weight:700;background:var(--attention-bg);color:var(--attention);padding:1px 7px;border-radius:8px;margin-left:6px}
+.ci-pill{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px}
+.ci-pill.ready{background:var(--stable-bg);color:var(--stable)}
+.ci-pill.notready{background:var(--track);color:var(--ink-soft)}
+
+.detail-vitals{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.detail-vitals h3{margin:0 0 14px;font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase}
+.detail-inner{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.detail-group h4{margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--critical)}
+.detail-group.vent h4{color:var(--blue-dark)}
+.detail-group.temp h4{color:var(--caution)}
+
+.gauge-row{display:flex;gap:12px;flex-wrap:wrap}
+.gauge{text-align:center;width:56px}
+.gauge svg{width:56px;height:56px;display:block}
+.gauge .ring-bg{fill:none;stroke:var(--ring-track);stroke-width:6}
+.gauge .ring-fg{fill:none;stroke-width:6;stroke-linecap:round}
+.gauge-num{font-size:13px;font-weight:700;fill:var(--ink);font-family:inherit}
+.gauge .g-label{font-size:10px;color:var(--ink-soft);margin-top:4px}
+.gauge .g-unit{font-size:9px;color:#9ca3af}
+.bar-list{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:72px 1fr 52px;align-items:center;gap:8px}
+.bar-row .bar-label{font-size:11px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-row .bar-value{font-size:12px;font-weight:700;text-align:right}
+.bar-row .bar-value small{font-weight:500;color:var(--ink-soft)}
+.num-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px}
+.num-item .num-label{font-size:10px;color:var(--ink-soft)}
+.num-item .num-value{font-size:15px;font-weight:700}
+.num-item .num-value small{font-size:10px;font-weight:500;color:var(--ink-soft)}
+
+@media(max-width:720px){
+  .ot-theatre-card{flex:0 0 188px}
+  .detail-inner{grid-template-columns:1fr}
+  .page{padding:20px 16px}
+}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="page-title">Surgery Schedule</h1>
+    <div class="ot-strip-section">
+      <div class="ot-strip-toolbar">
+        <input type="search" class="ot-search" id="ot-search" placeholder="Search OT, patient, or procedure…" autocomplete="off" />
+        <span class="ot-count" id="ot-count"></span>
+      </div>
+      <div class="ot-top-scroll" id="ot-top-scroll">
+        <div class="ot-top-row" id="ot-top-row"></div>
+      </div>
+    </div>
+
+    <section class="detail-panel" aria-live="polite">
+      <div class="detail-panel-head">
+        <h2 id="detail-panel-title">Room details</h2>
+        <div class="view-toggle" id="view-toggle">
+          <button type="button" data-view="rings" class="active">Rings</button>
+          <button type="button" data-view="bars">Bars</button>
+          <button type="button" data-view="numbers">Numbers</button>
+        </div>
+      </div>
+      <div id="detail-content" class="detail-empty">Select an OT room above to view live vitals and case details.</div>
+    </section>
+  </div>
+
+  <script>
+    const RANGES = {
+      HR:{min:60,max:100}, RR:{min:12,max:18}, Temp:{min:36.5,max:37.3},
+      SpO2:{min:95,max:100,noHigh:true}, Pulse:{min:60,max:100},
+      Ppeak:{min:15,max:25}, PEEP:{min:5,max:10}, Pplat:{min:15,max:25}, Pmean:{min:5,max:15},
+    };
+
+    const ROOMS = [
+      {id:'OT-01',status:'critical',statusLabel:'Critical',patient:'James · ASA I',procedure:'CABG',
+        vitals:[{l:'HR',v:90,key:'HR'},{l:'SpO2',v:98,key:'SpO2'},{l:'Temp1',v:25.6,key:'Temp'},{l:'PEEP',v:2,key:'PEEP'}],
+        alert:'Temp2 sensor fall off',
+        completion:{pct:62,status:'on-track',tag:'Surgery',priority:1,finish:'16:20',delay:null,nextReady:true},
+        detail:{
+          hemo:[{v:90,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:86,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:98,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:14,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:19,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:2,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.5,l:'MV',u:'L/min',max:15},{v:16,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:410,l:'VTi',u:'mL',max:800},{v:7,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:25.6,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:35.9,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-05',status:'attention',statusLabel:'Attention',patient:'Rahul · ASA IV',procedure:'Emergency laparotomy',
+        vitals:[{l:'HR',v:128,key:'HR'},{l:'SpO2',v:93,key:'SpO2'},{l:'Temp1',v:35.2,key:'Temp'},{l:'MAP',v:58}],
+        alert:'Low urine output',
+        completion:{pct:45,status:'watch',tag:'over-run risk',priority:1,finish:'17:40',delay:'+35m',nextReady:false},
+        detail:{
+          hemo:[{v:128,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:124,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:93,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:22,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:24,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:8.2,l:'MV',u:'L/min',max:15},{v:21,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:380,l:'VTi',u:'mL',max:800},{v:9,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:35.2,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.1,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-02',status:'caution',statusLabel:'Caution',patient:'Priya · ASA II',procedure:'Hip replacement',
+        vitals:[{l:'HR',v:112,key:'HR'},{l:'SpO2',v:96,key:'SpO2'},{l:'Temp1',v:36.8,key:'Temp'},{l:'MAP',v:64}],
+        alert:null,
+        completion:{pct:70,status:'watch',tag:'Surgery',priority:3,finish:'14:50',delay:null,nextReady:false},
+        detail:{
+          hemo:[{v:112,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:110,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:96,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:18,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:20,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.8,l:'MV',u:'L/min',max:15},{v:17,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:420,l:'VTi',u:'mL',max:800},{v:8,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:36.8,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.9,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-03',status:'stable',statusLabel:'Stable',patient:'Arun · ASA III',procedure:'Bowel resection',
+        vitals:[{l:'HR',v:78,key:'HR'},{l:'SpO2',v:99,key:'SpO2'},{l:'Temp1',v:37.1,key:'Temp'},{l:'MAP',v:82}],
+        alert:null,
+        completion:{pct:88,status:'watch',tag:'over-run risk',priority:2,finish:'15:05',delay:'+20m',nextReady:false},
+        detail:{
+          hemo:[{v:78,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:77,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:99,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:15,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:18,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:5,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:6.0,l:'MV',u:'L/min',max:15},{v:15,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:400,l:'VTi',u:'mL',max:800},{v:7,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:37.1,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:37.0,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+      {id:'OT-04',status:'stable',statusLabel:'Stable',patient:'Leela · ASA II',procedure:'Thyroidectomy',
+        vitals:[{l:'HR',v:70,key:'HR'},{l:'SpO2',v:99,key:'SpO2'},{l:'Temp1',v:36.9,key:'Temp'},{l:'MAP',v:78}],
+        alert:null,
+        completion:{pct:95,status:'on-track',tag:'Surgery',priority:4,finish:'13:10',delay:null,nextReady:true},
+        detail:{
+          hemo:[{v:70,l:'Heart rate',u:'bpm',max:180,key:'HR'},{v:69,l:'Pulse',u:'bpm',max:180,key:'Pulse'},{v:99,l:'SpO2',u:'%',max:100,key:'SpO2'},{v:13,l:'Resp. rate',u:'/min',max:40,key:'RR'}],
+          vent:[{v:17,l:'Ppeak',u:'cmH2O',max:40,key:'Ppeak'},{v:4,l:'PEEP',u:'cmH2O',max:20,key:'PEEP'},{v:5.6,l:'MV',u:'L/min',max:15},{v:14,l:'Pplat',u:'cmH2O',max:40,key:'Pplat'},{v:390,l:'VTi',u:'mL',max:800},{v:6,l:'Pmean',u:'cmH2O',max:20,key:'Pmean'}],
+          temp:[{v:36.9,l:'Temp1',u:'°C',max:42,key:'Temp'},{v:36.8,l:'Temp2',u:'°C',max:42,key:'Temp'}],
+        }},
+    ];
+
+    const SAMPLE_DETAIL = ROOMS[3].detail;
+
+    function demoRoom(id, status, statusLabel, patient, procedure, pct, finish, opts = {}) {
+      const delay = opts.delay ?? null;
+      const alert = opts.alert ?? null;
+      const watch = opts.watch ?? !!delay;
+      return {
+        id, status, statusLabel, patient, procedure,
+        vitals: opts.vitals ?? [
+          { l: 'HR', v: 76, key: 'HR' }, { l: 'SpO2', v: 98, key: 'SpO2' },
+          { l: 'Temp1', v: 36.7, key: 'Temp' }, { l: 'MAP', v: 79 },
+        ],
+        alert,
+        completion: {
+          pct, status: watch ? 'watch' : 'on-track', tag: opts.tag ?? 'Surgery',
+          priority: opts.priority ?? 2, finish, delay, nextReady: opts.nextReady ?? !delay,
+        },
+        detail: SAMPLE_DETAIL,
+      };
+    }
+
+    ROOMS.push(
+      demoRoom('OT-06', 'stable', 'Stable', 'Mia · ASA II', 'Knee arthroscopy', 55, '15:30'),
+      demoRoom('OT-07', 'caution', 'Caution', 'Omar · ASA III', 'Spinal fusion', 38, '18:00', { watch: true }),
+      demoRoom('OT-08', 'attention', 'Attention', 'Sara · ASA IV', 'Craniotomy', 22, '19:15', { delay: '+50m', alert: 'High ICP trend' }),
+      demoRoom('OT-09', 'stable', 'Stable', 'Vikram · ASA I', 'Appendectomy', 81, '14:05'),
+      demoRoom('OT-10', 'stable', 'Stable', 'Nina · ASA II', 'C-section', 67, '16:45'),
+      demoRoom('OT-11', 'caution', 'Caution', 'Tom · ASA III', 'Liver resection', 41, '17:55', { watch: true }),
+      demoRoom('OT-12', 'stable', 'Stable', 'Aisha · ASA II', 'Hernia repair', 12, '11:30', { nextReady: true }),
+    );
+
+    let view = 'rings';
+    let selectedId = null;
+    let filterQuery = '';
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function classify(key, value) {
+      const r = key ? RANGES[key] : undefined;
+      if (!r || value == null) return 'vclass-normal';
+      const num = typeof value === 'number' ? value : parseFloat(String(value));
+      if (Number.isNaN(num)) return 'vclass-normal';
+      if (num < (r.min ?? 0)) return 'vclass-caution';
+      if (!r.noHigh && r.max != null && num > r.max) return 'vclass-critical';
+      return 'vclass-normal';
+    }
+
+    function elapsedPieHtml(pct) {
+      const r = 20, c = 2 * Math.PI * r, clamped = Math.max(0, Math.min(100, pct)), offset = c - (clamped / 100) * c;
+      return `<div class="compact-pie"><svg viewBox="0 0 52 52"><g transform="rotate(-90 26 26)"><circle class="pie-bg" cx="26" cy="26" r="${r}"/><circle class="pie-fg" cx="26" cy="26" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="26" y="26" text-anchor="middle" dominant-baseline="central" class="pie-num">${clamped}%</text></svg><span class="compact-pie-label">Elapsed</span></div>`;
+    }
+
+    function vitalGroup(items) {
+      if (view === 'bars') {
+        return '<div class="bar-list">' + items.map(g => {
+          const pct = Math.max(2, Math.min(100, (g.v / g.max) * 100));
+          const vc = classify(g.key, g.v);
+          return `<div class="bar-row"><span class="bar-label">${esc(g.l)}</span><div class="bar-track"><div class="bar-fill ${vc}" style="width:${pct}%"></div></div><span class="bar-value ${vc}">${g.v} <small>${esc(g.u)}</small></span></div>`;
+        }).join('') + '</div>';
+      }
+      if (view === 'numbers') {
+        return '<div class="num-grid">' + items.map(g => {
+          const vc = classify(g.key, g.v);
+          return `<div class="num-item"><span class="num-label">${esc(g.l)}</span><span class="num-value ${vc}">${g.v}<small>${esc(g.u)}</small></span></div>`;
+        }).join('') + '</div>';
+      }
+      return '<div class="gauge-row">' + items.map(g => {
+        const r = 22, c = 2 * Math.PI * r, pct = Math.max(0, Math.min(1, g.v / g.max)), offset = c - pct * c;
+        const vc = classify(g.key, g.v);
+        return `<div class="gauge"><svg viewBox="0 0 56 56"><g transform="rotate(-90 28 28)"><circle class="ring-bg" cx="28" cy="28" r="${r}"/><circle class="ring-fg ${vc}" cx="28" cy="28" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="28" y="28" text-anchor="middle" dominant-baseline="central" class="gauge-num">${g.v}</text></svg><div class="g-label">${esc(g.l)}</div><div class="g-unit">${esc(g.u)}</div></div>`;
+      }).join('') + '</div>';
+    }
+
+    function theatreFoot(room) {
+      const c = room.completion;
+      if (c.delay) {
+        return `<div class="theatre-foot"><span class="status-note delayed">Delayed · ${esc(c.delay)}</span></div>`;
+      }
+      const barClass = c.status === 'watch' ? 'theatre-bar-fill watch' : 'theatre-bar-fill';
+      return `<div class="theatre-foot"><div class="theatre-bar"><div class="${barClass}" style="width:${c.pct}%"></div></div><span class="theatre-meta">${c.pct}% elapsed · finish ${esc(c.finish)}</span></div>`;
+    }
+
+    function filteredRooms() {
+      const q = filterQuery.trim().toLowerCase();
+      if (!q) return ROOMS;
+      return ROOMS.filter(r =>
+        r.id.toLowerCase().includes(q) ||
+        r.patient.toLowerCase().includes(q) ||
+        r.procedure.toLowerCase().includes(q)
+      );
+    }
+
+    function updateRoomCount(list) {
+      document.getElementById('ot-count').textContent =
+        list.length === ROOMS.length
+          ? `${ROOMS.length} rooms`
+          : `${list.length} of ${ROOMS.length} rooms`;
+    }
+
+    function renderTopCards() {
+      const list = filteredRooms();
+      updateRoomCount(list);
+      const row = document.getElementById('ot-top-row');
+      if (!list.length) {
+        row.innerHTML = '<p class="ot-count" style="padding:12px 4px">No rooms match your search.</p>';
+        return;
+      }
+      row.innerHTML = list.map(room => {
+        const sel = room.id === selectedId ? ' selected' : '';
+        return `<button type="button" class="ot-theatre-card${sel}" data-id="${esc(room.id)}" data-status="${room.status}">
+          <p class="theatre-label">${esc(room.id)}</p>
+          <p class="theatre-proc">${esc(room.procedure)}</p>
+          <p class="theatre-patient">${esc(room.patient)}</p>
+          ${theatreFoot(room)}
+        </button>`;
+      }).join('');
+      row.querySelectorAll('.ot-theatre-card').forEach(btn => {
+        btn.addEventListener('click', () => selectRoom(btn.dataset.id));
+      });
+    }
+
+    function completionBlock(c) {
+      const statusLabel = c.status === 'on-track' ? 'on track' : 'watch';
+      const tagClass = c.tag === 'over-run risk' ? 'ci-tag risk' : 'ci-tag';
+      return `<div class="completion"><div class="completion-top"><span class="status-chip ${c.status}"><span class="dot"></span>${statusLabel}</span><span class="priority-badge">${c.priority}</span></div><div class="progress-head"><span>Case progress</span><b>${c.pct}%</b></div><div class="progress-track"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="completion-info"><div class="ci-tagrow"><span class="${tagClass}">${esc(c.tag)}</span></div><div class="ci-row"><span>Predicted finish</span><b>${esc(c.finish)}${c.delay ? `<span class="ci-delay">${esc(c.delay)}</span>` : ''}</b></div><div class="ci-row"><span>Next patient</span><span class="ci-pill ${c.nextReady ? 'ready' : 'notready'}">${c.nextReady ? 'ready' : 'not ready'}</span></div></div></div>`;
+    }
+
+    function renderDetail() {
+      const el = document.getElementById('detail-content');
+      const title = document.getElementById('detail-panel-title');
+      const room = ROOMS.find(r => r.id === selectedId);
+      if (!room) {
+        title.textContent = 'Room details';
+        el.className = 'detail-empty';
+        el.innerHTML = 'Select an OT room above to view live vitals and case details.';
+        return;
+      }
+      title.textContent = `${room.id} · ${room.procedure}`;
+      el.className = 'detail-body';
+      const vitals = room.vitals.map(v => {
+        const vc = classify(v.key, v.v);
+        return `<div class="vital"><div class="label">${esc(v.l)}</div><div class="value ${vc}">${v.v}</div></div>`;
+      }).join('');
+      const alert = room.alert ? `<div class="alert-strip">⚠ ${esc(room.alert)}</div>` : '';
+      const detail = (g, t, cls) => `<div class="detail-group ${cls}"><h4>${t}</h4>${vitalGroup(room.detail[g])}</div>`;
+      el.innerHTML = `
+        <div class="detail-header-row">
+          <div>
+            <div class="card-id">${esc(room.id)} <span class="status-pill status-${room.status}">${esc(room.statusLabel)}</span></div>
+            <div class="patient-line">${esc(room.patient)}</div>
+            <div class="procedure-line">${esc(room.procedure)}</div>
+          </div>
+        </div>
+        <div class="detail-summary">
+          <div class="vitals-row">${vitals}</div>
+          ${elapsedPieHtml(room.completion.pct)}
+        </div>
+        ${alert}
+        ${completionBlock(room.completion)}
+        <div class="detail-vitals">
+          <h3>Full vitals readout</h3>
+          <div class="detail-inner">
+            ${detail('hemo','HEMODYNAMICS','hemo')}
+            ${detail('vent','VENTILATION','vent')}
+            ${detail('temp','TEMPERATURE','temp')}
+          </div>
+        </div>`;
+    }
+
+    function selectRoom(id, scrollIntoView) {
+      selectedId = id;
+      renderTopCards();
+      renderDetail();
+      if (scrollIntoView !== false) {
+        requestAnimationFrame(() => {
+          const el = document.querySelector(`.ot-theatre-card[data-id="${CSS.escape(id)}"]`);
+          el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+      }
+    }
+
+    document.getElementById('ot-search').addEventListener('input', e => {
+      filterQuery = e.target.value;
+      if (selectedId && !filteredRooms().some(r => r.id === selectedId)) {
+        selectedId = null;
+      }
+      renderTopCards();
+      renderDetail();
+    });
+
+    document.getElementById('view-toggle').addEventListener('click', e => {
+      const btn = e.target.closest('[data-view]');
+      if (!btn) return;
+      view = btn.dataset.view;
+      document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+      renderDetail();
+    });
+
+    renderTopCards();
+    renderDetail();
+  </script>
+</body>
+</html>

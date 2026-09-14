@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BPL Cortex OT · Monitoring Dashboard (Scrollable)</title>
+  <title>BPL Cortex OT · OT List Dashboard</title>
   <style>
 :root{
-  --navy:#0d2846;--navy-2:#123a68;--blue:#0ea5e9;--blue-dark:#0369a1;
+  --navy:#0d2846;--blue:#0ea5e9;--blue-dark:#0369a1;
   --ink:#16213a;--ink-soft:#5b6b85;--line:#d3ddec;--bg:#dfe6f0;--card:#f8fafc;
   --ring-track:#eef1f6;--track:#eef1f6;
   --critical:#e0122e;--critical-bg:#fbd2da;
@@ -15,7 +15,7 @@
   --stable:#0f7a4e;--stable-bg:#cdefdd;--priority:#a63fc7;
 }
 html[data-theme="dark"]{
-  --navy:#0a1a30;--blue:#38bdf8;--blue-dark:#0ea5e9;
+  --blue:#38bdf8;--blue-dark:#0ea5e9;
   --ink:#eef3fa;--ink-soft:#93a8c2;--line:#223a58;--bg:#0a1626;--card:#102640;
   --ring-track:#1c3350;--track:#1c3350;
   --critical:#ff7b81;--critical-bg:rgba(217,45,67,.22);
@@ -26,6 +26,7 @@ html[data-theme="dark"]{
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%}
 body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+body.modal-open{overflow:hidden}
 .top-strip{height:4px;background:linear-gradient(90deg,var(--navy) 0%,var(--blue) 100%)}
 header.dash-header{background:#4b9cd3;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
 header.dash-header .brand{display:flex;align-items:center;gap:16px}
@@ -33,7 +34,6 @@ header.dash-header .dash-logo{height:44px;width:auto;display:block}
 header.dash-header .brand .title{font-size:15px;font-weight:700;color:#fff}
 .header-right{display:flex;align-items:center;gap:18px}
 header.dash-header .signout{display:inline-flex;align-items:center;padding:7px 14px;border:none;border-radius:6px;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer}
-header.dash-header .signout:hover{background:rgba(255,255,255,.22)}
 .theme-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px}
 .theme-toggle button{border:none;background:transparent;color:#c7d6e8;width:28px;height:24px;border-radius:16px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
 .theme-toggle button.active{background:#fff;color:var(--navy)}
@@ -63,64 +63,101 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .ranges-legend span{display:inline-flex;align-items:center;gap:6px}
 .ranges-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .ranges-foot{margin-top:12px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
-.grid{display:flex;flex-direction:column;gap:16px}
-.row{display:flex;gap:16px;align-items:flex-start}
-.card{
-  flex:1 1 0;min-width:0;max-height:340px;height:auto;align-self:flex-start;
-  overflow-x:hidden;overflow-y:auto;
-  background:var(--card);border-radius:8px;
-  border:1px solid var(--line);border-left:6px solid var(--line);
-  box-shadow:0 1px 2px rgba(20,30,50,.05);
-  padding:12px 14px;cursor:pointer;
-  transition:box-shadow .2s;
-  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
-}
-.card::-webkit-scrollbar{width:6px}
-.card::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
-.card:hover{box-shadow:0 10px 26px rgba(13,40,70,.16);z-index:2;position:relative}
-.card[data-status="critical"]{border-left-color:var(--critical)}
-.card[data-status="attention"]{border-left-color:var(--attention)}
-.card[data-status="caution"]{border-left-color:var(--caution)}
-.card[data-status="stable"]{border-left-color:var(--stable)}
-.detail{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
-.detail-inner{display:flex;flex-direction:column;gap:10px}
-.detail-group{min-width:0}
-.detail-group h4{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.35px;color:var(--critical)}
-.detail-group.vent h4{color:var(--blue-dark)}
-.detail-group.temp h4{color:var(--caution)}
+.main-panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px 16px;box-shadow:0 2px 10px rgba(20,30,50,.06)}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-height:0}
+.metric-card.hero{background:linear-gradient(135deg,rgba(14,165,233,.14),rgba(3,105,161,.06));border-color:rgba(14,165,233,.28)}
+html[data-theme="dark"] .metric-card.hero{background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(14,165,233,.05));border-color:rgba(56,189,248,.22)}
+.metric-value{font-size:24px;font-weight:800;color:var(--ink);line-height:1.1}
+.metric-label{font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-top:6px}
+.metric-sub{font-size:10.5px;color:var(--ink-soft);margin-top:4px;line-height:1.3}
+.list-section{padding-top:2px}
+.list-title{margin:0 0 10px;font-size:14px;font-weight:700;color:var(--ink)}
+.list-header-row,.ot-row-top{display:grid;grid-template-columns:56px minmax(120px,1fr) 96px minmax(240px,320px) 52px;gap:12px;align-items:center;padding:0 14px}
+.list-header-row{font-size:10px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+.list-header-row span:last-child{text-align:center}
+.ot-row{display:block;width:100%;margin:0 0 8px;padding:0;border:1px solid var(--line);border-left-width:5px;border-radius:8px;background:var(--card);font:inherit;color:inherit;text-align:left;cursor:pointer;transition:background .15s,box-shadow .15s;overflow:hidden}
+.ot-row:hover{box-shadow:0 2px 10px rgba(13,40,70,.08)}
+.ot-row:hover .ot-row-top{background:rgba(14,165,233,.04)}
+html[data-theme="dark"] .ot-row:hover .ot-row-top{background:rgba(56,189,248,.06)}
+.ot-row[data-status="critical"]{border-left-color:var(--critical)}
+.ot-row[data-status="attention"]{border-left-color:var(--attention)}
+.ot-row[data-status="caution"]{border-left-color:var(--caution)}
+.ot-row[data-status="stable"]{border-left-color:var(--stable)}
+.ot-row-top{padding-top:10px;padding-bottom:10px}
+.ot-row-bottom{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px 14px;background:var(--bg);border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-soft);line-height:1.35}
+.meta-sep{opacity:.45;user-select:none}
+.meta-item{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.meta-k{color:var(--ink-soft)}
+.meta-item strong{color:var(--ink);font-weight:700;font-size:12px}
+.meta-alert{color:var(--critical);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.meta-muted{opacity:.75;font-size:11px}
+.row-ot{font-size:15px;font-weight:700;color:var(--ink)}
+.row-patient{font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:2px 6px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.row-vitals .vital{text-align:center;min-width:0}
+.row-vitals .vital .label{font-size:9.5px;color:var(--ink-soft);margin-bottom:2px;line-height:1.1;text-transform:uppercase;letter-spacing:.2px}
+.row-vitals .vital .value{font-size:14px;font-weight:700;line-height:1.15}
+.ci-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--track);color:var(--ink-soft);white-space:nowrap}
+.ci-tag.risk{background:var(--attention-bg);color:var(--attention)}
+.ci-delay{font-size:10px;font-weight:700;background:var(--attention-bg);color:var(--attention);padding:1px 6px;border-radius:8px;white-space:nowrap}
+.ci-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.ci-pill.ready{background:var(--stable-bg);color:var(--stable)}
+.ci-pill.notready{background:var(--track);color:var(--ink-soft)}
+.col-progress{display:flex;justify-content:center}
+.row-pie.compact-pie{margin:0}
+.row-pie svg{width:48px;height:48px}
+.row-pie .compact-pie-label{display:none}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.card-id{font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap}
-.status-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.card-id{font-size:17px;font-weight:700;color:var(--ink);white-space:nowrap}
+.status-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;display:inline-block}
 .status-critical{color:var(--critical);background:var(--critical-bg)}
 .status-attention{color:var(--attention);background:var(--attention-bg)}
 .status-caution{color:var(--caution);background:var(--caution-bg)}
 .status-stable{color:var(--stable);background:var(--stable-bg)}
-.patient-line{margin-top:5px;font-size:13.5px;color:var(--ink);font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.procedure-line{margin-top:2px;font-size:12.5px;color:var(--ink-soft);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.vitals-row{display:flex;gap:16px;margin-top:8px;flex-shrink:0;flex-wrap:wrap}
-.vital{min-width:44px;flex-shrink:0}
-.vital .label{font-size:10.5px;color:var(--ink-soft);margin-bottom:2px}
-.vital .value{font-size:16px;font-weight:700;color:var(--blue-dark)}
+.patient-line{margin-top:8px;font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.35}
+.procedure-line{margin-top:4px;font-size:13.5px;color:var(--ink-soft);line-height:1.35}
+.vitals-row{display:flex;gap:28px;margin-top:14px;flex-shrink:0}
+.modal-vitals-summary{margin-top:12px}
+.vital{min-width:48px;flex-shrink:0}
+.vital .label{font-size:12px;color:var(--ink-soft);margin-bottom:3px}
+.vital .value{font-size:18px;font-weight:700;color:var(--blue-dark)}
 .vclass-normal{--vc:var(--blue-dark)}.vclass-caution{--vc:var(--caution)}.vclass-critical{--vc:var(--critical)}
 .vital .value.vclass-normal,.vital .value.vclass-caution,.vital .value.vclass-critical,.num-value.vclass-normal,.num-value.vclass-caution,.num-value.vclass-critical,.bar-row .bar-value.vclass-normal,.bar-row .bar-value.vclass-caution,.bar-row .bar-value.vclass-critical{color:var(--vc)}
 .ring-fg.vclass-normal,.ring-fg.vclass-caution,.ring-fg.vclass-critical{stroke:var(--vc)}
 .bar-fill.vclass-normal,.bar-fill.vclass-caution,.bar-fill.vclass-critical{background:var(--vc)}
-.alert-strip{margin-top:8px;background:var(--critical-bg);color:var(--critical);font-size:12px;font-weight:600;padding:6px 10px;border-radius:6px;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hint{margin-top:8px;font-size:10.5px;color:#a7b0c2;letter-spacing:.2px;opacity:.85;white-space:nowrap;padding-top:4px}
-.completion{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
-.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-bottom:6px}
+.compact-pie{flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.compact-pie svg{width:52px;height:52px;display:block}
+.compact-pie .pie-bg{fill:none;stroke:var(--track);stroke-width:7}
+.compact-pie .pie-fg{fill:none;stroke:var(--blue);stroke-width:7;stroke-linecap:round}
+.compact-pie .pie-num{font-size:11px;font-weight:800;fill:var(--ink);font-family:inherit}
+.compact-pie-label{margin-top:3px;font-size:10px;color:var(--ink-soft);white-space:nowrap}
+.progress-track{height:9px;border-radius:5px;background:var(--track);overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;background:var(--blue)}
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(13,30,50,.45);display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex}
+.modal-panel{width:100%;max-width:640px;max-height:calc(100vh - 48px);background:var(--card);border-radius:10px;border:1px solid var(--line);box-shadow:0 20px 50px rgba(13,40,70,.22);display:flex;flex-direction:column;overflow:hidden}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 0;flex-shrink:0}
+.modal-header .card-top{flex:1;min-width:0}
+.modal-close{flex:none;width:32px;height:32px;border:none;border-radius:6px;background:var(--track);color:var(--ink-soft);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.modal-close:hover{background:var(--line);color:var(--ink)}
+.modal-body{padding:12px 20px 20px;overflow-y:auto;flex:1;min-height:0}
+.modal-footer{padding:12px 20px 18px;border-top:1px solid var(--line);flex-shrink:0}
+.modal-link-btn{border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--blue-dark);cursor:pointer;padding:0}
+.modal-link-btn:hover{text-decoration:underline;color:var(--blue)}
+.alert-strip{margin-top:12px;background:var(--critical-bg);color:var(--critical);font-size:13px;font-weight:600;padding:8px 12px;border-radius:6px;display:flex;align-items:center;gap:7px}
+.completion{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.completion-top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px}
 .status-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
 .status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
 .status-chip.on-track{background:var(--stable-bg);color:var(--stable)}
 .status-chip.watch{background:var(--attention-bg);color:var(--attention)}
 .priority-badge{width:20px;height:20px;border-radius:50%;background:var(--priority);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
-.completion-body{display:flex;flex-direction:column;gap:8px}
-.progress-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--ink-soft)}
-.progress-head b{color:var(--ink);font-size:14px;font-weight:800}
-.progress-track{height:7px;border-radius:4px;background:var(--track);overflow:hidden}
-.progress-fill{height:100%;border-radius:5px;background:var(--blue)}
-.completion-info{font-size:12px}
-.ci-tagrow{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.completion-body{display:flex;flex-direction:column;gap:10px}
+.progress-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--ink-soft)}
+.progress-head b{color:var(--ink);font-size:15px;font-weight:800}
+.completion-info{font-size:12.5px}
+.ci-tagrow{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
 .ci-tag{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--track);color:var(--ink-soft);white-space:nowrap}
 .ci-tag.risk{background:var(--attention-bg);color:var(--attention)}
 .ci-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;color:var(--ink-soft)}
@@ -130,32 +167,60 @@ table.ranges-table td.base{color:var(--blue-dark)}
 .ci-pill{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:10px}
 .ci-pill.ready{background:var(--stable-bg);color:var(--stable)}
 .ci-pill.notready{background:var(--track);color:var(--ink-soft)}
-.gauge-row{display:flex;gap:8px 10px;flex-wrap:wrap}
-.gauge{text-align:center;width:52px}
-.gauge svg{width:52px;height:52px;display:block}
-.gauge .ring-bg{fill:none;stroke:var(--ring-track);stroke-width:5}
-.gauge .ring-fg{fill:none;stroke-width:5;stroke-linecap:round}
-.gauge-num{font-size:12px;font-weight:700;fill:var(--ink);font-family:inherit}
-.gauge .g-label{font-size:10px;color:var(--ink-soft);margin-top:3px;line-height:1.2}
-.gauge .g-unit{font-size:9px;color:#aab3c4}
-.bar-list{display:flex;flex-direction:column;gap:6px}
-.bar-row{display:grid;grid-template-columns:72px 1fr 52px;align-items:center;gap:8px}
+.detail{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.detail-inner{display:flex;flex-direction:column;gap:18px}
+.detail-group h4{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.4px;color:var(--critical)}
+.detail-group.vent h4{color:var(--blue-dark)}
+.detail-group.temp h4{color:var(--caution)}
+.gauge-row{display:flex;gap:14px;flex-wrap:wrap}
+.gauge{text-align:center;width:60px}
+.gauge svg{width:60px;height:60px;display:block}
+.gauge .ring-bg{fill:none;stroke:var(--ring-track);stroke-width:6}
+.gauge .ring-fg{fill:none;stroke-width:6;stroke-linecap:round}
+.gauge-num{font-size:14px;font-weight:700;fill:var(--ink);font-family:inherit}
+.gauge .g-label{font-size:11px;color:var(--ink-soft);margin-top:5px}
+.gauge .g-unit{font-size:10px;color:#aab3c4}
+.bar-list{display:flex;flex-direction:column;gap:9px}
+.bar-row{display:grid;grid-template-columns:76px 1fr 56px;align-items:center;gap:10px}
 .bar-row .bar-label{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar-track{height:7px;border-radius:4px;background:var(--track);overflow:hidden}
 .bar-fill{height:100%;border-radius:4px}
 .bar-row .bar-value{font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap}
 .bar-row .bar-value small{font-weight:500;color:var(--ink-soft)}
-.num-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 12px}
+.num-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
 .num-item{display:flex;flex-direction:column;gap:2px}
 .num-item .num-label{font-size:11px;color:var(--ink-soft)}
 .num-item .num-value{font-size:17px;font-weight:700}
 .num-item .num-value small{font-size:11px;font-weight:500;color:var(--ink-soft);margin-left:2px}
+@media(max-width:900px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .list-header-row{display:none}
+  .ot-row-top{
+    grid-template-columns:1fr auto;
+    grid-template-areas:
+      "ot status"
+      "patient patient"
+      "vitals vitals"
+      "pie pie";
+    gap:8px 10px;
+    padding:12px 14px 10px;
+  }
+  .cell-ot{grid-area:ot}
+  .cell-patient{grid-area:patient}
+  .cell-status{grid-area:status;justify-self:end}
+  .cell-vitals{grid-area:vitals}
+  .cell-progress{grid-area:pie;justify-self:end}
+  .ot-row-bottom{white-space:normal}
+  .meta-item,.meta-alert{white-space:normal}
+}
+@media(max-width:520px){
+  .metrics-grid{grid-template-columns:1fr}
+}
 @media(max-width:760px){
   .dash-body{padding:16px}
   header.dash-header{padding:14px 16px}
-  .grid{gap:18px}
-  .row{flex-wrap:wrap;gap:18px}
-  .card{flex:1 1 100%;max-height:320px}
+  .main-panel{padding:16px 14px 12px}
+  .modal-overlay{padding:12px}
 }
   </style>
 </head>
@@ -169,7 +234,7 @@ table.ranges-table td.base{color:var(--blue-dark)}
         <text x="44" y="20" fill="#fff" font-size="13" font-weight="700" font-family="Segoe UI,sans-serif">Cortex OT</text>
         <text x="44" y="34" fill="rgba(255,255,255,.75)" font-size="10" font-family="Segoe UI,sans-serif">Monitoring</text>
       </svg>
-      <div class="title">BPL Cortex OT · Monitoring Dashboard</div>
+      <div class="title">BPL Cortex OT · OT List Dashboard</div>
     </div>
     <div class="header-right">
       <div class="theme-toggle" title="Light / dark theme">
@@ -182,7 +247,7 @@ table.ranges-table td.base{color:var(--blue-dark)}
 
   <div class="dash-body">
     <div class="toolbar">
-      <span class="toolbar-label">Vitals display</span>
+      <span class="toolbar-label">Vitals display (detail modal)</span>
       <div class="toolbar-right">
         <button type="button" class="ranges-btn" id="ranges-btn">ℹ Reference ranges</button>
         <div class="view-toggle" id="view-toggle">
@@ -207,7 +272,24 @@ table.ranges-table td.base{color:var(--blue-dark)}
       </div>
     </div>
 
-    <div class="grid" id="grid"></div>
+    <div class="main-panel">
+      <div class="metrics-grid" id="metrics-grid"></div>
+      <section class="list-section" aria-label="Operating theatres">
+        <h2 class="list-title">Active cases</h2>
+        <div class="list-header-row" aria-hidden="true">
+          <span>OT</span>
+          <span>Patient</span>
+          <span>Status</span>
+          <span>Vitals</span>
+          <span>Elapsed</span>
+        </div>
+        <div id="ot-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay" role="presentation">
+    <div class="modal-panel" id="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
   </div>
 
   <script>
@@ -271,7 +353,11 @@ table.ranges-table td.base{color:var(--blue-dark)}
         }},
     ];
 
+    const STATUS_ORDER = { critical: 0, attention: 1, caution: 2, stable: 3 };
+
     let view = 'rings';
+    let selectedRoom = null;
+    let selectedRoomId = null;
 
     function classify(key, value) {
       const r = key ? RANGES[key] : undefined;
@@ -287,6 +373,25 @@ table.ranges-table td.base{color:var(--blue-dark)}
     }
 
     function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function computeMetrics(rooms) {
+      let critical = 0, attention = 0, stable = 0;
+      for (const r of rooms) {
+        if (r.status === 'critical') critical++;
+        else if (r.status === 'attention' || r.status === 'caution') attention++;
+        else if (r.status === 'stable') stable++;
+      }
+      return { total: rooms.length, critical, attention, stable };
+    }
+
+    function sortedRooms() {
+      return [...ROOMS].sort((a, b) => {
+        const sa = STATUS_ORDER[a.status] ?? 9;
+        const sb = STATUS_ORDER[b.status] ?? 9;
+        if (sa !== sb) return sa - sb;
+        return a.id.localeCompare(b.id);
+      });
+    }
 
     function vitalGroup(items) {
       if (view === 'bars') {
@@ -309,45 +414,150 @@ table.ranges-table td.base{color:var(--blue-dark)}
       }).join('') + '</div>';
     }
 
+    function vitalsHtml(vitals) {
+      return `<div class="vitals-row modal-vitals-summary">` + vitals.map(v => {
+        const vc = classify(v.key, typeof v.v === 'number' ? v.v : undefined);
+        return `<div class="vital"><div class="label">${esc(v.l)}</div><div class="value ${vc}">${v.v}</div></div>`;
+      }).join('') + '</div>';
+    }
+
     function completionBlock(c) {
       const statusLabel = c.status === 'on-track' ? 'on track' : 'watch';
       const tagClass = c.tag === 'over-run risk' ? 'ci-tag risk' : 'ci-tag';
       return `<div class="completion"><div class="completion-top"><span class="status-chip ${c.status}"><span class="dot"></span>${statusLabel}</span><span class="priority-badge">${c.priority}</span></div><div class="completion-body"><div><div class="progress-head"><span>Elapsed</span><b>${c.pct}%</b></div><div class="progress-track"><div class="progress-fill" style="width:${c.pct}%"></div></div></div><div class="completion-info"><div class="ci-tagrow"><span class="${tagClass}">${esc(c.tag)}</span></div><div class="ci-row"><span>Predicted finish</span><b>${esc(c.finish)}${c.delay ? `<span class="ci-delay">${esc(c.delay)}</span>` : ''}</b></div><div class="ci-row"><span>Next patient</span><span class="ci-pill ${c.nextReady ? 'ready' : 'notready'}">${c.nextReady ? 'ready' : 'not ready'}</span></div></div></div></div>`;
     }
 
-    function renderCard(room) {
-      const vitals = room.vitals.map(v => {
+    function rowVitalsHtml(vitals) {
+      return `<div class="row-vitals">` + vitals.map(v => {
         const vc = classify(v.key, typeof v.v === 'number' ? v.v : undefined);
         return `<div class="vital"><div class="label">${esc(v.l)}</div><div class="value ${vc}">${v.v}</div></div>`;
-      }).join('');
-      const alert = room.alert ? `<div class="alert-strip">⚠ ${esc(room.alert)}</div>` : '';
-      const detail = (group, title, cls) => `<div class="detail-group ${cls}"><h4>${title}</h4>${vitalGroup(room.detail[group])}</div>`;
-
-      return `<div class="card" data-status="${room.status}" tabindex="0" role="button">
-        <div class="card-top"><div class="card-id">${esc(room.id)}</div><div class="status-pill status-${room.status}">${esc(room.statusLabel)}</div></div>
-        <div class="patient-line">${esc(room.patient)}</div>
-        <div class="procedure-line">${esc(room.procedure)}</div>
-        <div class="vitals-row">${vitals}</div>
-        ${alert}
-        ${completionBlock(room.completion)}
-        <div class="detail">
-          <div class="detail-inner">
-            ${detail('hemo','HEMODYNAMICS','hemo')}
-            ${detail('vent','VENTILATION','vent')}
-            ${detail('temp','TEMPERATURE','temp')}
-          </div>
-        </div>
-        <div class="hint">scroll for full readout · click to open record</div>
-      </div>`;
+      }).join('') + '</div>';
     }
 
-    function renderGrid() {
-      const perRow = window.innerWidth < 760 ? 1 : 2;
-      let html = '';
-      for (let i = 0; i < ROOMS.length; i += perRow) {
-        html += '<div class="row">' + ROOMS.slice(i, i + perRow).map(renderCard).join('') + '</div>';
-      }
-      document.getElementById('grid').innerHTML = html;
+    function rowMetaStrip(room) {
+      const c = room.completion;
+      const tagClass = c.tag === 'over-run risk' ? 'ci-tag risk' : 'ci-tag';
+      const finish = `${esc(c.finish)}${c.delay ? `<span class="ci-delay">${esc(c.delay)}</span>` : ''}`;
+      const nextLabel = c.nextReady ? 'ready' : 'not ready';
+      const pillClass = c.nextReady ? 'ci-pill ready' : 'ci-pill notready';
+      const alertPart = room.alert
+        ? `<span class="meta-alert">⚠ ${esc(room.alert)}</span>`
+        : `<span class="meta-muted">No alerts</span>`;
+      return `<span class="${tagClass}">${esc(c.tag)}</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item"><span class="meta-k">Predicted finish</span><strong>${finish}</strong></span>
+        <span class="meta-sep">·</span>
+        <span class="meta-item"><span class="meta-k">Next patient</span><span class="${pillClass}">${nextLabel}</span></span>
+        <span class="meta-sep">·</span>
+        ${alertPart}`;
+    }
+
+    function elapsedPieHtml(pct, rowOnly) {
+      const r = rowOnly ? 18 : 20, c = 2 * Math.PI * r;
+      const clamped = Math.max(0, Math.min(100, pct));
+      const offset = c - (clamped / 100) * c;
+      const size = rowOnly ? 48 : 52;
+      const cx = rowOnly ? 24 : 26;
+      const label = rowOnly ? '' : '<span class="compact-pie-label">Elapsed</span>';
+      const cls = rowOnly ? 'compact-pie row-pie' : 'compact-pie';
+      return `<div class="${cls}" aria-label="Elapsed ${clamped}%"><svg viewBox="0 0 ${size} ${size}" aria-hidden="true"><g transform="rotate(-90 ${cx} ${cx})"><circle class="pie-bg" cx="${cx}" cy="${cx}" r="${r}"/><circle class="pie-fg" cx="${cx}" cy="${cx}" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central" class="pie-num">${clamped}%</text></svg>${label}</div>`;
+    }
+
+    function renderMetrics() {
+      const m = computeMetrics(ROOMS);
+      document.getElementById('metrics-grid').innerHTML = `
+        <div class="metric-card hero">
+          <div class="metric-value">${m.total}</div>
+          <div class="metric-label">Total patients</div>
+          <div class="metric-sub">Active OT cases</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${m.critical}</div>
+          <div class="metric-label">Critical</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${m.attention}</div>
+          <div class="metric-label">Attention</div>
+          <div class="metric-sub">includes caution</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${m.stable}</div>
+          <div class="metric-label">Stable</div>
+        </div>`;
+    }
+
+    function renderListRow(room) {
+      return `<button type="button" class="ot-row" data-status="${room.status}" data-room-id="${esc(room.id)}" aria-label="Open details for ${esc(room.id)}">
+        <div class="ot-row-top">
+          <span class="row-ot cell-ot">${esc(room.id)}</span>
+          <span class="row-patient cell-patient">${esc(room.patient)}</span>
+          <span class="cell-status"><span class="status-pill status-${room.status}">${esc(room.statusLabel)}</span></span>
+          <span class="cell-vitals">${rowVitalsHtml(room.vitals)}</span>
+          <span class="col-progress cell-progress">${elapsedPieHtml(room.completion.pct, true)}</span>
+        </div>
+        <div class="ot-row-bottom">${rowMetaStrip(room)}</div>
+      </button>`;
+    }
+
+    function renderList() {
+      document.getElementById('ot-list').innerHTML = sortedRooms().map(renderListRow).join('');
+    }
+
+    function renderModal(room) {
+      const alert = room.alert ? `<div class="alert-strip">⚠ ${esc(room.alert)}</div>` : '';
+      const detail = (group, title, cls) => `<div class="detail-group ${cls}"><h4>${title}</h4>${vitalGroup(room.detail[group])}</div>`;
+      return `
+        <div class="modal-header">
+          <div class="card-top"><div class="card-id" id="modal-title">${esc(room.id)}</div><div class="status-pill status-${room.status}">${esc(room.statusLabel)}</div></div>
+          <button type="button" class="modal-close" id="modal-close" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-line">${esc(room.patient)}</div>
+          <div class="procedure-line">${esc(room.procedure)}</div>
+          ${vitalsHtml(room.vitals)}
+          ${alert}
+          ${completionBlock(room.completion)}
+          <div class="detail">
+            <div class="detail-inner">
+              ${detail('hemo','HEMODYNAMICS','hemo')}
+              ${detail('vent','VENTILATION','vent')}
+              ${detail('temp','TEMPERATURE','temp')}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-link-btn" id="modal-record">Open full record →</button>
+        </div>`;
+    }
+
+    function bindModalActions() {
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.getElementById('modal-record').addEventListener('click', () => {
+        if (selectedRoom) alert('Demo: would open full record for ' + selectedRoom.id);
+      });
+    }
+
+    function openModal(roomId) {
+      selectedRoom = ROOMS.find(r => r.id === roomId) || null;
+      if (!selectedRoom) return;
+      selectedRoomId = roomId;
+      document.getElementById('modal-panel').innerHTML = renderModal(selectedRoom);
+      document.getElementById('modal-overlay').classList.add('open');
+      document.body.classList.add('modal-open');
+      bindModalActions();
+    }
+
+    function closeModal() {
+      selectedRoom = null;
+      selectedRoomId = null;
+      document.getElementById('modal-overlay').classList.remove('open');
+      document.getElementById('modal-panel').innerHTML = '';
+      document.body.classList.remove('modal-open');
+    }
+
+    function renderDashboard() {
+      renderMetrics();
+      renderList();
     }
 
     function renderRanges() {
@@ -358,12 +568,17 @@ table.ranges-table td.base{color:var(--blue-dark)}
         '<thead><tr><th>Parameter</th><th>Low</th><th>Base / Normal range</th><th>Average / Typical</th><th>High</th><th>Unit</th></tr></thead><tbody>' + rows + '</tbody>';
     }
 
+    document.getElementById('ot-list').addEventListener('click', e => {
+      const row = e.target.closest('.ot-row');
+      if (row) openModal(row.dataset.roomId);
+    });
+
     document.getElementById('view-toggle').addEventListener('click', e => {
       const btn = e.target.closest('[data-view]');
       if (!btn) return;
       view = btn.dataset.view;
       document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b === btn));
-      renderGrid();
+      if (selectedRoomId) openModal(selectedRoomId);
     });
 
     document.getElementById('ranges-btn').addEventListener('click', () => {
@@ -382,9 +597,15 @@ table.ranges-table td.base{color:var(--blue-dark)}
       document.getElementById('theme-light').classList.remove('active');
     });
 
-    window.addEventListener('resize', renderGrid);
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+      if (e.target.id === 'modal-overlay') closeModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
     renderRanges();
-    renderGrid();
+    renderDashboard();
   </script>
 </body>
 </html>
