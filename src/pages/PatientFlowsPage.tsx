@@ -11,7 +11,9 @@ import { ReportTab } from '../components/flows/report/ReportTab';
 import { ScoreTab } from '../components/flows/score/ScoreTab';
 import { SectionTabs } from '../components/flows/SectionTabs';
 import { Topbar } from '../components/flows/Topbar';
+import { MobileBottomNav } from '../components/flows/MobileBottomNav';
 import { StageProceedDialog } from '../components/flows/shared/StageProceedDialog';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { getDefaultStageIndex, OR_STAGES } from '../data/flows';
 import { getPatient } from '../data/patients';
 import { getRoom } from '../data/rooms';
@@ -30,6 +32,7 @@ export function PatientFlowsPage() {
   const [currentStageIdx, setCurrentStageIdx] = useState(defaultStage);
   const [viewStageIdx, setViewStageIdx] = useState(defaultStage);
   const [pendingAdvanceIdx, setPendingAdvanceIdx] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     document.body.classList.add('dashboard-mode');
@@ -42,6 +45,10 @@ export function PatientFlowsPage() {
     setCurrentStageIdx(idx);
     setViewStageIdx(idx);
   }, [roomId]);
+
+  useEffect(() => {
+    if (isMobile && tab === 'staff') setTab('record');
+  }, [isMobile, tab]);
 
   if (!roomId || !getRoom(roomId)) {
     return <Navigate to="/board" replace />;
@@ -74,10 +81,10 @@ export function PatientFlowsPage() {
   }
 
   return (
-    <div className="dashboard-view">
-      <Topbar />
+    <div className={`dashboard-view${isMobile ? ' flows-mobile' : ''}`}>
+      <Topbar mobile={isMobile} />
       <PatientHeader patient={patient} currentStageIdx={currentStageIdx} />
-      <SectionTabs active={tab} onChange={setTab} patient={patient} />
+      <SectionTabs active={tab} onChange={setTab} patient={patient} className="section-tabs-desktop" />
 
       <div className={`tab-content${tab === 'record' ? ' active' : ''}`}>
         {tab === 'record' && (
@@ -89,7 +96,7 @@ export function PatientFlowsPage() {
           />
         )}
       </div>
-      <div className={`tab-content${tab === 'score' ? ' active' : ''}`}>
+      <div id="tabScore" className={`tab-content${tab === 'score' ? ' active' : ''}`}>
         {tab === 'score' && <ScoreTab />}
       </div>
       <div id="tabForm" className={`tab-content${tab === 'form' ? ' active' : ''}`}>
@@ -113,9 +120,16 @@ export function PatientFlowsPage() {
       <div id="tabReport" className={`tab-content${tab === 'report' ? ' active' : ''}`}>
         {tab === 'report' && <ReportTab patient={patient} />}
       </div>
-      <div className={`tab-content${tab === 'staff' ? ' active' : ''}`}>
+      <div className={`tab-content tab-staff-desktop${tab === 'staff' ? ' active' : ''}`}>
         {tab === 'staff' && <StaffTab />}
       </div>
+
+      {isMobile ? (
+        <MobileBottomNav
+          active={tab === 'staff' ? 'record' : tab}
+          onChange={setTab}
+        />
+      ) : null}
 
       {pendingAdvanceIdx != null && (
         <StageProceedDialog

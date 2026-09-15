@@ -5,7 +5,9 @@ import type { Room } from '../../../types';
 import { ScheduleDetailBody } from './ScheduleDetailBody';
 import { ScheduleDetailPanel } from './ScheduleDetailPanel';
 import { StageProceedDialog } from './StageProceedDialog';
+import { filterRoomsByWorkflow, OtStatusFilters } from './OtStatusFilters';
 import { TheatreStripCard } from './TheatreStripCard';
+import type { OtStatusFilter } from './scheduleStatus';
 import { pctForStageIndex, stageIndexFromPct } from './scheduleUtils';
 const STRIP_SIZE = 4;
 const MOBILE_QUERY = '(max-width: 720px)';
@@ -28,6 +30,7 @@ export function ScheduleBoard() {
   const isMobile = useIsMobile();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterQuery, setFilterQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<OtStatusFilter>('all');
   const [stripIds, setStripIds] = useState<string[]>(() => rooms.slice(0, STRIP_SIZE).map(r => r.id));
   const [moreOpen, setMoreOpen] = useState(false);
   const [stageByRoom, setStageByRoom] = useState<Record<string, number>>({});
@@ -75,14 +78,17 @@ export function ScheduleBoard() {
 
   const filteredRooms = useMemo(() => {
     const q = filterQuery.trim().toLowerCase();
-    if (!q) return rooms;
-    return rooms.filter(
-      r =>
-        r.id.toLowerCase().includes(q) ||
-        r.patient.toLowerCase().includes(q) ||
-        r.procedure.toLowerCase().includes(q),
-    );
-  }, [filterQuery]);
+    let list = rooms;
+    if (q) {
+      list = list.filter(
+        r =>
+          r.id.toLowerCase().includes(q) ||
+          r.patient.toLowerCase().includes(q) ||
+          r.procedure.toLowerCase().includes(q),
+      );
+    }
+    return filterRoomsByWorkflow(list, statusFilter);
+  }, [filterQuery, statusFilter]);
 
   const stripRoomsList = useMemo(
     () => stripIds.map(id => getRoom(id)).filter((r): r is Room => Boolean(r)),
@@ -174,7 +180,13 @@ export function ScheduleBoard() {
               onChange={e => setFilterQuery(e.target.value)}
             />
             <span className="ot-count">{roomCountLabel}</span>
+            <button type="button" className="ot-filter-btn" aria-label="Filter options" title="Filter">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <path d="M4 6h16M7 12h10M10 18h4" />
+              </svg>
+            </button>
           </div>
+          <OtStatusFilters rooms={rooms} active={statusFilter} onChange={setStatusFilter} />
           {mobileRecordLink}
           <div className="ot-top-scroll" ref={topScrollRef}>
             <div className={`ot-top-row strip-row${isMobile ? ' mobile-stack' : ''}`}>

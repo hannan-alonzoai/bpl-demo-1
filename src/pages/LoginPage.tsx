@@ -9,12 +9,12 @@ export function LoginPage() {
   if (isAuth) return <Navigate to="/board" replace />;
 
   return (
-    <>
-      <div className="top-strip" />
+    <div className="login-page">
+      <div className="top-strip" aria-hidden />
       <div id="login-screen">
         <LoginHero />
         <LoginForm />
       </div>
-    </>
+    </div>
   );
 }

@@ -35,10 +35,39 @@ export function ReportTab({ patient }: Props) {
   const [endDate, setEndDate] = useState('2026-09-11');
   const [endTime, setEndTime] = useState('08:00');
   const [selectedForms, setSelectedForms] = useState('all');
+  const [mobileFormOpen, setMobileFormOpen] = useState(false);
 
   return (
     <div className="report-view">
-      <div className="report-card">
+      <div className="report-mobile-hero">
+        <h2 className="report-mobile-title">OT Report</h2>
+        <p className="report-mobile-sub">
+          Generate consolidated documentation for {patient.name} ({patient.crn}).
+        </p>
+        {!mobileFormOpen ? (
+          <>
+            <button type="button" className="btn btn-report-mobile-primary" onClick={() => setMobileFormOpen(true)}>
+              Choose time interval
+            </button>
+            <div className="report-mobile-info-card">
+              <div className="report-mobile-info-title">Last generated</div>
+              <div className="report-mobile-info-body">11 Sep 2026, 08:15 · PDF</div>
+            </div>
+            <div className="report-mobile-info-card">
+              <div className="report-mobile-info-title">Included sections</div>
+              <div className="report-mobile-info-body">
+                Flowsheet, Vitals, Fluids, Staffing, APACHE II
+              </div>
+            </div>
+          </>
+        ) : (
+          <button type="button" className="report-mobile-back" onClick={() => setMobileFormOpen(false)}>
+            ← Back to summary
+          </button>
+        )}
+      </div>
+
+      <div className={`report-card report-card-desktop${mobileFormOpen ? ' report-mobile-form-open' : ''}`}>
         <h2 className="report-title">Choose time Interval</h2>
 
         <div className="report-form">

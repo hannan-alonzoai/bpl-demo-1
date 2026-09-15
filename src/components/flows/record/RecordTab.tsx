@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { OR_STAGES, STAFFING } from '../../../data/flows';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
-type RecordSub = 'flowsheet' | 'fluids' | 'medications';
+type RecordSub = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
 
 interface Props {
   currentStageIdx: number;
@@ -12,6 +13,13 @@ interface Props {
   onRequestStageAdvance: (targetIdx: number) => void;
 }
 
+const SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
+  { id: 'fluids', label: 'Fluids', mobileLabel: 'Fluids' },
+  { id: 'medications', label: 'Medications', mobileLabel: 'Medications' },
+  { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
+];
+
 export function RecordTab({
   currentStageIdx,
   viewStageIdx,
@@ -19,17 +27,18 @@ export function RecordTab({
   onRequestStageAdvance,
 }: Props) {
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
-
-  const subs: { id: RecordSub; label: string }[] = [
-    { id: 'flowsheet', label: 'Flowsheet' },
-    { id: 'fluids', label: 'Fluids' },
-    { id: 'medications', label: 'Medications' },
-  ];
+  const stageNum = currentStageIdx + 1;
+  const totalStages = OR_STAGES.length;
 
   return (
     <div className="record-view record-view-shell">
+      <div className="record-mobile-stage-head">
+        <span className="record-mobile-stage-title">OT Stage — {SUBS.find(s => s.id === recordSub)?.label ?? 'Flowsheet'}</span>
+        <span className="record-mobile-stage-pill">Stage {stageNum} of {totalStages}</span>
+      </div>
+
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
-        {subs.map(s => (
+        {SUBS.map(s => (
           <button
             key={s.id}
             type="button"
@@ -38,7 +47,8 @@ export function RecordTab({
             aria-selected={recordSub === s.id}
             onClick={() => setRecordSub(s.id)}
           >
-            {s.label}
+            <span className="record-subtab-label">{s.label}</span>
+            <span className="record-subtab-label-mobile">{s.mobileLabel}</span>
           </button>
         ))}
       </div>
@@ -80,6 +90,24 @@ export function RecordTab({
           </div>
           <div className="record-card-body">
             <MedicationsGanttChart />
+          </div>
+        </div>
+      </div>
+
+      <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
+        <div className="record-card record-card-staff">
+          <div className="record-card-header">
+            <h3>Staffing</h3>
+          </div>
+          <div className="record-card-body">
+            <div className="staff-mobile-list">
+              {STAFFING.map(s => (
+                <div className="staff-mobile-row" key={s.name}>
+                  <span className="staff-mobile-name">{s.name}</span>
+                  <span className="staff-mobile-time">{s.time.split('→')[0].trim()}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

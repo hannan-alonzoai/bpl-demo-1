@@ -125,7 +125,11 @@ export const rooms: Room[] = [
   demoRoom('OT-09', 'stable', 'Stable', 'Vikram · ASA I', 'Appendectomy', 81, '14:05'),
   demoRoom('OT-10', 'stable', 'Stable', 'Nina · ASA II', 'C-section', 67, '16:45'),
   demoRoom('OT-11', 'caution', 'Caution', 'Tom · ASA III', 'Liver resection', 41, '17:55', { watch: true }),
-  demoRoom('OT-12', 'stable', 'Stable', 'Aisha · ASA II', 'Hernia repair', 12, '11:30', { nextReady: true }),
+  demoRoom('OT-12', 'stable', 'Stable', 'Aisha · ASA II', 'Hernia repair', 12, '11:30', {
+    tag: 'In Prep',
+    nextReady: true,
+  }),
+  demoRoom('OT-13', 'stable', 'Stable', '—', 'Turnover', 4, '—', { tag: 'Cleaning', nextReady: true }),
 ];
 
 export function getRoom(id: string): Room | undefined {

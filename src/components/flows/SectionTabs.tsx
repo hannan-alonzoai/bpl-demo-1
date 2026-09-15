@@ -4,6 +4,7 @@ interface Props {
   active: FlowTab;
   onChange: (tab: FlowTab) => void;
   patient: PatientProfile;
+  className?: string;
 }
 
 const TABS: { id: FlowTab; label: string; count?: string }[] = [
@@ -14,11 +15,11 @@ const TABS: { id: FlowTab; label: string; count?: string }[] = [
   { id: 'staff', label: 'Staff' },
 ];
 
-export function SectionTabs({ active, onChange, patient }: Props) {
+export function SectionTabs({ active, onChange, patient, className }: Props) {
   const initials = `${patient.name.split(' ').map(n => n[0]).join('. ')}.`;
 
   return (
-    <div className="tabs-zone">
+    <div className={`tabs-zone${className ? ` ${className}` : ''}`}>
       <div className="section-tabs">
         <div className="section-tabs-left">
           {TABS.map(tab => (
