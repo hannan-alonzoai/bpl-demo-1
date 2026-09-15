@@ -216,30 +216,7 @@ animation:detail-load-spin .9s linear infinite;
 .detail-hero-main .detail-stages,
 .detail-hero > .detail-stages{margin-top:0}
 .detail-stages-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
-.stage-boxes-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.stage-boxes{display:flex;align-items:stretch;gap:8px;min-width:min-content}
-.stage-box{
-display:flex;flex-direction:column;align-items:flex-start;min-width:92px;max-width:110px;
-padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);
-flex-shrink:0;text-align:left;cursor:default;
-}
-.stage-box.done{border-color:var(--completed);background:var(--completed-bg);color:var(--completed)}
-.stage-box.done .stage-box-name{color:var(--completed)}
-.stage-box.done .stage-box-time{color:var(--completed);opacity:.85}
-.stage-box.done .stage-box-num{background:rgba(28,138,92,.15);color:var(--completed)}
-.stage-box.current{border-color:var(--inprogress);background:var(--inprogress-bg);box-shadow:0 4px 12px rgba(14,165,233,.2)}
-.stage-box.current .stage-box-name{color:var(--blue-700)}
-.stage-box.current .stage-box-time{color:var(--upcoming)}
-.stage-box.current .stage-box-num{background:rgba(14,165,233,.2);color:var(--blue-700)}
-.stage-box-num{
-font-size:10px;font-weight:700;color:var(--ink-soft);width:20px;height:20px;border-radius:50%;
-display:flex;align-items:center;justify-content:center;background:var(--track);margin-bottom:5px;
-}
-.stage-box-name{font-size:10.5px;font-weight:600;color:var(--upcoming);line-height:1.25}
-.stage-box-time{font-size:9.5px;color:var(--gray-500);margin-top:3px}
-.stage-box:not(.done):not(.current):not(.next){
-border-color:var(--gray-300);background:var(--upcoming-bg);
-}
+/* Stage boxes: scoped under .schedule-board only (see block ~500+) */
 .detail-hero-main .alert-strip{margin-top:12px;margin-bottom:0}
 .status-critical{color:var(--critical);background:var(--critical-bg)}
 .status-attention{color:var(--attention);background:var(--attention-bg)}

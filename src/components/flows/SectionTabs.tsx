@@ -7,14 +7,15 @@ interface Props {
 }
 
 const TABS: { id: FlowTab; label: string; count?: string }[] = [
-  { id: 'record', label: 'Record', count: '(1)' },
+  { id: 'record', label: 'Record' },
   { id: 'score', label: 'Score' },
   { id: 'form', label: 'Form', count: '(3)' },
   { id: 'report', label: 'Report' },
+  { id: 'staff', label: 'Staff' },
 ];
 
 export function SectionTabs({ active, onChange, patient }: Props) {
-  const initials = patient.name.split(' ').map(n => n[0]).join('. ').slice(0, 5);
+  const initials = `${patient.name.split(' ').map(n => n[0]).join('. ')}.`;
 
   return (
     <div className="tabs-zone">
@@ -34,7 +35,7 @@ export function SectionTabs({ active, onChange, patient }: Props) {
         </div>
         <div className="patient-badge">
           <span className="status-dot" />
-          {initials} · {patient.bed} · {patient.asa}
+          {initials} · {patient.roomId} · {patient.asa}
         </div>
       </div>
     </div>

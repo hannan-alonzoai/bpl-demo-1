@@ -41,7 +41,7 @@
   .scroll-y::-webkit-scrollbar-thumb:hover { background: var(--gray-500); background-clip: padding-box; }
 
   .topbar {
-    background: linear-gradient(90deg, var(--gray-900) 0%, var(--gray-800) 100%);
+    background: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-600) 55%, var(--blue-500) 100%);
     color: var(--white);
     display: flex;
     align-items: center;
@@ -383,6 +383,95 @@
     background: var(--gray-100);
   }
   .record-view > * + * { margin-top: 16px; }
+  .record-view.record-view-shell {
+    padding: 14px 16px 18px;
+  }
+  .record-view.record-view-shell > * + * {
+    margin-top: 0;
+  }
+  .record-subtabs {
+    display: flex; align-items: stretch; gap: 0;
+    border-bottom: 1px solid var(--gray-200); margin-bottom: 16px;
+    background: var(--white); border-radius: var(--radius) var(--radius) 0 0;
+    padding: 0 8px;
+  }
+  .record-subtab {
+    padding: 12px 20px; border: none; background: transparent;
+    font-size: 13px; font-weight: 600; color: var(--gray-500); cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit;
+  }
+  .record-subtab:hover { color: var(--gray-900); }
+  .record-subtab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+  .record-subpanel { display: none; }
+  .record-subpanel.active { display: block; }
+  .flowsheet-record-card { box-shadow: none; }
+  .flowsheet-panel { padding: 16px 18px 18px; }
+  .flowsheet-panel .stage-boxes-wrap { margin-bottom: 14px; padding: 2px 0 4px; }
+  .flowsheet-vitals-layout {
+    display: flex; flex-direction: row; align-items: stretch;
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    overflow: hidden; background: var(--gray-100); min-height: 220px;
+  }
+  .flowsheet-vitals-main { flex: 1; min-width: 0; }
+  .flowsheet-vitals-layout .flowsheet-vitals-panel {
+    border: none; border-radius: 0; background: var(--gray-100);
+    min-height: 220px; height: 100%;
+  }
+  .vitals-source-tabs-stack {
+    display: flex; flex-direction: column; flex-shrink: 0;
+    width: 112px; border-right: 1px solid var(--gray-200);
+    background: var(--white);
+  }
+  .vitals-source-tab {
+    display: block; width: 100%; padding: 11px 8px 11px 10px;
+    border: none; border-bottom: 1px solid var(--gray-100);
+    border-radius: 0; background: transparent;
+    font-size: 10px; font-weight: 600; line-height: 1.25;
+    color: var(--gray-500); text-align: left;
+    cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s;
+  }
+  .vitals-source-tab:last-child { border-bottom: none; }
+  .vitals-source-tab:hover {
+    background: var(--gray-50); color: var(--gray-800);
+  }
+  .vitals-source-tab.active {
+    background: var(--blue-50); color: var(--blue-800);
+    box-shadow: inset -3px 0 0 var(--blue-600);
+  }
+  .compact-stage-progress {
+    font-weight: 600; color: var(--gray-600); margin-left: 2px;
+  }
+  .stage-proceed-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; background: rgba(15, 23, 42, 0.45);
+  }
+  .stage-proceed-dialog {
+    width: min(100%, 400px); background: var(--white);
+    border-radius: var(--radius); padding: 22px 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--gray-200);
+  }
+  .stage-proceed-dialog h4 {
+    margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--gray-900);
+  }
+  .stage-proceed-dialog p {
+    margin: 0 0 20px; font-size: 13px; line-height: 1.5; color: var(--gray-600);
+  }
+  .stage-proceed-actions {
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .stage-proceed-actions .btn-secondary {
+    padding: 8px 16px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+    background: var(--white); font-size: 13px; font-weight: 600; color: var(--gray-700);
+    cursor: pointer; font-family: inherit;
+  }
+  .stage-proceed-actions .btn-primary {
+    padding: 8px 16px; border: none; border-radius: var(--radius-sm);
+    background: var(--blue-600); font-size: 13px; font-weight: 600; color: var(--white);
+    cursor: pointer; font-family: inherit;
+  }
+  .stage-proceed-actions .btn-primary:hover { background: var(--blue-700); }
   .record-card {
     background: var(--white); border: 1px solid var(--gray-200);
     border-radius: var(--radius); overflow: hidden;
@@ -407,58 +496,90 @@
   }
   .flowsheet-source-select:focus { border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--blue-100); }
 
-  /* OR stage boxes — select to view vitals */
-  .stage-boxes-wrap {
+  /* OR stage boxes — same language as /board schedule detail */
+  .flowsheet-panel .stage-boxes-wrap {
     overflow-x: auto; margin-bottom: 12px;
     -webkit-overflow-scrolling: touch;
     padding: 4px 2px 8px;
   }
-  .stage-boxes {
+  .flowsheet-panel .stage-boxes {
     display: flex; align-items: stretch; gap: 8px; min-width: max-content;
   }
-  .stage-box {
+  .flowsheet-panel button.stage-box {
+    appearance: none; -webkit-appearance: none;
+    font: inherit; color: inherit;
+  }
+  .flowsheet-panel .stage-box {
     display: flex; flex-direction: column; align-items: flex-start;
     min-width: 100px; max-width: 124px; padding: 10px 12px;
-    border: 1.5px solid var(--gray-300); border-radius: var(--radius);
+    border: 1px solid var(--line); border-radius: var(--radius);
     background: var(--upcoming-bg); cursor: pointer; text-align: left;
-    transition: all 0.15s; flex-shrink: 0; color: var(--upcoming);
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
   }
-  .stage-box:hover:not(.selected) {
+  .flowsheet-panel .stage-box:hover:not(.current):not(.next):not(.done) {
     border-color: var(--blue-300); background: var(--blue-50);
   }
-  .stage-box.done {
+  .flowsheet-panel .stage-box.done {
     border-color: var(--completed); background: var(--completed-bg);
   }
-  .stage-box.done .stage-box-num {
+  .flowsheet-panel .stage-box.done .stage-box-num {
     background: rgba(28, 138, 92, 0.15); color: var(--completed);
   }
-  .stage-box.done .stage-box-name { color: var(--completed); }
-  .stage-box.done .stage-box-time { color: var(--completed); opacity: 0.85; }
-  .stage-box.selected {
-    border-color: var(--inprogress); background: var(--inprogress-bg);
-    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);
+  .flowsheet-panel .stage-box.done .stage-box-name { color: var(--completed); }
+  .flowsheet-panel .stage-box.done .stage-box-time { color: var(--completed); opacity: 0.85; }
+  .flowsheet-panel .stage-box.current,
+  .flowsheet-panel button.stage-box.current {
+    border-color: var(--inprogress);
+    background: var(--inprogress-bg);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.28);
   }
-  .stage-box.selected .stage-box-name { color: var(--blue-700); }
-  .stage-box.selected .stage-box-time { color: var(--upcoming); }
-  .stage-box.selected .stage-box-num { background: rgba(14, 165, 233, 0.2); color: var(--blue-700); }
-  .stage-box.viewing {
+  .flowsheet-panel .stage-box.current .stage-box-name { color: var(--blue-700); font-weight: 700; }
+  .flowsheet-panel .stage-box.current .stage-box-time { color: var(--upcoming); }
+  .flowsheet-panel .stage-box.current .stage-box-num {
+    background: rgba(14, 165, 233, 0.2); color: var(--blue-700);
+  }
+  .flowsheet-panel .stage-box.next,
+  .flowsheet-panel button.stage-box.next {
+    border: 1px dashed var(--blue);
+    background: rgba(14, 165, 233, 0.1);
+    cursor: pointer;
+  }
+  .flowsheet-panel button.stage-box.next:hover {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: var(--blue-dark);
+  }
+  .flowsheet-panel .stage-box.next .stage-box-num {
+    background: var(--white-200); color: var(--ink-soft);
+  }
+  .flowsheet-panel .stage-box.next .stage-box-name { color: var(--blue-dark); font-weight: 600; }
+  .flowsheet-panel .stage-box.next .stage-box-time { color: var(--ink-soft); }
+  .flowsheet-panel .stage-box.locked {
+    opacity: 0.5; cursor: not-allowed; pointer-events: none;
+    background: var(--upcoming-bg); border-color: var(--gray-300);
+  }
+  .flowsheet-panel .stage-box.locked .stage-box-name { color: var(--gray-500); }
+  .flowsheet-panel .stage-box.viewing {
     box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-400);
   }
-  .stage-box.selected.viewing {
-    box-shadow: 0 4px 14px rgba(0, 136, 204, 0.35), 0 0 0 2px var(--white), 0 0 0 4px var(--blue-300);
+  .flowsheet-panel .stage-box.current.viewing {
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.28), 0 0 0 2px var(--white), 0 0 0 4px var(--blue-400);
   }
-  .stage-box-num {
-    font-size: 10px; font-weight: 700; color: var(--gray-500);
+  .flowsheet-panel .stage-box-num {
+    font-size: 10px; font-weight: 700; color: var(--ink-soft);
     width: 20px; height: 20px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    background: var(--gray-100); margin-bottom: 6px;
+    background: var(--track); margin-bottom: 6px;
   }
-  .stage-box-name {
+  .flowsheet-panel .stage-box-name {
     font-size: 11px; font-weight: 600; color: var(--upcoming);
     line-height: 1.25;
   }
-  .stage-box-time {
+  .flowsheet-panel .stage-box-time {
     font-size: 10px; color: var(--gray-500); margin-top: 4px;
+  }
+  .flowsheet-panel .stage-box:not(.done):not(.current):not(.next):not(.locked) {
+    border-color: var(--gray-300); background: var(--upcoming-bg);
   }
 
   .stage-selected-banner {

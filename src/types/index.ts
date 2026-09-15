@@ -1,6 +1,6 @@
 export type RoomStatus = 'critical' | 'attention' | 'caution' | 'stable';
 export type ViewMode = 'rings' | 'bars' | 'numbers';
-export type FlowTab = 'record' | 'score' | 'form' | 'report';
+export type FlowTab = 'record' | 'score' | 'form' | 'report' | 'staff';
 export type OverlayView = 'dashboard' | 'fluids' | 'medications' | 'form' | null;
 
 export interface VitalChip {
@@ -105,6 +105,7 @@ export interface OrStage {
 export interface VitalSource {
   id: string;
   name: string;
+  short?: string;
 }
 
 export interface MonitorParam {

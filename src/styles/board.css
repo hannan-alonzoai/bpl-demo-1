@@ -70,7 +70,7 @@
 /* ================= DASHBOARD SCREEN ================= */
 #dashboard-screen{display:none;}
 header.dash-header{
-  background:linear-gradient(90deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  background:linear-gradient(90deg, var(--blue-700) 0%, var(--blue-600) 55%, var(--blue-500) 100%);
   padding:0 24px;
   height:68px;
   display:flex;

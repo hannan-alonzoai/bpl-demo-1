@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { OR_STAGES } from '../../data/flows';
 import type { PatientProfile } from '../../types';
 
 interface Props {
   patient: PatientProfile;
+  currentStageIdx: number;
 }
 
 function AllergyIcon() {
@@ -24,9 +26,11 @@ function ValidateBtn({ compact }: { compact?: boolean }) {
   );
 }
 
-export function PatientHeader({ patient }: Props) {
+export function PatientHeader({ patient, currentStageIdx }: Props) {
   const [expanded, setExpanded] = useState(false);
   const procShort = patient.procedure.split('(')[0].trim();
+  const stage = OR_STAGES[currentStageIdx];
+  const stageNum = currentStageIdx + 1;
 
   return (
     <div className={`patient-header-panel${expanded ? '' : ' collapsed'}`}>
@@ -62,6 +66,13 @@ export function PatientHeader({ patient }: Props) {
             <span className="compact-val allergy">
               <AllergyIcon />
               {patient.allergies}
+            </span>
+          </span>
+          <span className="compact-kv">
+            <span className="compact-key">Stage</span>
+            <span className="compact-val highlight">{stage?.name ?? '—'}</span>
+            <span className="compact-val compact-stage-progress">
+              {stageNum} / {OR_STAGES.length}
             </span>
           </span>
         </div>
