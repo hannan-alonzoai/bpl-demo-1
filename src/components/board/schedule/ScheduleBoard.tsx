@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getRoom, rooms } from '../../../data/rooms';
-import type { Room, ViewMode } from '../../../types';
+import type { Room } from '../../../types';
 import { ScheduleDetailBody } from './ScheduleDetailBody';
 import { ScheduleDetailPanel } from './ScheduleDetailPanel';
 import { StageProceedDialog } from './StageProceedDialog';
@@ -25,7 +26,6 @@ function useIsMobile() {
 
 export function ScheduleBoard() {
   const isMobile = useIsMobile();
-  const [view, setView] = useState<ViewMode>('rings');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterQuery, setFilterQuery] = useState('');
   const [stripIds, setStripIds] = useState<string[]>(() => rooms.slice(0, STRIP_SIZE).map(r => r.id));
@@ -150,23 +150,14 @@ export function ScheduleBoard() {
       ? `${rooms.length} rooms`
       : `${filteredRooms.length} of ${rooms.length} rooms`;
 
-  const viewToggleMobile = isMobile && selectedRoom && (
-    <div className="ot-vitals-view-bar is-visible">
-      <span className="ot-vitals-view-bar-label">Patient vitals display</span>
-      <div className="view-toggle" role="group" aria-label="Vitals display">
-        {(['rings', 'bars', 'numbers'] as ViewMode[]).map(v => (
-          <button
-            key={v}
-            type="button"
-            className={view === v ? 'active' : ''}
-            onClick={() => setView(v)}
-          >
-            {v === 'rings' ? 'Rings' : v === 'bars' ? 'Bars' : 'Numbers'}
-          </button>
-        ))}
+  const mobileRecordLink =
+    isMobile && selectedRoom ? (
+      <div className="ot-vitals-view-bar is-visible">
+        <Link to={`/ot/${selectedRoom.id}`} className="detail-record-link detail-record-link-mobile">
+          Open full record →
+        </Link>
       </div>
-    </div>
-  );
+    ) : null;
 
   return (
     <div className="schedule-board">
@@ -184,7 +175,7 @@ export function ScheduleBoard() {
             />
             <span className="ot-count">{roomCountLabel}</span>
           </div>
-          {viewToggleMobile}
+          {mobileRecordLink}
           <div className="ot-top-scroll" ref={topScrollRef}>
             <div className={`ot-top-row strip-row${isMobile ? ' mobile-stack' : ''}`}>
               {isMobile ? (
@@ -213,7 +204,7 @@ export function ScheduleBoard() {
                             {open && selectedRoom && (
                               <ScheduleDetailBody
                                 room={selectedRoom}
-                                view={view}
+                                view="rings"
                                 stageIndex={getStageIndex(selectedRoom)}
                                 onRequestStageAdvance={next =>
                                   requestStageAdvance(selectedRoom.id, next)
@@ -290,9 +281,7 @@ export function ScheduleBoard() {
         {!isMobile && (
           <ScheduleDetailPanel
             room={selectedRoom}
-            view={view}
             stageIndex={selectedRoom ? getStageIndex(selectedRoom) : 0}
-            onViewChange={setView}
             onRequestStageAdvance={
               selectedRoom
                 ? next => requestStageAdvance(selectedRoom.id, next)

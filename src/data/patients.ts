@@ -24,12 +24,10 @@ const JAMES_WILSON: PatientProfile = {
 function profileFromRoom(roomId: string): PatientProfile {
   const room = getRoom(roomId);
   if (!room) throw new Error(`Unknown room: ${roomId}`);
-  const [namePart, asaPart] = room.patient.split(' · ');
-  const firstName = namePart.split(' ')[0];
-  const lastName = namePart.includes(' ') ? namePart.split(' ').slice(1).join(' ') : 'Patient';
+  const [namePart, asaPart] = room.patient.split(' · ').map(s => s.trim());
   return {
     roomId,
-    name: `${firstName} ${lastName}`.trim(),
+    name: namePart || roomId,
     crn: `CRN${3000 + parseInt(roomId.replace('OT-', ''), 10)}`,
     dob: '01/01/1970',
     gender: 'Male',

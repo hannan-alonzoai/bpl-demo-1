@@ -50,7 +50,17 @@
     height: 68px;
     flex-shrink: 0;
   }
-  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .topbar-back {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 7px 12px; border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.12);
+    color: var(--white); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; flex-shrink: 0;
+  }
+  .topbar-back:hover {
+    background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.5);
+  }
   .topbar-brand { display: flex; align-items: center; flex-shrink: 0; }
   .topbar-logo {
     height: 44px;
@@ -483,6 +493,28 @@
   .record-card-header h3 { font-size: 14px; font-weight: 600; color: var(--gray-900); }
   .record-card-meta { font-size: 11px; color: var(--gray-500); }
   .record-card-body { padding: 16px 18px; }
+  .record-card-gantt .record-card-header {
+    padding: 8px 12px; gap: 12px;
+  }
+  .record-card-gantt .record-card-body { padding: 6px 8px 8px; }
+  .gantt-add-btn {
+    appearance: none;
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--blue-600);
+    color: var(--white);
+    font-family: inherit;
+    font-size: 12px; font-weight: 700;
+    padding: 6px 12px;
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+  .gantt-add-btn:not(:disabled) {
+    cursor: pointer;
+    opacity: 1;
+  }
+  .gantt-add-btn:not(:disabled):hover { background: var(--blue-700); }
   .record-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 900px) { .record-grid-2 { grid-template-columns: 1fr; } }
 
@@ -880,6 +912,153 @@
     border-radius: 4px; line-height: 1.2;
   }
 
+  /* Fluids Gantt (design system — bpl-tokens) */
+  .fluids-gantt { min-width: 0; }
+  .fluids-gantt-scroll {
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--white);
+  }
+  .fluids-gantt-scroll:focus-visible {
+    outline: 2px solid var(--blue-500); outline-offset: 2px;
+  }
+  .fluids-gantt-inner { padding: 4px 6px 6px; }
+  .fluids-gantt-head {
+    display: flex; align-items: stretch;
+    margin-bottom: 4px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .fluids-gantt-head-spacer { flex-shrink: 0; }
+  .fluids-gantt-times {
+    display: flex; flex-shrink: 0; position: relative;
+  }
+  .fluids-gantt-time {
+    flex: 1; text-align: center;
+    font-family: var(--font-alt);
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .fluids-gantt-section {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--blue-50);
+    color: var(--blue-800);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border: 1px solid var(--blue-100);
+    border-bottom: none;
+  }
+  .fluids-gantt-section:first-of-type { margin-top: 0; }
+  .fluids-gantt-row {
+    display: flex; align-items: stretch;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+  }
+  .fluids-gantt-row:last-of-type {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    margin-bottom: 4px;
+  }
+  .fluids-gantt-label {
+    flex-shrink: 0;
+    display: flex; align-items: center;
+    padding: 6px 8px 6px 0;
+    border-right: 1px solid var(--line);
+    box-sizing: border-box;
+  }
+  .fluids-gantt-label-name {
+    font-size: 12px; font-weight: 600; color: var(--ink);
+    line-height: 1.3;
+  }
+  .fluids-gantt-track {
+    position: relative;
+    flex-shrink: 0;
+    min-height: 44px;
+    padding-bottom: 2px;
+    background: var(--white-100);
+  }
+  .fluids-gantt-grid-lines {
+    position: absolute; inset: 0;
+    display: flex; pointer-events: none;
+  }
+  .fluids-gantt-grid-line {
+    flex: 1;
+    border-right: 1px solid var(--line);
+  }
+  .fluids-gantt-grid-line:last-child { border-right: none; }
+  .fluids-gantt-segment-wrap {
+    position: absolute;
+    top: 0; bottom: 0;
+    display: flex; align-items: center;
+    padding: 0 2px;
+    box-sizing: border-box;
+  }
+  .fluids-gantt-bar {
+    position: relative;
+    height: 22px;
+    width: 100%;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    min-width: 8px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  .fluids-gantt-bar.bar-dextrose { background: var(--blue-700); }
+  .fluids-gantt-bar.bar-rl { background: var(--blue-400); }
+  .fluids-gantt-bar.bar-blood { background: var(--typical); }
+  .fluids-gantt-bar.bar-urine { background: var(--completed); }
+  .fluids-gantt-bar.bar-catheter { background: var(--priority); }
+  .fluids-gantt-bar.bar-med-stat { background: var(--blue-800); }
+  .fluids-gantt-bar.bar-med-prn { background: var(--typical); }
+  .fluids-gantt-bar.bar-med-infused { background: var(--blue-500); }
+  .fluids-gantt-bar-label {
+    font-family: var(--font-alt);
+    font-size: 10px; font-weight: 700;
+    color: var(--white);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fluids-gantt-bar-label--right {
+    position: absolute;
+    left: 100%;
+    margin-left: 8px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .fluids-gantt-bar-label--below {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    color: var(--completed);
+    font-weight: 700;
+  }
+  .fluids-gantt-legend {
+    display: flex; flex-wrap: wrap; gap: 8px 16px;
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--line);
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+  }
+  .fluids-gantt-legend-item {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .fluids-gantt-legend-item i {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .fluids-gantt-legend-item i.leg-dextrose { background: var(--blue-700); }
+  .fluids-gantt-legend-item i.leg-rl { background: var(--blue-400); }
+  .fluids-gantt-legend-item i.leg-blood { background: var(--typical); }
+  .fluids-gantt-legend-item i.leg-urine { background: var(--completed); }
+  .fluids-gantt-legend-item i.leg-catheter { background: var(--priority); }
+  .fluids-gantt-legend-item i.leg-med-stat { background: var(--blue-800); }
+  .fluids-gantt-legend-item i.leg-med-prn { background: var(--typical); }
+  .fluids-gantt-legend-item i.leg-med-infused { background: var(--blue-500); }
   .fluids-full-body {
     flex: 1; overflow-y: auto; padding: 20px 24px; background: var(--gray-100);
   }

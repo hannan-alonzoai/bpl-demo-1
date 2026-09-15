@@ -14,7 +14,7 @@ export function BoardHeader() {
     <header className="dash-header">
       <div className="brand">
         <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="dash-logo" />
-        <div className="title">BPL Cortex OT · Monitoring Dashboard</div>
+        <div className="title">Monitoring Dashboard</div>
       </div>
       <div className="header-right">
         <button type="button" className="signout" onClick={handleSignOut}>Sign out</button>

@@ -6,6 +6,9 @@ export function Topbar() {
   return (
     <header className="topbar">
       <div className="topbar-left">
+        <button type="button" className="topbar-back" onClick={() => navigate('/board')}>
+          ← Back
+        </button>
         <div className="topbar-brand">
           <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="topbar-logo" />
         </div>
@@ -13,11 +16,6 @@ export function Topbar() {
           <span className="status-dot" />
           OT Flows Suite
         </div>
-      </div>
-      <div className="topbar-center">
-        <button type="button" className="topbar-btn" onClick={() => navigate('/board')}>
-          Board View
-        </button>
       </div>
       <div className="topbar-user">
         <div className="avatar">JJ</div>

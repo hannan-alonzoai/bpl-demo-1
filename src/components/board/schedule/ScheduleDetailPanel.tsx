@@ -1,23 +1,17 @@
 import { Link } from 'react-router-dom';
-import type { Room, ViewMode } from '../../../types';
+import type { Room } from '../../../types';
 import { ScheduleDetailBody } from './ScheduleDetailBody';
 import { currentStageForIndex } from './scheduleUtils';
 
-const VIEW_MODES: ViewMode[] = ['rings', 'bars', 'numbers'];
-
 interface Props {
   room: Room | null;
-  view: ViewMode;
   stageIndex: number;
-  onViewChange: (view: ViewMode) => void;
   onRequestStageAdvance: (nextIndex: number) => void;
 }
 
 export function ScheduleDetailPanel({
   room,
-  view,
   stageIndex,
-  onViewChange,
   onRequestStageAdvance,
 }: Props) {
   return (
@@ -34,11 +28,6 @@ export function ScheduleDetailPanel({
                 </>
               )}
             </h2>
-            {room && (
-              <Link to={`/ot/${room.id}`} className="detail-record-link">
-                Open full record →
-              </Link>
-            )}
           </div>
           {room && (
             <div className="detail-panel-badges">
@@ -49,26 +38,18 @@ export function ScheduleDetailPanel({
             </div>
           )}
         </div>
-        <div className="view-toggle" role="group" aria-label="Vitals display">
-          {VIEW_MODES.map(v => (
-            <button
-              key={v}
-              type="button"
-              data-view={v}
-              className={view === v ? 'active' : ''}
-              onClick={() => onViewChange(v)}
-            >
-              {v === 'rings' ? 'Rings' : v === 'bars' ? 'Bars' : 'Numbers'}
-            </button>
-          ))}
-        </div>
+        {room ? (
+          <Link to={`/ot/${room.id}`} className="detail-record-link detail-record-link-head">
+            Open full record →
+          </Link>
+        ) : null}
       </div>
       <div id="detail-content" className={room ? 'detail-body' : 'detail-empty'}>
         {!room && 'Select an OT room above to view live vitals and case details.'}
         {room && (
           <ScheduleDetailBody
             room={room}
-            view={view}
+            view="rings"
             stageIndex={stageIndex}
             onRequestStageAdvance={onRequestStageAdvance}
           />

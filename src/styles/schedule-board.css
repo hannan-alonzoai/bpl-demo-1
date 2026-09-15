@@ -557,6 +557,15 @@ text-transform:uppercase;color:var(--ink-soft);
 .schedule-board .detail-record-link:hover{
   text-decoration:underline;color:var(--blue);
 }
+.schedule-board .detail-record-link-head{
+  align-self:center;padding:6px 0;margin-left:auto;
+}
+.schedule-board .detail-record-link-mobile{
+  display:inline-block;padding:4px 0;
+}
+.schedule-board .ot-vitals-view-bar.is-visible{
+  justify-content:flex-end;padding:8px 0 4px;
+}
 
 .schedule-board .stage-proceed-overlay{
   position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
