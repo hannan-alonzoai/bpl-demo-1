@@ -1,5 +1,7 @@
 export const GANTT_LABEL_W = 160;
 export const GANTT_TRACK_W = 720;
+/** Space after the timeline for dose/rate labels (right of bars) */
+export const GANTT_TRACK_VALUE_GUTTER = 96;
 const CHART_START_MIN = 17 * 60;
 const CHART_END_MIN = 20 * 60;
 const CHART_SPAN = CHART_END_MIN - CHART_START_MIN;
@@ -77,7 +79,10 @@ export function ClinicalGanttChart({ sections, ariaLabel }: Props) {
   return (
     <div className="fluids-gantt">
       <div className="fluids-gantt-scroll" tabIndex={0} aria-label={ariaLabel}>
-        <div className="fluids-gantt-inner" style={{ minWidth: GANTT_LABEL_W + GANTT_TRACK_W + 16 }}>
+        <div
+          className="fluids-gantt-inner"
+          style={{ minWidth: GANTT_LABEL_W + GANTT_TRACK_W + GANTT_TRACK_VALUE_GUTTER + 24 }}
+        >
           <div className="fluids-gantt-head">
             <div className="fluids-gantt-label fluids-gantt-head-spacer" style={{ width: GANTT_LABEL_W }} />
             <div className="fluids-gantt-times" style={{ width: GANTT_TRACK_W }}>
