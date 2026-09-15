@@ -13,11 +13,21 @@ export const OR_STAGES: OrStage[] = [
 ];
 
 export const VITAL_SOURCES: VitalSource[] = [
-  { id: 'monitor', name: 'Patient Monitor' },
-  { id: 'monitor_tabular', name: 'Patient Monitor — Tabular' },
-  { id: 'anaesthesia_machine', name: 'Anaesthesia Machine' },
-  { id: 'syringe_pump', name: 'Syringe Pump' },
+  { id: 'monitor', name: 'Patient Monitor', short: 'Monitor' },
+  { id: 'anaesthesia_machine', name: 'Anaesthesia Machine', short: 'Anes machine' },
+  { id: 'syringe_pump', name: 'Syringe Pump', short: 'Syringe pump' },
 ];
+
+/** Default OR stage index for demo rooms (matches ot/detail-dashboard.html). */
+export const DEFAULT_STAGE_BY_ROOM: Record<string, number> = {
+  'OT-01': 6,
+  'OT-03': 2,
+  'OT-05': 6,
+};
+
+export function getDefaultStageIndex(roomId: string): number {
+  return DEFAULT_STAGE_BY_ROOM[roomId] ?? 4;
+}
 
 export const FLUIDS_TIMES = [
   '16:55', '17:00', '17:05', '17:10', '17:15', '17:20', '17:25', '17:30',

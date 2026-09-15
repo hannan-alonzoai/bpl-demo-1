@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OT Flows · Record tab preview</title>
+  <link rel="stylesheet" href="flows.css" />
+  <style>
+    .proto-bar {
+      background: #fffbeb; border-bottom: 1px solid #fde68a;
+      padding: 10px 20px; font-size: 12px; color: #92400e;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+    }
+    .proto-bar strong { color: #78350f; }
+    .proto-bar select { margin-left: 6px; padding: 4px 8px; font: inherit; border-radius: 6px; border: 1px solid #fcd34d; }
+    .proto-bar a { color: #0369a1; font-weight: 600; text-decoration: none; }
+    .proto-bar a:hover { text-decoration: underline; }
+    .topbar-text-logo {
+      font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: #fff;
+      padding: 8px 12px; background: rgba(255,255,255,0.12); border-radius: 8px;
+    }
+    .record-subtabs {
+      display: flex; align-items: stretch; gap: 0;
+      border-bottom: 1px solid var(--gray-200); margin-bottom: 16px;
+      background: var(--white); border-radius: var(--radius) var(--radius) 0 0;
+      padding: 0 8px;
+    }
+    .record-subtab {
+      padding: 12px 20px; border: none; background: transparent;
+      font-size: 13px; font-weight: 600; color: var(--gray-500); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit;
+    }
+    .record-subtab:hover { color: var(--gray-900); }
+    .record-subtab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+    .record-subpanel { display: none; }
+    .record-subpanel.active { display: block; }
+    .flowsheet-vitals-layout {
+      display: flex; flex-direction: row; align-items: stretch;
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      overflow: hidden; background: var(--gray-50); min-height: 220px;
+    }
+    .flowsheet-vitals-main { flex: 1; min-width: 0; }
+    .flowsheet-vitals-layout .flowsheet-vitals-panel {
+      border: none; border-radius: 0; background: var(--gray-50);
+      min-height: 220px; height: 100%;
+    }
+    .vitals-source-tabs-stack {
+      display: flex; flex-direction: column; flex-shrink: 0;
+      width: 112px; border-right: 1px solid var(--gray-200);
+      background: var(--white);
+    }
+    .vitals-source-tab {
+      display: block; width: 100%; padding: 11px 8px 11px 10px;
+      border: none; border-bottom: 1px solid var(--gray-100);
+      border-radius: 0; background: transparent;
+      font-size: 10px; font-weight: 600; line-height: 1.25;
+      color: var(--gray-500); text-align: left;
+      cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s;
+    }
+    .vitals-source-tab:last-child { border-bottom: none; }
+    .vitals-source-tab:hover {
+      background: var(--gray-50); color: var(--gray-800);
+    }
+    .vitals-source-tab.active {
+      background: var(--blue-50); color: var(--blue-800);
+      box-shadow: inset -3px 0 0 var(--blue-600);
+    }
+    .record-view.record-view-shell { padding: 14px 16px 18px; }
+    .flowsheet-record-card { box-shadow: none; }
+    .flowsheet-panel { padding: 16px 18px 18px; }
+    .flowsheet-panel .stage-boxes-wrap { margin-bottom: 14px; padding: 2px 0 4px; }
+    .flowsheet-panel .flowsheet-vitals-layout { margin-top: 0; }
+    .compact-stage-progress { font-weight: 600; color: var(--gray-600); margin-left: 2px; }
+    .stage-proceed-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(15, 23, 42, 0.45);
+    }
+    .stage-proceed-overlay[hidden] { display: none !important; }
+    .stage-proceed-dialog {
+      width: min(100%, 400px); background: var(--white);
+      border-radius: var(--radius); padding: 22px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--gray-200);
+    }
+    .stage-proceed-dialog h4 {
+      margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--gray-900);
+    }
+    .stage-proceed-dialog p {
+      margin: 0 0 20px; font-size: 13px; line-height: 1.5; color: var(--gray-600);
+    }
+    .stage-proceed-actions {
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .stage-proceed-actions .btn-secondary {
+      padding: 8px 16px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+      background: var(--white); font-size: 13px; font-weight: 600; color: var(--gray-700);
+      cursor: pointer; font-family: inherit;
+    }
+    .stage-proceed-actions .btn-primary {
+      padding: 8px 16px; border: none; border-radius: var(--radius-sm);
+      background: var(--blue-600); font-size: 13px; font-weight: 600; color: var(--white);
+      cursor: pointer; font-family: inherit;
+    }
+    .stage-proceed-actions .btn-primary:hover { background: var(--blue-700, #007ab8); }
+  </style>
+</head>
+<body class="dashboard-mode">
+  <div class="proto-bar">
+    <span><strong>HTML preview</strong> — OT Flows Record / Staff layout prototype.</span>
+    <label>Room
+      <select id="room-picker" aria-label="Preview room"></select>
+    </label>
+    <a href="../index4.html">Schedule strip (index4) →</a>
+  </div>
+
+  <div class="dashboard-view">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-brand"><span class="topbar-text-logo">BPL Cortex OT</span></div>
+        <div class="active-suite"><span class="status-dot"></span>OT Flows Suite</div>
+      </div>
+      <div class="topbar-center">
+        <button type="button" class="topbar-btn">Board View</button>
+      </div>
+      <div class="topbar-user">
+        <div class="avatar">JJ</div>
+        Dr. Jacob Jenner
+      </div>
+    </header>
+
+    <div class="patient-header-panel collapsed" id="patient-header">
+      <div class="patient-header-compact">
+        <button type="button" class="patient-expand-toggle" id="expand-toggle" aria-expanded="false">
+          <span class="chevron">▶</span>
+          <span class="toggle-label">Details</span>
+        </button>
+        <div class="patient-compact-summary" id="patient-summary"></div>
+        <button type="button" class="btn-validate btn-validate-compact">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l4 4 6-7"/></svg>
+          Validate Parameter
+        </button>
+      </div>
+      <div class="patient-header-expanded" id="patient-expanded"></div>
+    </div>
+
+    <div class="tabs-zone">
+      <div class="section-tabs">
+        <div class="section-tabs-left" id="main-tabs">
+          <button type="button" class="section-tab active" data-main-tab="record">Record <span class="tab-count">(1)</span></button>
+          <button type="button" class="section-tab" data-main-tab="score">Score</button>
+          <button type="button" class="section-tab" data-main-tab="form">Form <span class="tab-count">(3)</span></button>
+          <button type="button" class="section-tab" data-main-tab="report">Report</button>
+          <button type="button" class="section-tab" data-main-tab="staff">Staff</button>
+        </div>
+        <div class="patient-badge" id="patient-badge"></div>
+      </div>
+    </div>
+
+    <div class="tab-content active" id="main-tab-record">
+      <div class="record-view record-view-shell">
+        <div class="record-subtabs" role="tablist" aria-label="Record sections">
+          <button type="button" class="record-subtab active" data-record-sub="flowsheet" role="tab" aria-selected="true">Flowsheet</button>
+          <button type="button" class="record-subtab" data-record-sub="fluids" role="tab" aria-selected="false">Fluids</button>
+          <button type="button" class="record-subtab" data-record-sub="medications" role="tab" aria-selected="false">Medications</button>
+        </div>
+
+        <div class="record-subpanel active" id="record-panel-flowsheet" role="tabpanel">
+          <div class="record-card flowsheet-record-card">
+            <div class="record-card-body flowsheet-panel" id="flowsheet-root"></div>
+          </div>
+        </div>
+
+        <div class="record-subpanel" id="record-panel-fluids" role="tabpanel" hidden>
+          <div class="record-card" title="Fluids intake / output">
+            <div class="record-card-header fluids-card-header">
+              <h3>Fluids</h3>
+              <div class="fluids-header-right">
+                <div class="fluids-view-toggle" id="fluids-view-toggle" role="tablist" aria-label="Fluids view">
+                  <button type="button" class="fluids-view-tab active" data-fluids-view="table" role="tab" aria-selected="true">Table</button>
+                  <button type="button" class="fluids-view-tab" data-fluids-view="timeline" role="tab" aria-selected="false">Timeline</button>
+                </div>
+              </div>
+            </div>
+            <div class="record-card-body" id="fluids-grid-root"></div>
+          </div>
+        </div>
+
+        <div class="record-subpanel" id="record-panel-medications" role="tabpanel" hidden>
+          <div class="record-card" title="Medications infusion timeline">
+            <div class="record-card-header fluids-card-header">
+              <h3>Medications</h3>
+              <div class="fluids-header-right">
+                <div class="fluids-view-toggle" id="meds-view-toggle" role="tablist" aria-label="Medications view">
+                  <button type="button" class="fluids-view-tab active" data-meds-view="table" role="tab" aria-selected="true">Table</button>
+                  <button type="button" class="fluids-view-tab" data-meds-view="timeline" role="tab" aria-selected="false">Timeline</button>
+                </div>
+              </div>
+            </div>
+            <div class="record-card-body" id="medications-grid-root"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="main-tab-staff" hidden>
+      <div class="record-view record-view-shell">
+        <div class="record-card">
+          <div class="record-card-header">
+            <h3>Staffing</h3>
+            <span class="record-card-meta">set pre-op · editable inline <span class="badge-count">2</span></span>
+          </div>
+          <div class="record-card-body">
+            <div class="record-list">
+              <div class="record-row"><span>Dr A. Rao — Anaesthetist</span><span class="val">08:30 → —</span></div>
+              <div class="record-row"><span>Dr J. Belita — Surgeon</span><span class="val">08:35 → —</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="main-tab-score" hidden>
+      <div class="tab-placeholder">Score tab — preview placeholder</div>
+    </div>
+    <div class="tab-content" id="main-tab-form" hidden>
+      <div class="tab-placeholder">Form tab — preview placeholder</div>
+    </div>
+    <div class="tab-content" id="main-tab-report" hidden>
+      <div class="tab-placeholder">Report tab — preview placeholder</div>
+    </div>
+  </div>
+
+  <div class="stage-proceed-overlay" id="stage-proceed-overlay" hidden>
+    <div class="stage-proceed-dialog" role="dialog" aria-modal="true" aria-labelledby="stage-proceed-title">
+      <h4 id="stage-proceed-title">Proceed to new stage?</h4>
+      <p id="stage-proceed-message"></p>
+      <div class="stage-proceed-actions">
+        <button type="button" class="btn-secondary" id="stage-proceed-cancel">Cancel</button>
+        <button type="button" class="btn-primary" id="stage-proceed-yes">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const OR_STAGES = [
+      { id: 'positioning', name: 'Positioning', desc: 'Patient positioned on table', time: '08:28' },
+      { id: 'or', name: 'OR', desc: 'Patient in OR / case started', time: '08:32' },
+      { id: 'anes_ready', name: 'Anes Ready', desc: 'Anaesthesia team ready', time: '08:35' },
+      { id: 'catheter', name: 'Catheter Insertion', desc: 'Arterial / central line', time: '08:42' },
+      { id: 'anaesthesia', name: 'Anaesthesia', desc: 'Induction given', time: '08:48' },
+      { id: 'wound_dressing', name: 'Wound Dressing', desc: 'Prep / drape, pre-incision', time: '08:55' },
+      { id: 'surgery', name: 'Surgery', desc: 'Surgery underway', time: '09:02' },
+      { id: 'incision', name: 'Incision', desc: 'Skin incision', time: '09:08' },
+      { id: 'handoff', name: 'Hand to Surgeon', desc: 'Hand to surgeon', time: '09:12' },
+    ];
+
+    const VITAL_SOURCES = [
+      { id: 'monitor', name: 'Patient Monitor', short: 'Monitor' },
+      { id: 'monitor_tabular', name: 'Patient Monitor — Tabular', short: 'Tabular' },
+      { id: 'anaesthesia_machine', name: 'Anaesthesia Machine', short: 'Anes machine' },
+      { id: 'syringe_pump', name: 'Syringe Pump', short: 'Syringe pump' },
+    ];
+
+    const ALLERGY_SVG = '<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5z"/></svg>';
+
+    const ROOMS = {
+      'OT-01': {
+        id: 'OT-01', name: 'James Wilson', crn: 'CRN3185', dob: '03/06/1964', gender: 'Male',
+        admitDate: '02/09/2026', admitTime: '10:06', careUnit: 'OT', bed: 'OT-01',
+        consulting: 'Dr. Ajay Tiwari, Dr. Sheetal K.', caseType: 'General Anaesthesia',
+        asa: 'ASA I', allergies: 'Latex', diagnosis: 'Blocked Coronary Artery (CAD 3…)',
+        procedure: 'CABG (Coronary Artery Bypass)', comorbidities: 'DM (Type 2), HTN', other: 'Skin Eczema',
+        defaultStage: 6,
+      },
+      'OT-03': {
+        id: 'OT-03', name: 'Arun Patient', crn: 'CRN3003', dob: '01/01/1970', gender: 'Male',
+        admitDate: '02/09/2026', admitTime: '10:06', careUnit: 'OT', bed: 'OT-03',
+        consulting: 'Dr. Ajay Tiwari', caseType: 'General Anaesthesia',
+        asa: 'ASA III', allergies: 'None known', diagnosis: 'Bowel resection',
+        procedure: 'Bowel resection', comorbidities: '—', other: '—',
+        defaultStage: 2,
+      },
+      'OT-05': {
+        id: 'OT-05', name: 'Rahul Patient', crn: 'CRN3005', dob: '01/01/1970', gender: 'Male',
+        admitDate: '02/09/2026', admitTime: '10:06', careUnit: 'OT', bed: 'OT-05',
+        consulting: 'Dr. Ajay Tiwari', caseType: 'General Anaesthesia',
+        asa: 'ASA IV', allergies: 'None known', diagnosis: 'Emergency laparotomy',
+        procedure: 'Emergency laparotomy', comorbidities: '—', other: '—',
+        defaultStage: 6,
+      },
+    };
+
+    const FLUIDS_TIMES = [
+      '16:55', '17:00', '17:05', '17:10', '17:15', '17:20', '17:25', '17:30',
+      '17:35', '17:40', '17:45', '17:50', '17:55',
+    ];
+    const FLUIDS_PREVIEW_COLS = 5;
+    const FLUIDS_INTAKE = [
+      { name: '25% Dextrose', cells: ['flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','pause'], stayTotal: '' },
+      { name: 'RL (continuous)', cells: Array(13).fill('flow'), stayTotal: '420 ml' },
+      { name: 'Blood', cells: ['empty','empty','empty','empty','value','empty','empty','empty','empty','empty','empty','empty','empty'], stayTotal: '1 unit', values: { 4: '1 u' } },
+    ];
+    const FLUIDS_OUTPUT = [
+      { name: 'Urine Output', cells: Array(13).fill('empty'), stayTotal: '0.00 ml' },
+      { name: 'Urinary Catheter', cells: Array(13).fill('empty'), stayTotal: '' },
+    ];
+
+    const MEDICATIONS_TIMES = [
+      '17:06', '17:11', '17:16', '17:21', '17:26', '17:31',
+      '17:36', '17:41', '17:46', '17:51', '17:56', '18:01', '18:06',
+    ];
+    const MEDICATIONS_PREVIEW_COLS = 5;
+    const MED_FLOW = ['flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','flow','pause'];
+    const MEDICATIONS_SECTIONS = [
+      { title: 'STAT Medications', rows: [{ name: 'Fentanyl', cells: MED_FLOW.slice(), stayTotal: '' }] },
+      { title: 'PRN Medications', rows: [{ name: 'Propofol', cells: MED_FLOW.slice(), stayTotal: '' }] },
+      { title: 'INFUSED Medications', rows: [{ name: 'Dopamine', cells: Array(13).fill('flow'), stayTotal: '17 ml/h' }] },
+    ];
+
+    const ICONS = { ecg: '♥', resp: '↔', spo2: '◉', temp: '°', validation: '↓' };
+
+    let roomId = 'OT-03';
+    let currentStageIdx = ROOMS['OT-03'].defaultStage;
+    let viewStageIdx = currentStageIdx;
+    let pendingAdvanceStageIdx = null;
+    let sourceId = 'monitor';
+    let mainTab = 'record';
+    let recordSub = 'flowsheet';
+    let fluidsViewMode = 'table';
+    let medsViewMode = 'table';
+    const TIMELINE_COL_W = 52;
+    const TIMELINE_LABEL_W = 148;
+
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function patient() { return ROOMS[roomId]; }
+
+    function stageBoxClass(i) {
+      let cls = 'stage-box';
+      if (i < currentStageIdx) cls += ' done';
+      if (i === currentStageIdx) cls += ' selected';
+      if (i === viewStageIdx && viewStageIdx !== currentStageIdx) cls += ' viewing';
+      return cls;
+    }
+
+    function stageBoxesHtml() {
+      return `<div class="stage-boxes-wrap"><div class="stage-boxes">${OR_STAGES.map((s, i) =>
+        `<button type="button" class="${stageBoxClass(i)}" data-stage="${i}" title="${esc(s.desc)}">
+          <span class="stage-box-num">${i + 1}</span>
+          <span class="stage-box-name">${esc(s.name)}</span>
+          <span class="stage-box-time">${esc(s.time)}</span>
+        </button>`).join('')}</div></div>`;
+    }
+
+    function openStageProceedDialog(targetIdx) {
+      pendingAdvanceStageIdx = targetIdx;
+      const stage = OR_STAGES[targetIdx];
+      document.getElementById('stage-proceed-message').innerHTML =
+        `Advance the case to <strong>${esc(stage.name)}</strong> (stage ${targetIdx + 1} of ${OR_STAGES.length})?`;
+      document.getElementById('stage-proceed-overlay').hidden = false;
+    }
+
+    function closeStageProceedDialog() {
+      pendingAdvanceStageIdx = null;
+      document.getElementById('stage-proceed-overlay').hidden = true;
+    }
+
+    function confirmStageAdvance() {
+      if (pendingAdvanceStageIdx == null) return;
+      currentStageIdx = pendingAdvanceStageIdx;
+      viewStageIdx = pendingAdvanceStageIdx;
+      closeStageProceedDialog();
+      renderFlowsheet();
+      renderPatientHeader();
+    }
+
+    function onStageBoxClick(targetIdx) {
+      if (targetIdx > currentStageIdx) {
+        openStageProceedDialog(targetIdx);
+        return;
+      }
+      viewStageIdx = targetIdx;
+      renderFlowsheet();
+    }
+
+    function vitalsSourceTabsHtml() {
+      return VITAL_SOURCES.map(s =>
+        `<button type="button" class="vitals-source-tab${s.id === sourceId ? ' active' : ''}" data-source="${s.id}" role="tab" aria-selected="${s.id === sourceId}" title="${esc(s.name)}">${esc(s.short)}</button>`
+      ).join('');
+    }
+
+    function stageVitals(idx) {
+      const hr = 72 + idx * 2 + 6;
+      const tabular = [
+        { param: 'Heart Rate', value: hr, unit: 'bpm', kind: 'ecg' },
+        { param: 'Resp. Rate', value: 14 + Math.floor(idx / 2), unit: 'bpm', kind: 'resp' },
+        { param: 'SpO₂', value: Math.min(99, 96 + idx), unit: '%', kind: 'spo2' },
+        { param: 'Temp1', value: (36.4 + idx * 0.08).toFixed(1), unit: '°C', kind: 'temp' },
+        { param: 'Pulse', value: 72 + idx * 2 + 4, unit: 'bpm', kind: 'ecg' },
+        { param: 'ECG Lead', value: 'Lead II', unit: '', kind: 'ecg' },
+        { param: 'ECG Rhythm', value: idx < 4 ? 'Sinus' : 'NSR', unit: '', kind: 'ecg' },
+        { param: 'ST Level', value: idx >= 4 ? '+0.5' : '—', unit: 'mm', kind: 'ecg' },
+        { param: 'PVC / min', value: idx >= 6 ? 2 : 0, unit: '', kind: 'ecg' },
+      ];
+      return {
+        tabular,
+        monitorParams: tabular,
+        anes: {
+          fio2: idx < 4 ? 21 : 40 + idx * 2, tv: idx < 4 ? '—' : 480 + idx * 10,
+          rr: idx < 4 ? '—' : 12 + Math.floor(idx / 3), peep: idx < 5 ? '—' : 5,
+          etco2: idx < 4 ? '—' : 32 + idx, agent: idx < 4 ? '—' : 'Sevoflurane 1.8%', mac: idx < 4 ? '—' : '0.9',
+        },
+        pumps: idx < 4
+          ? [{ drug: '—', rate: '—', infused: '—', vtbi: '—', active: false }]
+          : [
+              { drug: 'Propofol', rate: `${80 + idx * 5} ml/h`, infused: `${120 + idx * 15} ml`, vtbi: '500 ml', active: true },
+              { drug: 'Dopamine', rate: `${12 + idx} ml/h`, infused: `${40 + idx * 8} ml`, vtbi: '250 ml', active: idx >= 6 },
+            ],
+      };
+    }
+
+    function paramChip(p) {
+      return `<div class="vitals-param-item">
+        <span class="param-icon ${p.kind}">${ICONS[p.kind] || '•'}</span>
+        <span class="pname">${esc(p.param)}</span>
+        <span class="pval">${esc(p.value)}</span>
+        ${p.unit ? `<span class="punit">${esc(p.unit)}</span>` : ''}
+      </div>`;
+    }
+
+    function waveformHtml(idx, params) {
+      const offset = idx * 5;
+      const t0 = `${8 + Math.floor(idx / 2)}:${String(28 + (idx % 2) * 15).padStart(2, '0')}`;
+      const tMid = `${8 + Math.floor((idx + 1) / 2)}:${String(10 + idx * 3).padStart(2, '0')}`;
+      const t1 = `${9 + Math.floor(idx / 3)}:${String(5 + idx * 2).padStart(2, '0')}`;
+      const green = Array.from({ length: 80 }, (_, i) => `${i * 10},${100 + Math.sin((i + offset) * 0.4) * 40}`).join(' ');
+      const blue = Array.from({ length: 80 }, (_, i) => `${i * 10},${120 + Math.sin((i + offset) * 0.25) * 20}`).join(' ');
+      return `<div class="flowsheet-waveform-block">
+        <div class="vitals-param-list vitals-param-list-above">${params.map(paramChip).join('')}</div>
+        <div class="flowsheet-chart-wrap">
+          <svg class="flowsheet-chart" viewBox="0 0 800 200" preserveAspectRatio="none">
+            <polyline fill="none" stroke="#16a34a" stroke-width="2" points="${green}"/>
+            <polyline fill="none" stroke="#2563eb" stroke-width="2" points="${blue}"/>
+          </svg>
+          <div class="flowsheet-chart-time"><span>${t0}</span><span>${tMid}</span><span>${t1}</span></div>
+          <div class="waveform-legend">
+            <span><i style="background:#16a34a"></i> ECG</span>
+            <span><i style="background:#2563eb"></i> Resp. Rate</span>
+            <span><i style="background:#ea580c"></i> SpO₂</span>
+            <span><i style="background:#dc2626"></i> Temp1</span>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function vitalsPanelHtml(idx, source) {
+      const data = stageVitals(idx);
+      if (source === 'monitor_tabular') {
+        return `<div class="vitals-param-list">${data.tabular.map(paramChip).join('')}</div>`;
+      }
+      if (source === 'monitor') return waveformHtml(idx, data.monitorParams);
+      if (source === 'anaesthesia_machine') {
+        const a = data.anes;
+        const cells = [['FiO₂', a.fio2, '%'], ['Tidal Vol', a.tv, 'mL'], ['RR', a.rr, '/min'], ['PEEP', a.peep, 'cmH₂O'], ['EtCO₂', a.etco2, 'mmHg'], ['Agent', a.agent, ''], ['MAC', a.mac, '']];
+        return `<div class="anes-grid">${cells.map(([l, v, u]) => `<div class="anes-cell"><div class="label">${l}</div><div class="value">${esc(v)}${u && v !== '—' ? `<span class="unit"> ${u}</span>` : ''}</div></div>`).join('')}</div>`;
+      }
+      if (source === 'syringe_pump') {
+        return `<div class="pump-grid">${data.pumps.map(p => `<div class="pump-card"><div class="pump-card-header"><span class="pump-drug">${esc(p.drug)}</span><span class="pump-status${p.active ? '' : ' idle'}">${p.active ? '● infusing' : 'idle'}</span></div><div class="pump-row"><span>Rate</span><span class="val">${esc(p.rate)}</span></div><div class="pump-row"><span>Vol infused</span><span class="val">${esc(p.infused)}</span></div><div class="pump-row"><span>VTBI</span><span class="val">${esc(p.vtbi)}</span></div></div>`).join('')}</div>`;
+      }
+      return '';
+    }
+
+    function fluidCellHtml(cell, values, colIdx) {
+      if (cell === 'flow') return '<td class="flow-cell"><span class="flow-arrow">→</span></td>';
+      if (cell === 'pause') return '<td class="flow-cell pause"><span class="pause-icon">⏸</span><span class="flow-arrow">→</span></td>';
+      if (cell === 'value' && values && values[colIdx]) return `<td>${esc(values[colIdx])}</td>`;
+      return '<td class="empty-cell">·</td>';
+    }
+
+    function timelineTrackMarkup(row, n, colW, times) {
+      const cells = row.cells;
+      const parts = [];
+      let i = 0;
+      while (i < n) {
+        const cell = cells[i];
+        if (cell === 'flow') {
+          let j = i;
+          while (j < n && cells[j] === 'flow') j++;
+          const left = i * colW;
+          const width = (j - i) * colW - 4;
+          parts.push(`<span class="flow-timeline-bar flow" style="left:${left}px;width:${width}px" title="Infusing ${esc(times[i])} – ${esc(times[j - 1])}"></span>`);
+          i = j;
+        } else if (cell === 'pause') {
+          const left = i * colW + colW / 2 - 8;
+          parts.push(`<span class="flow-timeline-pause" style="left:${left}px" title="Paused ${esc(times[i])}">⏸</span>`);
+          i++;
+        } else if (cell === 'value') {
+          const left = i * colW + colW / 2 - 10;
+          const val = row.values && row.values[i] ? row.values[i] : '•';
+          parts.push(`<span class="flow-timeline-marker" style="left:${left}px" title="${esc(times[i])}: ${esc(val)}">${esc(val)}</span>`);
+          i++;
+        } else {
+          i++;
+        }
+      }
+      return parts.join('');
+    }
+
+    function flowTimelineHtml({ scrollId, times, groups, ariaLabel }) {
+      const n = times.length;
+      const colW = TIMELINE_COL_W;
+      const labelW = TIMELINE_LABEL_W;
+      const trackW = n * colW;
+      const innerW = labelW + trackW + 12;
+      const timeHeader = times.map(t =>
+        `<span class="flow-timeline-time" style="width:${colW}px">${esc(t)}</span>`
+      ).join('');
+      let rowsHtml = '';
+      groups.forEach(g => {
+        rowsHtml += `<div class="flow-timeline-section">${esc(g.label)}</div>`;
+        g.rows.forEach(row => {
+          const stay = row.stayTotal ? `<span class="flow-timeline-stay">${esc(row.stayTotal)}</span>` : '';
+          rowsHtml += `<div class="flow-timeline-row">
+            <div class="flow-timeline-label" style="width:${labelW}px">${esc(row.name)}${stay}</div>
+            <div class="flow-timeline-track" style="width:${trackW}px">${timelineTrackMarkup(row, n, colW, times)}</div>
+          </div>`;
+        });
+      });
+      return `<div class="flow-timeline">
+        <div class="flow-timeline-legend">
+          <span><i class="leg-flow"></i> Running</span>
+          <span><i class="leg-pause"></i> Paused</span>
+          <span><i class="leg-marker"></i> Event / dose</span>
+        </div>
+        <div class="flow-timeline-scroll" id="${scrollId}" tabindex="0" aria-label="${esc(ariaLabel)}">
+          <div class="flow-timeline-inner" style="min-width:${innerW}px">
+            <div class="flow-timeline-head">
+              <div class="flow-timeline-label flow-timeline-head-spacer" style="width:${labelW}px"></div>
+              <div class="flow-timeline-times" style="width:${trackW}px">${timeHeader}</div>
+            </div>
+            ${rowsHtml}
+          </div>
+        </div>
+        <p class="fluids-preview-note"><span>Scroll left for earlier intervals · view opens at current time</span></p>
+      </div>`;
+    }
+
+    function fluidsTimelineHtml() {
+      return flowTimelineHtml({
+        scrollId: 'fluids-timeline-scroll',
+        times: FLUIDS_TIMES,
+        groups: [
+          { label: 'Intake', rows: FLUIDS_INTAKE },
+          { label: 'Output', rows: FLUIDS_OUTPUT },
+        ],
+        ariaLabel: 'Fluids Gantt timeline, scroll horizontally',
+      });
+    }
+
+    function medicationsTimelineHtml() {
+      return flowTimelineHtml({
+        scrollId: 'meds-timeline-scroll',
+        times: MEDICATIONS_TIMES,
+        groups: MEDICATIONS_SECTIONS.map(sec => ({ label: sec.title, rows: sec.rows })),
+        ariaLabel: 'Medications Gantt timeline, scroll horizontally',
+      });
+    }
+
+    function scrollTimelineToEnd(scrollId) {
+      const el = document.getElementById(scrollId);
+      if (!el) return;
+      el.scrollLeft = el.scrollWidth - el.clientWidth;
+    }
+
+    function fluidsGridHtml() {
+      const allTimes = FLUIDS_TIMES;
+      const times = allTimes.slice(-FLUIDS_PREVIEW_COLS);
+      const colSpan = times.length + 2;
+      const timeHead = times.map(t => `<th>${esc(t)}</th>`).join('');
+      const mapRow = row => {
+        const cells = times.map(t => {
+          const fullIdx = allTimes.indexOf(t);
+          return fluidCellHtml(row.cells[fullIdx], row.values, fullIdx);
+        }).join('');
+        return `<tr>
+          <td class="fluid-label-col">${esc(row.name)}</td>
+          ${cells}
+          <td class="stay-total">${row.stayTotal ? esc(row.stayTotal) : '·'}</td>
+        </tr>`;
+      };
+      return `<div class="fluids-grid-wrap">
+        <table class="fluids-grid">
+          <thead>
+            <tr class="time-header">
+              <th class="fluid-label-col"></th>
+              ${timeHead}
+              <th class="stay-total">Stay Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="section-row"><td colspan="${colSpan}">Intake</td></tr>
+            ${FLUIDS_INTAKE.map(mapRow).join('')}
+            <tr class="section-row"><td colspan="${colSpan}">Output</td></tr>
+            ${FLUIDS_OUTPUT.map(mapRow).join('')}
+          </tbody>
+        </table>
+        <p class="fluids-preview-note"><span>Showing last ${FLUIDS_PREVIEW_COLS} time columns</span></p>
+      </div>`;
+    }
+
+    function medicationsGridHtml() {
+      const allTimes = MEDICATIONS_TIMES;
+      const times = allTimes.slice(-MEDICATIONS_PREVIEW_COLS);
+      const timeThs = times.map(t => `<th>${esc(t)}</th>`).join('');
+      const sections = MEDICATIONS_SECTIONS.map(sec => {
+        const rows = sec.rows.map(row => {
+          const cells = times.map(t => {
+            const fullIdx = allTimes.indexOf(t);
+            return fluidCellHtml(row.cells[fullIdx], row.values, fullIdx);
+          }).join('');
+          return `<tr>
+            <td class="fluid-label-col">${esc(row.name)}</td>
+            ${cells}
+            <td class="stay-total">${row.stayTotal ? esc(row.stayTotal) : '·'}</td>
+          </tr>`;
+        }).join('');
+        return `<tr class="med-section-header">
+            <th class="fluid-label-col">${esc(sec.title)}</th>
+            ${timeThs}
+            <th class="stay-total">Stay Total</th>
+          </tr>${rows}`;
+      }).join('');
+      return `<div class="fluids-grid-wrap">
+        <table class="fluids-grid">
+          <tbody>${sections}</tbody>
+        </table>
+        <p class="fluids-preview-note"><span>Showing last ${MEDICATIONS_PREVIEW_COLS} time columns</span></p>
+      </div>`;
+    }
+
+    function renderFluidsPanel() {
+      document.querySelectorAll('#fluids-view-toggle .fluids-view-tab').forEach(btn => {
+        const on = btn.dataset.fluidsView === fluidsViewMode;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.getElementById('fluids-grid-root').innerHTML =
+        fluidsViewMode === 'timeline' ? fluidsTimelineHtml() : fluidsGridHtml();
+      if (fluidsViewMode === 'timeline') {
+        requestAnimationFrame(() => requestAnimationFrame(() => scrollTimelineToEnd('fluids-timeline-scroll')));
+      }
+    }
+
+    function renderMedicationsPanel() {
+      document.querySelectorAll('#meds-view-toggle .fluids-view-tab').forEach(btn => {
+        const on = btn.dataset.medsView === medsViewMode;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.getElementById('medications-grid-root').innerHTML =
+        medsViewMode === 'timeline' ? medicationsTimelineHtml() : medicationsGridHtml();
+      if (medsViewMode === 'timeline') {
+        requestAnimationFrame(() => requestAnimationFrame(() => scrollTimelineToEnd('meds-timeline-scroll')));
+      }
+    }
+
+    function renderFluidsAndMedications() {
+      renderFluidsPanel();
+      renderMedicationsPanel();
+    }
+
+    function bindFlowsheetEvents() {
+      document.querySelectorAll('#flowsheet-root .stage-box').forEach(btn => {
+        btn.addEventListener('click', () => onStageBoxClick(Number(btn.dataset.stage)));
+      });
+    }
+
+    function renderVitalsSection() {
+      const tabsEl = document.getElementById('vitals-source-tabs-mount');
+      const panelEl = document.getElementById('vitals-panel-mount');
+      if (!tabsEl || !panelEl) return;
+      tabsEl.innerHTML = vitalsSourceTabsHtml();
+      panelEl.innerHTML = vitalsPanelHtml(viewStageIdx, sourceId);
+      document.querySelectorAll('#flowsheet-root .vitals-source-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sourceId = btn.dataset.source;
+          renderVitalsSection();
+        });
+      });
+    }
+
+    function renderFlowsheet() {
+      document.getElementById('flowsheet-root').innerHTML = `
+        ${stageBoxesHtml()}
+        <div class="flowsheet-vitals-layout">
+          <div id="vitals-source-tabs-mount" class="vitals-source-tabs-stack" role="tablist" aria-label="Vitals source"></div>
+          <div class="flowsheet-vitals-main">
+            <div class="flowsheet-vitals-panel" id="vitals-panel-mount"></div>
+          </div>
+        </div>`;
+      renderVitalsSection();
+      bindFlowsheetEvents();
+    }
+
+    function setMainTab(id) {
+      mainTab = id;
+      document.querySelectorAll('#main-tabs .section-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mainTab === id);
+      });
+      ['record', 'score', 'form', 'report', 'staff'].forEach(key => {
+        const el = document.getElementById(`main-tab-${key}`);
+        if (!el) return;
+        const on = key === id;
+        el.classList.toggle('active', on);
+        el.hidden = !on;
+      });
+    }
+
+    function setRecordSub(id) {
+      recordSub = id;
+      document.querySelectorAll('.record-subtab').forEach(btn => {
+        const on = btn.dataset.recordSub === id;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      ['flowsheet', 'fluids', 'medications'].forEach(key => {
+        const panel = document.getElementById(`record-panel-${key}`);
+        if (!panel) return;
+        const on = key === id;
+        panel.classList.toggle('active', on);
+        panel.hidden = !on;
+      });
+      if (id === 'fluids' && fluidsViewMode === 'timeline') {
+        requestAnimationFrame(() => requestAnimationFrame(() => scrollTimelineToEnd('fluids-timeline-scroll')));
+      }
+      if (id === 'medications' && medsViewMode === 'timeline') {
+        requestAnimationFrame(() => requestAnimationFrame(() => scrollTimelineToEnd('meds-timeline-scroll')));
+      }
+    }
+
+    function renderPatientHeader() {
+      const p = patient();
+      const procShort = p.procedure.split('(')[0].trim();
+      const initials = p.name.split(' ').map(n => n[0]).join('. ') + '.';
+      const stage = OR_STAGES[currentStageIdx];
+      const stageNum = currentStageIdx + 1;
+      document.getElementById('patient-summary').innerHTML = `
+        <span class="compact-kv"><span class="compact-key">Name</span><span class="compact-val">${esc(p.name)}</span></span>
+        <span class="compact-kv"><span class="compact-key">Procedure</span><span class="compact-val highlight">${esc(procShort)}</span></span>
+        <span class="compact-kv"><span class="compact-key">Allergies</span><span class="compact-val allergy">${ALLERGY_SVG} ${esc(p.allergies)}</span></span>
+        <span class="compact-kv"><span class="compact-key">Stage</span><span class="compact-val highlight">${esc(stage.name)}</span><span class="compact-val compact-stage-progress">${stageNum} / ${OR_STAGES.length}</span></span>`;
+      document.getElementById('patient-badge').innerHTML = `<span class="status-dot"></span>${esc(initials)} · ${esc(p.id)} · ${esc(p.asa)}`;
+      document.getElementById('patient-expanded').innerHTML = `
+        <div class="patient-zone">
+          <div class="patient-meta-cards">
+            <div class="meta-card">
+              <div class="meta-item">
+                <span class="meta-label">Patient Name</span>
+                <span class="meta-value strong">${esc(p.name)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">UHID / CRN</span>
+                <span class="pill pill-gray">${esc(p.crn)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-inline">DOB: <strong>${esc(p.dob)}</strong></span>
+                <span class="meta-inline" style="margin-top:2px">Gender: <strong>${esc(p.gender)}</strong></span>
+              </div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-item">
+                <span class="meta-label">Admit Date &amp; Time</span>
+                <span class="meta-value">${esc(p.admitDate)} <span style="color:var(--gray-500);font-weight:400">(${esc(p.admitTime)})</span></span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Care Unit &amp; Bed</span>
+                <div class="meta-row">
+                  <span class="meta-value">${esc(p.careUnit)}</span>
+                  <span class="pill pill-blue">${esc(p.bed)}</span>
+                </div>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Consulting</span>
+                <span class="meta-value">${esc(p.consulting)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Case Type</span>
+                <span class="meta-value">${esc(p.caseType)}</span>
+              </div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-item">
+                <span class="meta-label">ASA</span>
+                <span class="pill pill-asa">${esc(p.asa)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Allergies</span>
+                <span class="allergy-warn">${ALLERGY_SVG} ${esc(p.allergies)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Diagnosis</span>
+                <span class="meta-value">${esc(p.diagnosis)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Procedures</span>
+                <span class="meta-value highlight">${esc(p.procedure)}</span>
+              </div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-item">
+                <span class="meta-label">Comorbidities</span>
+                <span class="meta-value">${esc(p.comorbidities)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Other</span>
+                <span class="meta-value">${esc(p.other)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="actions-zone">
+          <div class="action-bar">
+            <span class="action-bar-label">Actions</span>
+            <div class="action-group">
+              <button type="button" class="action-chip">More Info</button>
+              <button type="button" class="action-chip">OR Events</button>
+              <button type="button" class="action-chip">Quick Note</button>
+              <button type="button" class="action-chip">Print PDF</button>
+              <button type="button" class="action-chip">Interval</button>
+            </div>
+            <div class="action-divider"></div>
+            <button type="button" class="btn-validate">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l4 4 6-7"/></svg>
+              Validate Parameter
+            </button>
+          </div>
+        </div>`;
+    }
+
+    document.querySelectorAll('#main-tabs .section-tab').forEach(btn => {
+      btn.addEventListener('click', () => setMainTab(btn.dataset.mainTab));
+    });
+    document.querySelectorAll('.record-subtab').forEach(btn => {
+      btn.addEventListener('click', () => setRecordSub(btn.dataset.recordSub));
+    });
+    document.querySelectorAll('#fluids-view-toggle .fluids-view-tab').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        fluidsViewMode = btn.dataset.fluidsView;
+        renderFluidsPanel();
+      });
+    });
+    document.querySelectorAll('#meds-view-toggle .fluids-view-tab').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        medsViewMode = btn.dataset.medsView;
+        renderMedicationsPanel();
+      });
+    });
+
+    const picker = document.getElementById('room-picker');
+    Object.keys(ROOMS).forEach(id => {
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = `${id} · ${ROOMS[id].name}`;
+      picker.appendChild(opt);
+    });
+    picker.value = roomId;
+    picker.addEventListener('change', () => {
+      roomId = picker.value;
+      currentStageIdx = ROOMS[roomId].defaultStage;
+      viewStageIdx = currentStageIdx;
+      renderPatientHeader();
+      renderFlowsheet();
+    });
+
+    document.getElementById('stage-proceed-cancel').addEventListener('click', closeStageProceedDialog);
+    document.getElementById('stage-proceed-yes').addEventListener('click', confirmStageAdvance);
+    document.getElementById('stage-proceed-overlay').addEventListener('click', e => {
+      if (e.target.id === 'stage-proceed-overlay') closeStageProceedDialog();
+    });
+
+    document.getElementById('expand-toggle').addEventListener('click', () => {
+      const panel = document.getElementById('patient-header');
+      panel.classList.toggle('collapsed');
+      const expanded = !panel.classList.contains('collapsed');
+      document.getElementById('expand-toggle').setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      document.querySelector('#expand-toggle .toggle-label').textContent = expanded ? 'Hide' : 'Details';
+    });
+
+    renderPatientHeader();
+    renderFlowsheet();
+    renderFluidsAndMedications();
+    setMainTab('record');
+    setRecordSub('flowsheet');
+  </script>
+</body>
+</html>

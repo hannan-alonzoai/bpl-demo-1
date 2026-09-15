@@ -1,4 +1,4 @@
-export type BoardLayoutId = 'flip' | 'scroll' | 'compact' | 'schedule' | 'rows';
+export type BoardLayoutId = 'flip' | 'scroll' | 'compact' | 'schedule' | 'rows' | 'detail-flows';
 
 export interface BoardLayoutOption {
   id: BoardLayoutId;
@@ -44,6 +44,13 @@ export const BOARD_LAYOUTS: BoardLayoutOption[] = [
     shortLabel: 'Rows',
     description: 'KPI metrics and scannable OT rows; click a row for the full detail modal.',
     demoFile: 'index5.html',
+  },
+  {
+    id: 'detail-flows',
+    name: 'OT Flows · Record',
+    shortLabel: 'OT Record',
+    description: 'Full /ot/:roomId Record tab preview — flowsheet, vitals source, staffing (HTML prototype).',
+    demoFile: 'ot/detail-dashboard.html',
   },
 ];
 

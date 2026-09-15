@@ -37,9 +37,9 @@ export function RangesPanel({ open }: Props) {
           </tbody>
         </table>
         <div className="ranges-legend">
-          <span><i style={{ background: 'var(--caution)' }} />Low / borderline</span>
-          <span><i style={{ background: 'var(--blue-dark)' }} />Normal</span>
-          <span><i style={{ background: 'var(--critical)' }} />High / severe</span>
+          <span><i style={{ background: 'var(--typical)' }} />Typical deviation</span>
+          <span><i style={{ background: 'var(--normal)' }} />Normal</span>
+          <span><i style={{ background: 'var(--critical)' }} />Critical</span>
         </div>
         <div className="ranges-foot">
           Heart rate 40–60 bpm is read as bradycardia (orange); 40 bpm or below is severe bradycardia (red).

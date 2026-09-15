@@ -6,10 +6,15 @@ import { MedicationsOverlay } from '../components/flows/overlays/MedicationsOver
 import { PatientHeader } from '../components/flows/PatientHeader';
 import { FormTab } from '../components/flows/form/FormTab';
 import { RecordTab } from '../components/flows/record/RecordTab';
+import { StaffTab } from '../components/flows/record/StaffTab';
 import { ReportTab } from '../components/flows/report/ReportTab';
 import { ScoreTab } from '../components/flows/score/ScoreTab';
 import { SectionTabs } from '../components/flows/SectionTabs';
 import { Topbar } from '../components/flows/Topbar';
+import { MobileBottomNav } from '../components/flows/MobileBottomNav';
+import { StageProceedDialog } from '../components/flows/shared/StageProceedDialog';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { getDefaultStageIndex, OR_STAGES } from '../data/flows';
 import { getPatient } from '../data/patients';
 import { getRoom } from '../data/rooms';
 import type { FlowTab, OverlayView } from '../types';
@@ -23,16 +28,40 @@ export function PatientFlowsPage() {
   const [formMode, setFormMode] = useState<'create' | 'view'>('create');
   const [formRecordId, setFormRecordId] = useState<number | null>(null);
 
+  const defaultStage = roomId ? getDefaultStageIndex(roomId) : 0;
+  const [currentStageIdx, setCurrentStageIdx] = useState(defaultStage);
+  const [viewStageIdx, setViewStageIdx] = useState(defaultStage);
+  const [pendingAdvanceIdx, setPendingAdvanceIdx] = useState<number | null>(null);
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     document.body.classList.add('dashboard-mode');
     return () => document.body.classList.remove('dashboard-mode');
   }, []);
+
+  useEffect(() => {
+    if (!roomId) return;
+    const idx = getDefaultStageIndex(roomId);
+    setCurrentStageIdx(idx);
+    setViewStageIdx(idx);
+  }, [roomId]);
+
+  useEffect(() => {
+    if (isMobile && tab === 'staff') setTab('record');
+  }, [isMobile, tab]);
 
   if (!roomId || !getRoom(roomId)) {
     return <Navigate to="/board" replace />;
   }
 
   const patient = getPatient(roomId);
+
+  function confirmStageAdvance() {
+    if (pendingAdvanceIdx == null) return;
+    setCurrentStageIdx(pendingAdvanceIdx);
+    setViewStageIdx(pendingAdvanceIdx);
+    setPendingAdvanceIdx(null);
+  }
 
   if (overlay === 'fluids') {
     return <FluidsOverlay patient={patient} onBack={() => setOverlay(null)} />;
@@ -52,20 +81,22 @@ export function PatientFlowsPage() {
   }
 
   return (
-    <div className="dashboard-view">
-      <Topbar />
-      <PatientHeader patient={patient} />
-      <SectionTabs active={tab} onChange={setTab} patient={patient} />
+    <div className={`dashboard-view${isMobile ? ' flows-mobile' : ''}`}>
+      <Topbar mobile={isMobile} />
+      <PatientHeader patient={patient} currentStageIdx={currentStageIdx} />
+      <SectionTabs active={tab} onChange={setTab} patient={patient} className="section-tabs-desktop" />
 
       <div className={`tab-content${tab === 'record' ? ' active' : ''}`}>
         {tab === 'record' && (
           <RecordTab
-            onOpenFluids={() => setOverlay('fluids')}
-            onOpenMedications={() => setOverlay('medications')}
+            currentStageIdx={currentStageIdx}
+            viewStageIdx={viewStageIdx}
+            onViewStageChange={setViewStageIdx}
+            onRequestStageAdvance={setPendingAdvanceIdx}
           />
         )}
       </div>
-      <div className={`tab-content${tab === 'score' ? ' active' : ''}`}>
+      <div id="tabScore" className={`tab-content${tab === 'score' ? ' active' : ''}`}>
         {tab === 'score' && <ScoreTab />}
       </div>
       <div id="tabForm" className={`tab-content${tab === 'form' ? ' active' : ''}`}>
@@ -89,6 +120,25 @@ export function PatientFlowsPage() {
       <div id="tabReport" className={`tab-content${tab === 'report' ? ' active' : ''}`}>
         {tab === 'report' && <ReportTab patient={patient} />}
       </div>
+      <div className={`tab-content tab-staff-desktop${tab === 'staff' ? ' active' : ''}`}>
+        {tab === 'staff' && <StaffTab />}
+      </div>
+
+      {isMobile ? (
+        <MobileBottomNav
+          active={tab === 'staff' ? 'record' : tab}
+          onChange={setTab}
+        />
+      ) : null}
+
+      {pendingAdvanceIdx != null && (
+        <StageProceedDialog
+          stages={OR_STAGES}
+          targetStageIndex={pendingAdvanceIdx}
+          onConfirm={confirmStageAdvance}
+          onCancel={() => setPendingAdvanceIdx(null)}
+        />
+      )}
     </div>
   );
 }

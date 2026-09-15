@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { LayoutPreviewOverlay } from '../components/layouts/LayoutPreviewOverlay';
 import { BOARD_LAYOUTS, boardLayoutById, type BoardLayoutOption } from '../data/boardLayouts';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import '../styles/board.css';
 import '../styles/layout-gallery.css';
 
@@ -11,7 +10,6 @@ export function LayoutGalleryPage() {
   const { layoutId } = useParams<{ layoutId?: string }>();
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [preview, setPreview] = useState<BoardLayoutOption | null>(null);
 
   const openPreview = useCallback((layout: BoardLayoutOption) => {
@@ -51,10 +49,6 @@ export function LayoutGalleryPage() {
           <Link to="/board" className="layout-gallery-nav-link">
             React board
           </Link>
-          <div className="theme-toggle" title="Light / dark theme">
-            <button type="button" className={theme === 'light' ? 'active' : ''} onClick={() => setTheme('light')}>☀</button>
-            <button type="button" className={theme === 'dark' ? 'active' : ''} onClick={() => setTheme('dark')}>☾</button>
-          </div>
           <button type="button" className="signout" onClick={handleSignOut}>Sign out</button>
         </div>
       </header>
@@ -62,7 +56,7 @@ export function LayoutGalleryPage() {
       <div className="dash-body layout-gallery-body">
         <div className="layout-gallery-intro">
           <h1>Choose a monitoring layout</h1>
-          <p>Select a prototype to preview the standalone HTML demo full screen. The live React app uses the compact grid on <Link to="/board">/board</Link>.</p>
+          <p>Select a prototype to preview the standalone HTML demo full screen. The live React app uses the schedule strip on <Link to="/board">/board</Link>.</p>
         </div>
         <div className="layout-gallery-grid">
           {BOARD_LAYOUTS.map(layout => (

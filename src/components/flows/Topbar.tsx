@@ -1,27 +1,33 @@
 import { useNavigate } from 'react-router-dom';
 
-export function Topbar() {
+interface Props {
+  mobile?: boolean;
+}
+
+export function Topbar({ mobile }: Props) {
   const navigate = useNavigate();
 
   return (
-    <header className="topbar">
+    <header className={`topbar${mobile ? ' topbar-mobile' : ''}`}>
       <div className="topbar-left">
+        {!mobile ? (
+          <button type="button" className="topbar-back" onClick={() => navigate('/board')}>
+            ← Back
+          </button>
+        ) : null}
         <div className="topbar-brand">
           <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="topbar-logo" />
         </div>
-        <div className="active-suite">
-          <span className="status-dot" />
-          OT Flows Suite
-        </div>
-      </div>
-      <div className="topbar-center">
-        <button type="button" className="topbar-btn" onClick={() => navigate('/board')}>
-          Board View
-        </button>
+        {!mobile ? (
+          <div className="active-suite">
+            <span className="status-dot" />
+            OT Flows Suite
+          </div>
+        ) : null}
       </div>
       <div className="topbar-user">
         <div className="avatar">JJ</div>
-        Dr. Jacob Jenner
+        {!mobile ? <span className="topbar-user-name">Dr. Jacob Jenner</span> : null}
       </div>
     </header>
   );

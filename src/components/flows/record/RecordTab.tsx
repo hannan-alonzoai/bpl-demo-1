@@ -1,65 +1,105 @@
-import {
-  FLUIDS_INTAKE, FLUIDS_OUTPUT, FLUIDS_PREVIEW_COLS, FLUIDS_TIMES,
-  MEDICATIONS_PREVIEW_COLS, MEDICATIONS_SECTIONS, MEDICATIONS_TIMES, STAFFING,
-} from '../../../data/flows';
-import { FluidsGrid, MedicationsGrid } from '../shared/FluidsGrid';
+import { useState } from 'react';
+import { STAFFING } from '../../../data/flows';
+import { FluidsGanttChart } from '../shared/FluidsGanttChart';
+import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
+type RecordSub = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
+
 interface Props {
-  onOpenFluids: () => void;
-  onOpenMedications: () => void;
+  currentStageIdx: number;
+  viewStageIdx: number;
+  onViewStageChange: (idx: number) => void;
+  onRequestStageAdvance: (targetIdx: number) => void;
 }
 
-export function RecordTab({ onOpenFluids, onOpenMedications }: Props) {
-  const fluidTimes = FLUIDS_TIMES.slice(-FLUIDS_PREVIEW_COLS);
-  const medTimes = MEDICATIONS_TIMES.slice(-MEDICATIONS_PREVIEW_COLS);
+const SUBS: { id: RecordSub; label: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet' },
+  { id: 'fluids', label: 'Fluids' },
+  { id: 'medications', label: 'Medications' },
+  { id: 'staffing', label: 'Staffing' },
+];
+
+export function RecordTab({
+  currentStageIdx,
+  viewStageIdx,
+  onViewStageChange,
+  onRequestStageAdvance,
+}: Props) {
+  const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
 
   return (
-    <div className="record-view">
-      <div className="record-card">
-        <div className="record-card-header">
-          <h3>Flowsheet</h3>
-          <span className="record-card-meta">select stage · live from HL7</span>
-        </div>
-        <div className="record-card-body">
-          <Flowsheet />
+    <div className="record-view record-view-shell">
+      <div className="record-subtabs" role="tablist" aria-label="Record sections">
+        {SUBS.map(s => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            className={`record-subtab${recordSub === s.id ? ' active' : ''}`}
+            aria-selected={recordSub === s.id}
+            onClick={() => setRecordSub(s.id)}
+          >
+            <span className="record-subtab-label">{s.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className={`record-subpanel${recordSub === 'flowsheet' ? ' active' : ''}`} hidden={recordSub !== 'flowsheet'}>
+        <div className="record-card flowsheet-record-card">
+          <div className="record-card-body flowsheet-panel">
+            <Flowsheet
+              currentStageIdx={currentStageIdx}
+              viewStageIdx={viewStageIdx}
+              onViewStageChange={onViewStageChange}
+              onRequestAdvance={onRequestStageAdvance}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="record-grid-2">
-        <div className="record-card clickable" title="Click to open full fluids chart" onClick={onOpenFluids} onKeyDown={() => {}} role="button" tabIndex={0}>
+      <div className={`record-subpanel${recordSub === 'fluids' ? ' active' : ''}`} hidden={recordSub !== 'fluids'}>
+        <div className="record-card record-card-gantt" title="Fluids intake / output">
           <div className="record-card-header">
             <h3>Fluids</h3>
-            <span className="record-card-meta view-all-link">View all →</span>
+            <button type="button" className="gantt-add-btn" disabled title="Demo only">
+              + Add Entry
+            </button>
           </div>
           <div className="record-card-body">
-            <FluidsGrid times={fluidTimes} allTimes={FLUIDS_TIMES} intake={FLUIDS_INTAKE} output={FLUIDS_OUTPUT} />
-          </div>
-        </div>
-        <div className="record-card clickable" title="Click to open full medications chart" onClick={onOpenMedications} onKeyDown={() => {}} role="button" tabIndex={0}>
-          <div className="record-card-header">
-            <h3>Medications</h3>
-            <span className="record-card-meta view-all-link">View all →</span>
-          </div>
-          <div className="record-card-body">
-            <MedicationsGrid times={medTimes} allTimes={MEDICATIONS_TIMES} sections={MEDICATIONS_SECTIONS} />
+            <FluidsGanttChart />
           </div>
         </div>
       </div>
 
-      <div className="record-card">
-        <div className="record-card-header">
-          <h3>Staffing</h3>
-          <span className="record-card-meta">set pre-op · editable inline <span className="badge-count">2</span></span>
+      <div className={`record-subpanel${recordSub === 'medications' ? ' active' : ''}`} hidden={recordSub !== 'medications'}>
+        <div className="record-card record-card-gantt" title="Medications timeline">
+          <div className="record-card-header">
+            <h3>Medications</h3>
+            <button type="button" className="gantt-add-btn" disabled title="Demo only">
+              + Add Medication
+            </button>
+          </div>
+          <div className="record-card-body">
+            <MedicationsGanttChart />
+          </div>
         </div>
-        <div className="record-card-body">
-          <div className="record-list">
-            {STAFFING.map(s => (
-              <div className="record-row" key={s.name}>
-                <span>{s.name}</span>
-                <span className="val">{s.time}</span>
-              </div>
-            ))}
+      </div>
+
+      <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
+        <div className="record-card record-card-staff">
+          <div className="record-card-header">
+            <h3>Staffing</h3>
+          </div>
+          <div className="record-card-body">
+            <div className="staff-mobile-list">
+              {STAFFING.map(s => (
+                <div className="staff-mobile-row" key={s.name}>
+                  <span className="staff-mobile-name">{s.name}</span>
+                  <span className="staff-mobile-time">{s.time.split('→')[0].trim()}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

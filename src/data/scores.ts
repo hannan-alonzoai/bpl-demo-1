@@ -1,13 +1,18 @@
 import type { ScoreData, ScoreType } from '../types';
 
-export const SCORE_TYPES: ScoreType[] = [
-  { id: 'apache2', icon: 'A2', name: 'APACHE II' },
-  { id: 'sofa', icon: 'SF', name: 'SOFA' },
-  { id: 'saps2', icon: 'SP', name: 'SAPS II' },
-  { id: 'news', icon: 'NW', name: 'NEWS' },
-  { id: 'mews', icon: 'MW', name: 'MEWS' },
-  { id: 'apache23', icon: 'A3', name: 'APACHE 23' },
-  { id: 'sirs', icon: 'SR', name: 'SIRS' },
+export interface ScoreTypeMeta extends ScoreType {
+  description: string;
+  tone: 'blue' | 'teal' | 'purple' | 'green' | 'amber' | 'pink' | 'slate';
+}
+
+export const SCORE_TYPES: ScoreTypeMeta[] = [
+  { id: 'apache2', icon: 'A2', name: 'APACHE II', description: 'Acute Physiology and Chronic Health Evaluation — ICU severity', tone: 'blue' },
+  { id: 'sofa', icon: 'SF', name: 'SOFA', description: 'Sequential Organ Failure Assessment', tone: 'teal' },
+  { id: 'saps2', icon: 'SP', name: 'SAPS II', description: 'Simplified Acute Physiology Score', tone: 'purple' },
+  { id: 'news', icon: 'NW', name: 'NEWS', description: 'National Early Warning Score', tone: 'green' },
+  { id: 'mews', icon: 'MW', name: 'MEWS', description: 'Modified Early Warning Score', tone: 'amber' },
+  { id: 'apache23', icon: 'A3', name: 'APACHE 23', description: 'Extended APACHE score', tone: 'blue' },
+  { id: 'sirs', icon: 'SR', name: 'SIRS', description: 'Systemic Inflammatory Response Syndrome', tone: 'pink' },
 ];
 
 export const PARAM_SCORES: Record<string, ScoreData> = {
@@ -20,7 +25,7 @@ export const PARAM_SCORES: Record<string, ScoreData> = {
       { title: 'Age', col1: 'Demographics Option', col2: 'Scale Option', rows: [{ label: 'Age', value: 62, unit: 'years' }] },
       { title: 'Heart rate / pulse', col1: 'Parameter', col2: 'Value', rows: [{ label: 'Heart Rate', value: 88, unit: 'bpm' }] },
       { title: 'Respiratory rate', col1: 'Parameter', col2: 'Value', rows: [{ label: 'RR', value: 18, unit: '/min' }] },
-      { title: 'Glasgow Coma Scale', col1: 'Parameter', col2: 'Value', rows: [{ label: 'GCS', value: 14, unit: '' }] },
+      { title: 'Glasgow Coma Scale', col1: 'Parameter', col2: 'Value', rows: [{ label: 'GCS', value: 14, unit: '/15' }] },
     ],
   },
   sofa: {
