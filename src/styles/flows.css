@@ -1,5 +1,6 @@
 @import './bpl-tokens.css';
-@import './flows-mobile.css';
+/* flows-mobile.css is imported after this file (see PatientFlowsPage) so its
+   media-query rules win same-specificity ties against the desktop rules here. */
 
 :root {
     --accent: var(--blue-600);

@@ -19,6 +19,7 @@ import { getPatient } from '../data/patients';
 import { getRoom } from '../data/rooms';
 import type { FlowTab, OverlayView } from '../types';
 import '../styles/flows.css';
+import '../styles/flows-mobile.css';
 
 export function PatientFlowsPage() {
   const { roomId } = useParams<{ roomId: string }>();
