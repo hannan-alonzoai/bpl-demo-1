@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { getRoom, rooms } from '../../../data/rooms';
 import type { Room } from '../../../types';
 import { ScheduleDetailBody } from './ScheduleDetailBody';
 import { ScheduleDetailPanel } from './ScheduleDetailPanel';
 import { StageProceedDialog } from './StageProceedDialog';
-import { filterRoomsByWorkflow, OtStatusFilters } from './OtStatusFilters';
 import { TheatreStripCard } from './TheatreStripCard';
-import type { OtStatusFilter } from './scheduleStatus';
 import { pctForStageIndex, stageIndexFromPct } from './scheduleUtils';
 const STRIP_SIZE = 4;
 const MOBILE_QUERY = '(max-width: 720px)';
@@ -30,7 +27,6 @@ export function ScheduleBoard() {
   const isMobile = useIsMobile();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterQuery, setFilterQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<OtStatusFilter>('all');
   const [stripIds, setStripIds] = useState<string[]>(() => rooms.slice(0, STRIP_SIZE).map(r => r.id));
   const [moreOpen, setMoreOpen] = useState(false);
   const [stageByRoom, setStageByRoom] = useState<Record<string, number>>({});
@@ -78,17 +74,14 @@ export function ScheduleBoard() {
 
   const filteredRooms = useMemo(() => {
     const q = filterQuery.trim().toLowerCase();
-    let list = rooms;
-    if (q) {
-      list = list.filter(
-        r =>
-          r.id.toLowerCase().includes(q) ||
-          r.patient.toLowerCase().includes(q) ||
-          r.procedure.toLowerCase().includes(q),
-      );
-    }
-    return filterRoomsByWorkflow(list, statusFilter);
-  }, [filterQuery, statusFilter]);
+    if (!q) return rooms;
+    return rooms.filter(
+      r =>
+        r.id.toLowerCase().includes(q) ||
+        r.patient.toLowerCase().includes(q) ||
+        r.procedure.toLowerCase().includes(q),
+    );
+  }, [filterQuery]);
 
   const stripRoomsList = useMemo(
     () => stripIds.map(id => getRoom(id)).filter((r): r is Room => Boolean(r)),
@@ -119,8 +112,14 @@ export function ScheduleBoard() {
     (id: string, opts?: { fromMore?: boolean; scrollIntoView?: boolean }) => {
       const scroll = opts?.scrollIntoView !== false;
 
+      // Clicking the open card again collapses it, on mobile and desktop alike.
+      if (selectedId === id) {
+        setSelectedId(null);
+        return;
+      }
+
       if (isMobile) {
-        setSelectedId(prev => (prev === id ? null : id));
+        setSelectedId(id);
         return;
       }
 
@@ -137,7 +136,7 @@ export function ScheduleBoard() {
       setSelectedId(id);
       if (scroll) scrollCardIntoView(id);
     },
-    [isMobile, promoteToStrip, scrollCardIntoView],
+    [isMobile, promoteToStrip, scrollCardIntoView, selectedId],
   );
 
   useEffect(() => {
@@ -155,15 +154,6 @@ export function ScheduleBoard() {
     filteredRooms.length === rooms.length
       ? `${rooms.length} rooms`
       : `${filteredRooms.length} of ${rooms.length} rooms`;
-
-  const mobileRecordLink =
-    isMobile && selectedRoom ? (
-      <div className="ot-vitals-view-bar is-visible">
-        <Link to={`/ot/${selectedRoom.id}`} className="detail-record-link detail-record-link-mobile">
-          Open full record →
-        </Link>
-      </div>
-    ) : null;
 
   return (
     <div className="schedule-board">
@@ -186,8 +176,6 @@ export function ScheduleBoard() {
               </svg>
             </button>
           </div>
-          <OtStatusFilters rooms={rooms} active={statusFilter} onChange={setStatusFilter} />
-          {mobileRecordLink}
           <div className="ot-top-scroll" ref={topScrollRef}>
             <div className={`ot-top-row strip-row${isMobile ? ' mobile-stack' : ''}`}>
               {isMobile ? (
@@ -209,6 +197,8 @@ export function ScheduleBoard() {
                           stageIndex={getStageIndex(room)}
                           completionPct={getCompletionPct(room)}
                           selected={open}
+                          expanded={open}
+                          showRecordLink
                           onSelect={() => selectRoom(room.id)}
                         />
                         <div className={`ot-card-expand${open ? ' open' : ''}`} aria-hidden={open ? 'false' : 'true'}>

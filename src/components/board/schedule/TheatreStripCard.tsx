@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from 'react';
+import { Link } from 'react-router-dom';
 import type { Room } from '../../../types';
 import { scheduleClassify } from './scheduleUtils';
 import { ProgressPie } from './ProgressPie';
@@ -8,20 +10,41 @@ interface Props {
   stageIndex: number;
   completionPct: number;
   selected?: boolean;
+  expanded?: boolean;
+  showRecordLink?: boolean;
   onSelect: () => void;
 }
 
-export function TheatreStripCard({ room, stageIndex, completionPct, selected, onSelect }: Props) {
+export function TheatreStripCard({
+  room,
+  stageIndex,
+  completionPct,
+  selected,
+  expanded,
+  showRecordLink,
+  onSelect,
+}: Props) {
   const { name, asa } = parsePatient(room.patient);
   const stage = currentStageForIndex(stageIndex);
 
+  // Not a <button>: the record link is an anchor and cannot be nested inside one.
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.target !== e.currentTarget) return;
+    e.preventDefault();
+    onSelect();
+  };
+
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       className={`ot-theatre-card${selected ? ' selected' : ''}`}
       data-id={room.id}
       data-status={room.status}
+      aria-expanded={expanded === undefined ? undefined : expanded}
       onClick={onSelect}
+      onKeyDown={handleKeyDown}
     >
       <div className="theatre-card-inner">
         <div className="theatre-card-body">
@@ -47,7 +70,18 @@ export function TheatreStripCard({ room, stageIndex, completionPct, selected, on
               </p>
             </div>
             <p className="theatre-proc">{room.procedure}</p>
-            <span className="theatre-asa-below">{asa ?? '—'}</span>
+            <div className="theatre-asa-row">
+              <span className="theatre-asa-below">{asa ?? '—'}</span>
+              {showRecordLink && (
+                <Link
+                  to={`/ot/${room.id}`}
+                  className="theatre-card-record-link"
+                  onClick={e => e.stopPropagation()}
+                >
+                  Open full record →
+                </Link>
+              )}
+            </div>
           </div>
           <div className="theatre-card-right">
             <ProgressPie pct={completionPct} label="Completed" />
@@ -65,6 +99,6 @@ export function TheatreStripCard({ room, stageIndex, completionPct, selected, on
           })}
         </div>
       </div>
-    </button>
+    </div>
   );
 }

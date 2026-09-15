@@ -3,18 +3,23 @@ import { SCHEDULE_STAGES } from './scheduleUtils';
 interface Props {
   currentIndex: number;
   onRequestAdvance: (nextIndex: number) => void;
+  /** Drop already-completed stages, leaving the current one and what's still ahead. */
+  upcomingOnly?: boolean;
 }
 
-export function StageQuickActions({ currentIndex, onRequestAdvance }: Props) {
+export function StageQuickActions({ currentIndex, onRequestAdvance, upcomingOnly }: Props) {
   const nextIndex = currentIndex + 1;
   const canAdvance = nextIndex < SCHEDULE_STAGES.length;
+  const visibleStages = upcomingOnly
+    ? SCHEDULE_STAGES.map((s, i) => ({ s, i })).filter(({ i }) => i >= currentIndex)
+    : SCHEDULE_STAGES.map((s, i) => ({ s, i }));
 
   return (
     <div className="detail-stages">
       <div className="detail-stages-label">Quick actions · case stages</div>
       <div className="stage-boxes-wrap">
         <div className="stage-boxes">
-          {SCHEDULE_STAGES.map((s, i) => {
+          {visibleStages.map(({ s, i }) => {
             let cls = '';
             if (i < currentIndex) cls = ' done';
             else if (i === currentIndex) cls = ' current';

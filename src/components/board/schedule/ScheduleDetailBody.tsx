@@ -31,7 +31,11 @@ export function ScheduleDetailBody({ room, view, stageIndex, onRequestStageAdvan
   if (mobileExpand) {
     return (
       <div className="mobile-expand-body">
-        <StageQuickActions currentIndex={stageIndex} onRequestAdvance={onRequestStageAdvance} />
+        <StageQuickActions
+          currentIndex={stageIndex}
+          onRequestAdvance={onRequestStageAdvance}
+          upcomingOnly
+        />
         <div className="detail-vitals mobile-expand-vitals">
           <h3>Patient vitals</h3>
           <div className="detail-inner">{groups}</div>
