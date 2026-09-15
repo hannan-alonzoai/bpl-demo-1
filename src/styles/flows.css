@@ -131,6 +131,13 @@
     font-variant-numeric: tabular-nums;
   }
   .compact-kv .compact-val.highlight { color: var(--normal); }
+  .compact-kv .compact-val-count {
+    margin-left: 3px; padding: 1px 7px;
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 11px; font-weight: 700; color: var(--blue-700);
+    background: var(--blue-50); border: 1px solid var(--blue-100);
+    border-radius: 999px;
+  }
   .compact-kv .compact-val.allergy {
     color: var(--critical); display: inline-flex; align-items: center; gap: 4px;
   }
@@ -1079,7 +1086,7 @@
   .fluids-gantt-label {
     flex-shrink: 0;
     display: flex; align-items: center;
-    padding: 10px 12px 10px 4px;
+    padding: 10px 12px;
     border-right: 1px solid var(--line);
     box-sizing: border-box;
   }
@@ -1222,11 +1229,6 @@
   .score-count-line {
     font-size: 11px; color: var(--gray-500); margin: 0 16px 8px;
   }
-  .scores-view-all {
-    border: none; background: transparent; color: var(--blue-600);
-    font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 0;
-  }
-  .scores-view-all:disabled { opacity: 0.55; cursor: default; }
   .score-list { flex: 1; min-height: 0; padding: 8px; }
   .score-card-list {
     flex: 1; min-height: 0; padding: 4px 12px 12px;
@@ -1236,6 +1238,8 @@
     display: flex;
     flex-direction: column;
   }
+  /* Cards keep their height so the list scrolls instead of squashing them. */
+  .score-card-list:not(.score-card-list-mobile) > .score-select-card { flex: 0 0 auto; }
   .score-list-item {
     display: flex; align-items: center; gap: 10px; width: 100%;
     padding: 10px 12px; border: none; background: transparent;
@@ -1604,6 +1608,11 @@
     display: flex; flex-direction: column;
     min-height: 100vh; min-height: 100dvh;
     background: var(--gray-100);
+  }
+  /* Score is a fixed-height workspace: the list scrolls in place instead of
+     stretching the page, which is what kept the left panel from scrolling. */
+  .dashboard-view:has(#tabScore.tab-content.active) {
+    height: 100dvh; max-height: 100dvh; min-height: 0; overflow: hidden;
   }
   .dashboard-view.hidden { display: none; }
   .form-view {

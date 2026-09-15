@@ -263,9 +263,6 @@ export function ScoreTab() {
       <aside className="scores-panel scores-panel-cards">
         <div className="scores-panel-header">
           <h2>Scores</h2>
-          <button type="button" className="scores-view-all" disabled title="Demo only">
-            View All &gt;
-          </button>
         </div>
         <div className="score-count-line">{SCORE_TYPES.length} score types</div>
 

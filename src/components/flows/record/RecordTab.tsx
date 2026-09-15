@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { OR_STAGES, STAFFING } from '../../../data/flows';
+import { STAFFING } from '../../../data/flows';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
@@ -13,11 +13,11 @@ interface Props {
   onRequestStageAdvance: (targetIdx: number) => void;
 }
 
-const SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
-  { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
-  { id: 'fluids', label: 'Fluids', mobileLabel: 'Fluids' },
-  { id: 'medications', label: 'Medications', mobileLabel: 'Medications' },
-  { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
+const SUBS: { id: RecordSub; label: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet' },
+  { id: 'fluids', label: 'Fluids' },
+  { id: 'medications', label: 'Medications' },
+  { id: 'staffing', label: 'Staffing' },
 ];
 
 export function RecordTab({
@@ -27,16 +27,9 @@ export function RecordTab({
   onRequestStageAdvance,
 }: Props) {
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
-  const stageNum = currentStageIdx + 1;
-  const totalStages = OR_STAGES.length;
 
   return (
     <div className="record-view record-view-shell">
-      <div className="record-mobile-stage-head">
-        <span className="record-mobile-stage-title">OT Stage — {SUBS.find(s => s.id === recordSub)?.label ?? 'Flowsheet'}</span>
-        <span className="record-mobile-stage-pill">Stage {stageNum} of {totalStages}</span>
-      </div>
-
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
         {SUBS.map(s => (
           <button
@@ -48,7 +41,6 @@ export function RecordTab({
             onClick={() => setRecordSub(s.id)}
           >
             <span className="record-subtab-label">{s.label}</span>
-            <span className="record-subtab-label-mobile">{s.mobileLabel}</span>
           </button>
         ))}
       </div>

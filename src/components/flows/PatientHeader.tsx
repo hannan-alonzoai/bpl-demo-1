@@ -1,10 +1,20 @@
 import { useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { OR_STAGES } from '../../data/flows';
 import type { PatientProfile } from '../../types';
 
 interface Props {
   patient: PatientProfile;
   currentStageIdx: number;
+}
+
+const DETAIL_PANEL_ID = 'patient-mobile-detail';
+
+function ChevronDownIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 function AllergyIcon() {
@@ -48,14 +58,14 @@ function MobileDetailRow({ label, children }: { label: string; children: ReactNo
   );
 }
 
-export function PatientHeader({ patient }: Props) {
-  const navigate = useNavigate();
-  const [desktopExpanded, setDesktopExpanded] = useState(true);
+export function PatientHeader({ patient, currentStageIdx }: Props) {
+  const [desktopExpanded, setDesktopExpanded] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const procShort = patient.procedure.split('(')[0].trim();
   const age = ageFromDob(patient.dob);
-  const identityMeta = [patient.crn, age != null ? `${age}Y` : null, patient.gender].filter(Boolean).join(' | ');
   const hasAllergy = patient.allergies && patient.allergies !== 'None known';
+  const stageName = OR_STAGES[currentStageIdx]?.name ?? OR_STAGES[0].name;
+  const stageCount = `${currentStageIdx + 1}/${OR_STAGES.length}`;
 
   return (
     <div className={`patient-header-panel${mobileExpanded ? ' mobile-expanded' : ''}`}>
@@ -87,6 +97,12 @@ export function PatientHeader({ patient }: Props) {
             <span className="compact-kv">
               <span className="compact-key">Procedure</span>
               <span className="compact-val highlight">{procShort}</span>
+            </span>
+            <span className="compact-kv">
+              <span className="compact-key">Stage</span>
+              <span className="compact-val highlight">
+                {stageName} <span className="compact-val-count">{stageCount}</span>
+              </span>
             </span>
             <span className="compact-kv">
               <span className="compact-key">Allergies</span>
@@ -173,20 +189,22 @@ export function PatientHeader({ patient }: Props) {
       {/* Mobile */}
       <div className="patient-header-mobile">
         <div className="patient-mobile-card">
-          <button type="button" className="patient-mobile-back" aria-label="Back to board" onClick={() => navigate('/board')}>
-            ‹
-          </button>
           <button
             type="button"
             className="patient-mobile-identity"
             aria-expanded={mobileExpanded}
+            aria-controls={DETAIL_PANEL_ID}
             onClick={() => setMobileExpanded(v => !v)}
           >
             <span className="patient-mobile-name-row">
               <span className="patient-mobile-name">{patient.name}</span>
-              <span className={`patient-mobile-chevron${mobileExpanded ? ' up' : ''}`} aria-hidden>›</span>
             </span>
-            <span className="patient-mobile-meta">{identityMeta}</span>
+            <span className="patient-mobile-meta">
+              <span className="patient-mobile-proc">{procShort}</span>
+              <span className="patient-mobile-meta-sep" aria-hidden>·</span>
+              <span className="patient-mobile-stage">{stageName}</span>
+              <span className="patient-mobile-stage-count">{stageCount}</span>
+            </span>
           </button>
           {hasAllergy ? (
             <span className="patient-mobile-allergy">
@@ -194,59 +212,60 @@ export function PatientHeader({ patient }: Props) {
               {patient.allergies}
             </span>
           ) : null}
+          <button
+            type="button"
+            className={`patient-mobile-toggle${mobileExpanded ? ' open' : ''}`}
+            aria-expanded={mobileExpanded}
+            aria-controls={DETAIL_PANEL_ID}
+            aria-label={mobileExpanded ? 'Hide patient details' : 'Show patient details'}
+            onClick={() => setMobileExpanded(v => !v)}
+          >
+            <ChevronDownIcon />
+          </button>
         </div>
 
-        {mobileExpanded ? (
-          <div className="patient-mobile-detail scroll-y">
-            <MobileDetailRow label="UHID / CRN">{patient.crn}</MobileDetailRow>
-            <MobileDetailRow label="DOB / Age">
-              {patient.dob}
-              {age != null ? ` (${age} years)` : ''}
-            </MobileDetailRow>
-            <MobileDetailRow label="Gender">
-              <span className="text-blue">{patient.gender}</span>
-            </MobileDetailRow>
-            <MobileDetailRow label="ASA Status">
-              <span className="pill pill-asa">{patient.asa}</span>
-            </MobileDetailRow>
-            <MobileDetailRow label="Admit Date & Time">
-              {patient.admitDate} ({patient.admitTime})
-            </MobileDetailRow>
-            <MobileDetailRow label="Care Unit & Bed">
-              <span className="pill pill-blue">{patient.careUnit}</span>
-              <span className="pill pill-blue">{patient.bed}</span>
-            </MobileDetailRow>
-            <MobileDetailRow label="Consulting">{patient.consulting}</MobileDetailRow>
-            <MobileDetailRow label="Case Type">{patient.caseType}</MobileDetailRow>
-            <MobileDetailRow label="Allergies">
-              {hasAllergy ? <span className="allergy-warn"><AllergyIcon /> {patient.allergies}</span> : patient.allergies}
-            </MobileDetailRow>
-            <MobileDetailRow label="Diagnosis">
-              <span className="text-blue">{patient.diagnosis}</span>
-            </MobileDetailRow>
-            <MobileDetailRow label="Comorbidities">{patient.comorbidities}</MobileDetailRow>
-            <MobileDetailRow label="Other">{patient.other}</MobileDetailRow>
-            <button type="button" className="patient-mobile-collapse" onClick={() => setMobileExpanded(false)} aria-label="Collapse">
-              ^
-            </button>
-          </div>
-        ) : (
-          <div className="patient-mobile-quick">
-            <button type="button" className="patient-mobile-details-btn" onClick={() => setMobileExpanded(true)}>
-              ▶ Details
-            </button>
-            <div className="patient-mobile-quick-meta">
-              <span className="patient-mobile-proc">{procShort}</span>
-              {hasAllergy ? (
-                <span className="patient-mobile-quick-allergy">
-                  <AllergyIcon />
-                  {patient.allergies}
-                </span>
-              ) : null}
+        <div className="patient-mobile-quick">
+          <ValidateBtn compact short />
+        </div>
+
+        <div
+          className={`patient-mobile-detail-wrap${mobileExpanded ? ' open' : ''}`}
+          id={DETAIL_PANEL_ID}
+          aria-hidden={!mobileExpanded}
+        >
+          <div className="patient-mobile-detail-inner">
+            <div className="patient-mobile-detail scroll-y">
+              <MobileDetailRow label="UHID / CRN">{patient.crn}</MobileDetailRow>
+              <MobileDetailRow label="DOB / Age">
+                {patient.dob}
+                {age != null ? ` (${age} years)` : ''}
+              </MobileDetailRow>
+              <MobileDetailRow label="Gender">
+                <span className="text-blue">{patient.gender}</span>
+              </MobileDetailRow>
+              <MobileDetailRow label="ASA Status">
+                <span className="pill pill-asa">{patient.asa}</span>
+              </MobileDetailRow>
+              <MobileDetailRow label="Admit Date & Time">
+                {patient.admitDate} ({patient.admitTime})
+              </MobileDetailRow>
+              <MobileDetailRow label="Care Unit & Bed">
+                <span className="pill pill-blue">{patient.careUnit}</span>
+                <span className="pill pill-blue">{patient.bed}</span>
+              </MobileDetailRow>
+              <MobileDetailRow label="Consulting">{patient.consulting}</MobileDetailRow>
+              <MobileDetailRow label="Case Type">{patient.caseType}</MobileDetailRow>
+              <MobileDetailRow label="Allergies">
+                {hasAllergy ? <span className="allergy-warn"><AllergyIcon /> {patient.allergies}</span> : patient.allergies}
+              </MobileDetailRow>
+              <MobileDetailRow label="Diagnosis">
+                <span className="text-blue">{patient.diagnosis}</span>
+              </MobileDetailRow>
+              <MobileDetailRow label="Comorbidities">{patient.comorbidities}</MobileDetailRow>
+              <MobileDetailRow label="Other">{patient.other}</MobileDetailRow>
             </div>
-            <ValidateBtn compact short />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

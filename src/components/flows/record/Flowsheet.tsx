@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { OR_STAGES, VITAL_SOURCES } from '../../../data/flows';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { stageVitals } from '../../../utils/stageVitals';
@@ -354,9 +354,19 @@ function VitalsPanel({ stageIdx, sourceId }: { stageIdx: number; sourceId: strin
 export function Flowsheet({ currentStageIdx, viewStageIdx, onViewStageChange, onRequestAdvance }: FlowsheetProps) {
   const isMobile = useIsMobile();
   const [sourceId, setSourceId] = useState('monitor');
+  const trackerRef = useRef<HTMLDivElement>(null);
   const nextIdx = currentStageIdx + 1;
   const progressPct =
     OR_STAGES.length <= 1 ? 0 : (Math.min(currentStageIdx, OR_STAGES.length - 1) / (OR_STAGES.length - 1)) * 100;
+
+  // Park the current stage at the left edge so it and the next three read first.
+  useEffect(() => {
+    if (!isMobile) return;
+    const wrap = trackerRef.current;
+    const node = wrap?.querySelectorAll<HTMLElement>('.ot-stage-node')[currentStageIdx];
+    if (!wrap || !node) return;
+    wrap.scrollTo({ left: node.offsetLeft, behavior: 'smooth' });
+  }, [isMobile, currentStageIdx]);
 
   function onStageClick(targetIdx: number) {
     if (targetIdx > nextIdx) return;
@@ -369,7 +379,7 @@ export function Flowsheet({ currentStageIdx, viewStageIdx, onViewStageChange, on
 
   return (
     <>
-      <div className="ot-stage-tracker-wrap">
+      <div className="ot-stage-tracker-wrap" ref={trackerRef}>
         <div className="ot-stage-tracker" role="list" aria-label="OT stage progress">
           <div className="ot-stage-track" aria-hidden>
             <div className="ot-stage-track-fill" style={{ width: `${progressPct}%` }} />
