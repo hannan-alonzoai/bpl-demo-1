@@ -57,10 +57,27 @@
   --track: var(--white-200);
   --ring-track: var(--white-200);
 
+  /* derived accents — kept in-palette so hover/border states never leave the system */
+  --critical-dark: color-mix(in srgb, var(--critical) 82%, #000000);
+  --critical-line: color-mix(in srgb, var(--critical) 32%, var(--white));
+  --typical-dark: color-mix(in srgb, var(--typical) 82%, #000000);
+  --typical-line: color-mix(in srgb, var(--typical) 32%, var(--white));
+  --completed-dark: color-mix(in srgb, var(--completed) 82%, #000000);
+  --completed-line: color-mix(in srgb, var(--completed) 32%, var(--white));
+
   /* typography */
   --font-ui: 'Sentient', 'Georgia', serif;
   --font-mono: 'Sentient', 'Georgia', serif;
   --font-alt: 'Sora', 'Segoe UI', sans-serif;
+
+  /* type scale (design system §Typography) */
+  --fs-h1: 28px;
+  --fs-h2: 21px;
+  --fs-h3: 16px;
+  --fs-body: 14px;
+  --fs-label: 11px;
+  --fs-tabular: 22px;
+  --ls-label: 0.4px;
 
   /* legacy names used across board / schedule (mapped to design system) */
   --navy: var(--gray-900);
@@ -73,7 +90,7 @@
   --attention-bg: var(--typical-bg);
   --stable: var(--completed);
   --stable-bg: var(--completed-bg);
-  --priority: #6b46c1;
+  --priority: var(--blue-900);
   --accent-top-critical: var(--critical);
   --accent-top-attention: var(--typical);
   --accent-top-caution: var(--typical);

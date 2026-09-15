@@ -11,7 +11,7 @@
 .login-hero{
   flex:0 0 40%;
   background:linear-gradient(160deg, var(--gray-800) 0%, var(--gray-900) 100%);
-  color:#fff;
+  color:var(--white);
   padding:40px 40px;
   display:flex;
   flex-direction:column;
@@ -43,12 +43,12 @@
   width:100%;
   padding:12px 14px;
   background:var(--navy);
-  color:#fff;
+  color:var(--white);
   border:none;
   border-radius:6px;
   font-size:14.5px;
 }
-.field input::placeholder{color:#8fa2ba;}
+.field input::placeholder{color:var(--gray-400);}
 .row-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;font-size:13.5px;}
 .row-between .remember{display:flex;align-items:center;gap:8px;color:var(--ink-soft);}
 .row-between a{color:var(--blue);text-decoration:none;font-weight:600;}
@@ -56,7 +56,7 @@
   width:100%;
   padding:13px;
   background:var(--blue);
-  color:#fff;
+  color:var(--white);
   border:none;
   border-radius:6px;
   font-size:15px;
@@ -65,7 +65,7 @@
   transition:background .15s ease;
 }
 .signin-btn:hover{background:var(--blue-dark);}
-.meta-foot{display:flex;justify-content:space-between;margin-top:60px;font-size:12px;color:#9aa6b8;max-width:360px;}
+.meta-foot{display:flex;justify-content:space-between;margin-top:60px;font-size:12px;color:var(--gray-400);max-width:360px;}
 
 /* ================= DASHBOARD SCREEN ================= */
 #dashboard-screen{display:none;}
@@ -88,7 +88,7 @@ header.dash-header .dash-logo{
   display:block;
   object-fit:contain;
 }
-header.dash-header .brand .title{font-size:15px;font-weight:700;color:#fff;}
+header.dash-header .brand .title{font-size:15px;font-weight:700;color:var(--white);}
 .header-right{display:flex;align-items:center;gap:18px;}
 header.dash-header .header-layouts-link{
   display:inline-flex;
@@ -96,7 +96,7 @@ header.dash-header .header-layouts-link{
   padding:7px 12px;
   border-radius:6px;
   background:rgba(255,255,255,0.12);
-  color:#fff;
+  color:var(--white);
   font-size:12px;
   font-weight:600;
   text-decoration:none;
@@ -110,7 +110,7 @@ header.dash-header .signout{
   border:none;
   border-radius:6px;
   background:rgba(255,255,255,0.12);
-  color:#fff;
+  color:var(--white);
   font-size:12px;
   font-weight:500;
   font-family:inherit;
@@ -132,7 +132,7 @@ header.dash-header .signout:hover{background:rgba(255,255,255,0.22);}
 .theme-toggle button{
   border:none;
   background:transparent;
-  color:#c7d6e8;
+  color:var(--blue-100);
   width:28px;
   height:24px;
   border-radius:16px;
@@ -143,7 +143,7 @@ header.dash-header .signout:hover{background:rgba(255,255,255,0.22);}
   justify-content:center;
   transition:background .15s ease, color .15s ease;
 }
-.theme-toggle button.active{background:#fff;color:var(--navy);}
+.theme-toggle button.active{background:var(--white);color:var(--navy);}
 
 .dash-body{padding:20px 28px 40px;}
 
@@ -173,7 +173,7 @@ header.dash-header .signout:hover{background:rgba(255,255,255,0.22);}
   border-left:1px solid var(--line);
 }
 .view-toggle button:first-child{border-left:none;}
-.view-toggle button.active{background:var(--blue);color:#fff;}
+.view-toggle button.active{background:var(--blue);color:var(--white);}
 
 .ranges-btn{
   display:inline-flex;
@@ -302,7 +302,8 @@ table.ranges-table td.base{color:var(--blue-dark);}
   font-size:11px;
   font-weight:800;
   fill:var(--ink);
-  font-family:inherit;
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
 }
 .compact-pie-label{
   margin-top:3px;
@@ -470,7 +471,7 @@ table.ranges-table td.base{color:var(--blue-dark);}
 }
 .vital{min-width:48px;flex-shrink:0;}
 .vital .label{font-size:12px;color:var(--ink-soft);margin-bottom:3px;}
-.vital .value{font-size:18px;font-weight:700;color:var(--blue-dark);}
+.vital .value{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--normal);font-variant-numeric:tabular-nums;}
 
 /* shared 3-tier clinical colour coding, driven by the reference-range
    table: normal = blue, low/borderline = orange, high/severe = red */
@@ -540,7 +541,7 @@ table.ranges-table td.base{color:var(--blue-dark);}
   width:20px;height:20px;
   border-radius:50%;
   background:var(--priority);
-  color:#fff;
+  color:var(--white);
   font-size:11px;
   font-weight:700;
   display:flex;
@@ -586,7 +587,7 @@ table.ranges-table td.base{color:var(--blue-dark);}
   font-family:inherit;
 }
 .modal-detail .gauge .g-label{font-size:11px;color:var(--ink-soft);margin-top:5px;}
-.modal-detail .gauge .g-unit{font-size:10px;color:#aab3c4;}
+.modal-detail .gauge .g-unit{font-size:10px;color:var(--gray-400);}
 
 /* ---- view: bars ---- */
 .modal-detail .bar-list{display:flex;flex-direction:column;gap:9px;}
