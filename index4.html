@@ -49,17 +49,17 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 }
 .ot-top-row.strip-row .ot-theatre-card{flex:none;width:100%;max-width:none}
 .ot-expand-btn{
-  align-self:stretch;min-width:48px;width:48px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  padding:8px 6px;border:1px dashed var(--line);border-radius:10px;
+  align-self:center;min-width:34px;width:34px;height:52px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:4px 3px;border:1px dashed var(--line);border-radius:8px;
   background:var(--card);color:var(--ink-soft);cursor:pointer;font-family:inherit;
   transition:background .15s,border-color .15s,box-shadow .15s;
 }
 .ot-expand-btn:hover{border-color:var(--blue);color:var(--blue-dark);background:rgba(14,165,233,.06)}
 .ot-expand-btn.open{border-style:solid;border-color:var(--blue);box-shadow:0 0 0 2px rgba(14,165,233,.2)}
-.ot-expand-chevron{font-size:16px;line-height:1;transition:transform .2s}
+.ot-expand-chevron{font-size:10px;line-height:1;opacity:.85;transition:transform .2s}
 .ot-expand-btn.open .ot-expand-chevron{transform:rotate(180deg)}
-.ot-expand-count{font-size:10px;font-weight:700;color:var(--ink-soft)}
+.ot-expand-count{font-size:9px;font-weight:700;color:var(--ink-soft);line-height:1}
 .ot-more-panel{
   display:grid;grid-template-rows:0fr;
   opacity:0;margin-top:0;overflow:hidden;
@@ -87,35 +87,55 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
   text-align:left;
   font-family:inherit;
   transition:box-shadow .15s,border-color .15s;
+  display:flex;align-items:stretch;
 }
-.theatre-card-inner{width:100%}
-.theatre-card-top{display:flex;align-items:flex-start;gap:10px}
-.theatre-card-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.theatre-card-head-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
-.theatre-id{font-size:15px;font-weight:800;color:var(--ink);line-height:1.15}
-.theatre-card-head-row .status-pill{font-size:10px;padding:3px 9px;line-height:1.2}
-.theatre-card-alert{
-  margin-top:8px;padding:6px 8px;border-radius:6px;
-  font-size:10.5px;font-weight:600;line-height:1.35;
+.theatre-card-inner{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+.theatre-card-header{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;min-width:0}
+.theatre-card-meta-line{
+  display:flex;align-items:center;gap:5px;width:100%;min-width:0;
+}
+.theatre-id{font-size:13px;font-weight:800;color:var(--ink);line-height:1.15;flex-shrink:0}
+.theatre-card-meta-sep{color:var(--ink-soft);font-size:10px;font-weight:500;flex-shrink:0;line-height:1}
+.theatre-card-meta-line .theatre-stage{
+  font-size:9.5px;font-weight:700;padding:2px 7px;line-height:1.2;flex-shrink:1;min-width:0;
+  border-radius:20px;background:var(--track);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.theatre-card-alert-below{
+  max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  width:fit-content;font-size:9.5px;font-weight:600;line-height:1.25;padding:3px 7px;border-radius:4px;
   background:var(--critical-bg);color:var(--critical);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
+.theatre-card-alert-below.is-empty{visibility:hidden}
+.theatre-card-body{display:flex;align-items:stretch;gap:8px;width:100%;min-width:0}
+.theatre-card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .theatre-proc{margin:0;font-size:13px;font-weight:700;line-height:1.25;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.theatre-patient-name{
-  font-size:12px;font-weight:500;color:var(--ink-soft);line-height:1.35;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  margin-top:2px;letter-spacing:.01em;
+.theatre-asa-below{
+  display:inline-block;width:fit-content;max-width:100%;margin-top:2px;
+  font-size:10px;font-weight:700;color:var(--ink-soft);
+  background:var(--track);padding:3px 8px;border-radius:6px;
+  align-self:flex-start;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.theatre-card-right{flex-shrink:0;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px}
-.theatre-asa{font-size:10px;font-weight:700;color:var(--ink-soft);background:var(--track);padding:3px 8px;border-radius:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.theatre-card-right .compact-pie svg{width:50px;height:50px;display:block}
-.theatre-card-right .compact-pie .pie-num{font-size:11px}
-.theatre-card-right .compact-pie-label{font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+.theatre-card-alert-below + .theatre-patient-line{margin-top:10px}
+.theatre-patient-line{
+  margin:0;font-size:11px;line-height:1.35;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.theatre-patient-line .theatre-patient-label{font-weight:600;color:var(--ink-soft);margin-right:4px}
+.theatre-patient-line .theatre-patient-value{font-weight:700;color:var(--ink)}
+.theatre-card-right{
+  flex-shrink:0;width:78px;align-self:stretch;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+.theatre-card-right .compact-pie{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.theatre-card-right .compact-pie svg{width:70px;height:70px;display:block}
+.theatre-card-right .compact-pie .pie-bg,
+.theatre-card-right .compact-pie .pie-fg{stroke-width:3}
+.theatre-card-right .compact-pie .pie-num{font-size:10px;font-weight:800;letter-spacing:-0.02em}
+.theatre-card-right .compact-pie-label{font-size:9px;text-transform:uppercase;letter-spacing:.3px;margin-top:4px}
 .theatre-strip-vitals{
   display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px;
-  margin-top:10px;padding-top:10px;border-top:1px solid var(--line);
+  margin-top:auto;padding-top:8px;border-top:1px solid var(--line);
 }
-.theatre-card-inner:has(.theatre-card-alert) .theatre-strip-vitals{margin-top:8px}
 .theatre-strip-vitals .strip-vital{text-align:center;min-width:0}
 .theatre-strip-vitals .strip-vital-label{font-size:9px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.15px;line-height:1.2;margin-bottom:2px}
 .theatre-strip-vitals .strip-vital-value{font-size:13px;font-weight:700;line-height:1.15;color:var(--blue-dark)}
@@ -148,7 +168,18 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
   padding:16px 20px;border-bottom:1px solid var(--line);
 }
-.detail-panel-head h2{margin:0;font-size:16px;font-weight:700}
+.detail-panel-headline{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;
+  flex:1;min-width:min(100%,280px);
+}
+.detail-panel-head h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.02em;line-height:1.35;white-space:nowrap}
+.detail-panel-head h2 .detail-title-sep{color:var(--ink-soft);font-weight:500;margin:0 6px}
+.detail-panel-badges{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.detail-panel-badges .theatre-stage{font-size:11px;font-weight:700;padding:4px 11px;flex-shrink:0;border-radius:20px;background:var(--track);color:var(--ink)}
+.detail-panel-badges .alert-strip-inline{
+  margin:0;padding:5px 10px;font-size:12px;font-weight:600;line-height:1.3;
+  flex:0 1 auto;max-width:min(100%,420px);
+}
 .detail-empty{
   flex:1;display:flex;align-items:center;justify-content:center;
   padding:48px 24px;color:var(--ink-soft);font-size:14px;text-align:center;
@@ -184,6 +215,8 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 .detail-patient-label{font-weight:600;color:var(--ink-soft);margin-right:6px}
 .detail-hero .vitals-row{margin-top:12px}
 .detail-stages{margin-top:16px}
+.detail-hero-main .detail-stages,
+.detail-hero > .detail-stages{margin-top:0}
 .detail-stages-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
 .stage-boxes-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .stage-boxes{display:flex;align-items:stretch;gap:8px;min-width:min-content}
@@ -220,8 +253,8 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 .bar-fill.vclass-normal,.bar-fill.vclass-caution,.bar-fill.vclass-critical{background:var(--vc)}
 
 .compact-pie{flex-shrink:0;display:flex;flex-direction:column;align-items:center}
-.compact-pie .pie-bg{fill:none;stroke:var(--track);stroke-width:7}
-.compact-pie .pie-fg{fill:none;stroke:var(--blue);stroke-width:7;stroke-linecap:round}
+.compact-pie .pie-bg{fill:none;stroke:var(--track);stroke-width:4}
+.compact-pie .pie-fg{fill:none;stroke:var(--blue);stroke-width:4;stroke-linecap:round}
 .compact-pie .pie-num{font-weight:800;fill:var(--ink);font-family:inherit}
 .compact-pie-label{margin-top:3px;font-size:10px;color:var(--ink-soft)}
 .compact-pie.progress-pie-detail svg{width:156px;height:156px;display:block}
@@ -280,22 +313,24 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 .num-item .num-value small{font-size:10px;font-weight:500;color:var(--ink-soft)}
 
 @media(min-width:721px){
-  .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-top,
-  .ot-more-grid .theatre-card-top{gap:12px}
+  .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-body,
+  .ot-more-grid .theatre-card-body{gap:10px}
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right,
   .ot-more-grid .theatre-card-right{
-    width:76px;min-width:76px;gap:8px;padding-left:6px;margin-top:1px;
+    width:90px;min-width:90px;padding-left:2px;margin-top:0;
   }
-  .ot-top-row.strip-row:not(.mobile-stack) .theatre-asa,
-  .ot-more-grid .theatre-asa{padding:4px 9px;font-size:10px}
+  .ot-top-row.strip-row:not(.mobile-stack) .theatre-asa-below,
+  .ot-more-grid .theatre-asa-below{padding:4px 9px;font-size:10px}
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie,
-  .ot-more-grid .theatre-card-right .compact-pie{padding-top:2px}
+  .ot-more-grid .theatre-card-right .compact-pie{padding-top:0}
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie svg,
-  .ot-more-grid .theatre-card-right .compact-pie svg{width:54px;height:54px}
+  .ot-more-grid .theatre-card-right .compact-pie svg{width:80px;height:80px}
+  .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie .pie-num,
+  .ot-more-grid .theatre-card-right .compact-pie .pie-num{font-size:11px}
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie .pie-bg,
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie .pie-fg,
   .ot-more-grid .theatre-card-right .compact-pie .pie-bg,
-  .ot-more-grid .theatre-card-right .compact-pie .pie-fg{stroke-width:6}
+  .ot-more-grid .theatre-card-right .compact-pie .pie-fg{stroke-width:3}
   .ot-top-row.strip-row:not(.mobile-stack) .theatre-card-right .compact-pie-label,
   .ot-more-grid .theatre-card-right .compact-pie-label{
     margin-top:5px;line-height:1.25;letter-spacing:.2px;
@@ -382,7 +417,10 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 
     <section class="detail-panel" aria-live="polite">
       <div class="detail-panel-head">
-        <h2 id="detail-panel-title">Room details</h2>
+        <div class="detail-panel-headline">
+          <h2 id="detail-panel-title">Select an OT room</h2>
+          <div class="detail-panel-badges" id="detail-panel-badges" aria-live="polite"></div>
+        </div>
         <div class="view-toggle" id="view-toggle">
           <button type="button" data-view="rings" class="active">Rings</button>
           <button type="button" data-view="bars">Bars</button>
@@ -514,13 +552,13 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
 
     function progressPieHtml(pct, label, large) {
       const clamped = Math.max(0, Math.min(100, pct));
-      const caption = label || 'Progress';
+      const caption = label || 'Completed';
       if (large) {
         const size = 156, cx = size / 2, r = 54, c = 2 * Math.PI * r, offset = c - (clamped / 100) * c;
         return `<div class="compact-pie progress-pie-detail" aria-label="${esc(caption)} ${clamped}%"><svg viewBox="0 0 ${size} ${size}"><g transform="rotate(-90 ${cx} ${cx})"><circle class="pie-bg" cx="${cx}" cy="${cx}" r="${r}"/><circle class="pie-fg" cx="${cx}" cy="${cx}" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central" class="pie-num">${clamped}%</text></svg><span class="compact-pie-label">${esc(caption)}</span></div>`;
       }
-      const r = 18, c = 2 * Math.PI * r, offset = c - (clamped / 100) * c;
-      return `<div class="compact-pie" aria-label="${esc(caption)} ${clamped}%"><svg viewBox="0 0 50 50"><g transform="rotate(-90 25 25)"><circle class="pie-bg" cx="25" cy="25" r="${r}"/><circle class="pie-fg" cx="25" cy="25" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="25" y="25" text-anchor="middle" dominant-baseline="central" class="pie-num">${clamped}%</text></svg><span class="compact-pie-label">${esc(caption)}</span></div>`;
+      const size = 64, cx = size / 2, r = 24, c = 2 * Math.PI * r, offset = c - (clamped / 100) * c;
+      return `<div class="compact-pie" aria-label="${esc(caption)} ${clamped}%"><svg viewBox="0 0 ${size} ${size}"><g transform="rotate(-90 ${cx} ${cx})"><circle class="pie-bg" cx="${cx}" cy="${cx}" r="${r}"/><circle class="pie-fg" cx="${cx}" cy="${cx}" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></g><text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="middle" class="pie-num">${clamped}%</text></svg><span class="compact-pie-label">${esc(caption)}</span></div>`;
     }
 
     function stageIndexFromPct(pct) {
@@ -528,12 +566,24 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
       return Math.min(OR_STAGES.length - 1, Math.floor((pct / 100) * OR_STAGES.length));
     }
 
-    function stagesQuickActionsHtml(pct) {
+    function currentStageForPct(pct) {
+      return OR_STAGES[stageIndexFromPct(pct)];
+    }
+
+    function stagesQuickActionsHtml(pct, opts = {}) {
       const current = stageIndexFromPct(pct);
-      const visible = OR_STAGES.slice(current, current + 3);
-      const boxes = visible.map((s, vi) => {
-        const i = current + vi;
-        const cls = vi === 0 ? ' current' : '';
+      const list = opts.allStages ? OR_STAGES : OR_STAGES.slice(current, current + 3);
+      const boxes = list.map((s, vi) => {
+        let i;
+        let cls = '';
+        if (opts.allStages) {
+          i = vi;
+          if (i < current) cls = ' done';
+          else if (i === current) cls = ' current';
+        } else {
+          i = current + vi;
+          cls = vi === 0 ? ' current' : '';
+        }
         return `<div class="stage-box${cls}" title="${esc(s.name)}">
           <span class="stage-box-num">${i + 1}</span>
           <span class="stage-box-name">${esc(s.short)}</span>
@@ -544,6 +594,22 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
         <div class="detail-stages-label">Quick actions · case stages</div>
         <div class="stage-boxes-wrap"><div class="stage-boxes">${boxes}</div></div>
       </div>`;
+    }
+
+    function setDetailPanelHeadline(room) {
+      const titleEl = document.getElementById('detail-panel-title');
+      const badgesEl = document.getElementById('detail-panel-badges');
+      if (!titleEl || !badgesEl) return;
+      if (!room) {
+        titleEl.textContent = 'Select an OT room';
+        badgesEl.innerHTML = '';
+        return;
+      }
+      titleEl.innerHTML = `${esc(room.id)} <span class="detail-title-sep">|</span> ${esc(room.procedure)}`;
+      const stage = currentStageForPct(room.completion.pct);
+      badgesEl.innerHTML = `
+        <span class="theatre-stage">${esc(stage.name)}</span>
+        ${room.alert ? `<div class="alert-strip alert-strip-inline">⚠ ${esc(room.alert)}</div>` : ''}`;
     }
 
     function parsePatient(patient) {
@@ -619,27 +685,33 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
     function theatreCardHtml(room, selected) {
       const sel = selected ? ' selected' : '';
       const { name, asa } = parsePatient(room.patient);
-      const asaHtml = asa ? `<span class="theatre-asa">${esc(asa)}</span>` : '<span class="theatre-asa">—</span>';
-      const alertHtml = room.alert
-        ? `<div class="theatre-card-alert">⚠ ${esc(room.alert)}</div>`
-        : '';
+      const asaHtml = asa
+        ? `<span class="theatre-asa-below">${esc(asa)}</span>`
+        : '<span class="theatre-asa-below">—</span>';
+      const stage = currentStageForPct(room.completion.pct);
+      const alertBelow = room.alert
+        ? `<div class="theatre-card-alert-below" title="${esc(room.alert)}">⚠ ${esc(room.alert)}</div>`
+        : '<div class="theatre-card-alert-below is-empty" aria-hidden="true">&nbsp;</div>';
       return `<button type="button" class="ot-theatre-card${sel}" data-id="${esc(room.id)}" data-status="${room.status}">
           <div class="theatre-card-inner">
-            <div class="theatre-card-top">
-              <div class="theatre-card-left">
-                <div class="theatre-card-head-row">
-                  <span class="theatre-id">${esc(room.id)}</span>
-                  <span class="status-pill status-${room.status}">${esc(room.statusLabel)}</span>
+            <div class="theatre-card-body">
+              <div class="theatre-card-main">
+                <div class="theatre-card-header">
+                  <div class="theatre-card-meta-line">
+                    <span class="theatre-id">${esc(room.id)}</span>
+                    <span class="theatre-card-meta-sep">|</span>
+                    <span class="theatre-stage">${esc(stage.name)}</span>
+                  </div>
+                  ${alertBelow}
+                  <p class="theatre-patient-line"><span class="theatre-patient-label">Patient Name:-</span><span class="theatre-patient-value">${esc(name)}</span></p>
                 </div>
                 <p class="theatre-proc">${esc(room.procedure)}</p>
-                <span class="theatre-patient-name">${esc(name)}</span>
+                ${asaHtml}
               </div>
               <div class="theatre-card-right">
-                ${asaHtml}
-                ${progressPieHtml(room.completion.pct, 'Progress')}
+                ${progressPieHtml(room.completion.pct, 'Completed')}
               </div>
             </div>
-            ${alertHtml}
             <div class="theatre-strip-vitals">${stripVitalsHtml(room.vitals)}</div>
           </div>
         </button>`;
@@ -862,8 +934,7 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
     function renderDetailEmpty() {
       if (isMobileView()) return;
       const el = document.getElementById('detail-content');
-      const title = document.getElementById('detail-panel-title');
-      title.textContent = 'Room details';
+      setDetailPanelHeadline(null);
       el.className = 'detail-empty';
       el.removeAttribute('aria-busy');
       el.innerHTML = 'Select an OT room above to view live vitals and case details.';
@@ -899,7 +970,7 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
       const detail = (g, t, cls) => `<div class="detail-group ${cls}"><h4>${t}</h4>${vitalGroup(room.detail[g])}</div>`;
       return `
         <div class="mobile-expand-body">
-          ${stagesQuickActionsHtml(c.pct)}
+          ${stagesQuickActionsHtml(c.pct, { allStages: true })}
           <div class="detail-vitals mobile-expand-vitals">
             <h3>Patient vitals</h3>
             <div class="detail-inner">
@@ -914,31 +985,11 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
     function detailBodyHtml(room, opts = {}) {
       if (opts.mobileExpand) return mobileExpandBodyHtml(room);
 
-      const { name } = parsePatient(room.patient);
       const c = room.completion;
-      const vitals = room.vitals.map(v => {
-        const vc = classify(v.key, v.v);
-        return `<div class="vital"><div class="label">${esc(v.l)}</div><div class="value ${vc}">${v.v}</div></div>`;
-      }).join('');
-      const alert = room.alert ? `<div class="alert-strip">⚠ ${esc(room.alert)}</div>` : '';
       const detail = (g, t, cls) => `<div class="detail-group ${cls}"><h4>${t}</h4>${vitalGroup(room.detail[g])}</div>`;
       return `
         <div class="detail-hero">
-          <div class="detail-hero-main">
-            <div class="detail-title-row">
-              <span class="card-id">${esc(room.id)}</span>
-              <span class="detail-title-sep">·</span>
-              <span class="detail-surgery">${esc(room.procedure)}</span>
-              <span class="status-pill status-${room.status}">${esc(room.statusLabel)}</span>
-            </div>
-            <div class="detail-patient-name"><span class="detail-patient-label">Patient name:</span>${esc(name)}</div>
-            <div class="vitals-row">${vitals}</div>
-            ${alert}
-            ${stagesQuickActionsHtml(c.pct)}
-          </div>
-          <div class="detail-hero-side">
-            ${progressPieHtml(c.pct, 'Progress', true)}
-          </div>
+          ${stagesQuickActionsHtml(c.pct, { allStages: true })}
         </div>
         <div class="detail-vitals">
           <h3>Patient vitals</h3>
@@ -954,8 +1005,13 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
       const el = targetEl || document.getElementById('detail-content');
       const room = roomById(roomId);
       if (!targetEl) {
-        const title = document.getElementById('detail-panel-title');
-        title.textContent = room ? `${room.id} · loading…` : 'Room details';
+        if (room) {
+          document.getElementById('detail-panel-title').innerHTML =
+            `${esc(room.id)} <span class="detail-title-sep">|</span> ${esc(room.procedure)} <span class="detail-title-sep">|</span> <span style="color:var(--ink-soft);font-weight:500">Loading…</span>`;
+          document.getElementById('detail-panel-badges').innerHTML = '';
+        } else {
+          setDetailPanelHeadline(null);
+        }
       }
       el.className = targetEl ? 'ot-card-expand-inner detail-empty detail-loading' : 'detail-empty detail-loading';
       el.setAttribute('aria-busy', 'true');
@@ -969,7 +1025,7 @@ body{font-family:'Segoe UI','Inter',-apple-system,BlinkMacSystemFont,Helvetica,A
       const el = targetEl || document.getElementById('detail-content');
       const mobile = Boolean(targetEl);
       if (!mobile) {
-        document.getElementById('detail-panel-title').textContent = 'Room details';
+        setDetailPanelHeadline(room);
         el.className = 'detail-body';
       } else {
         el.className = 'ot-card-expand-inner detail-body';
