@@ -1,6 +1,6 @@
-import type { Room } from '../types';
+import type { Room, RoomStatus } from '../types';
 
-export const rooms: Room[] = [
+const coreRooms: Room[] = [
   {
     id: 'OT-01', status: 'critical', statusLabel: 'Critical',
     patient: 'James · ASA I', procedure: 'CABG',
@@ -61,6 +61,71 @@ export const rooms: Room[] = [
       temp: [{ v: 36.9, l: 'Temp1', u: '°C', max: 42, key: 'Temp' }, { v: 36.8, l: 'Temp2', u: '°C', max: 42, key: 'Temp' }],
     },
   },
+];
+
+const sampleDetail = coreRooms[3].detail;
+
+function demoRoom(
+  id: string,
+  status: RoomStatus,
+  statusLabel: string,
+  patient: string,
+  procedure: string,
+  pct: number,
+  finish: string,
+  opts: {
+    delay?: string | null;
+    alert?: string | null;
+    watch?: boolean;
+    tag?: string;
+    priority?: number;
+    nextReady?: boolean;
+  } = {},
+): Room {
+  const delay = opts.delay ?? null;
+  const watch = opts.watch ?? !!delay;
+  return {
+    id,
+    status,
+    statusLabel,
+    patient,
+    procedure,
+    vitals: [
+      { l: 'HR', v: 76, key: 'HR' },
+      { l: 'SpO2', v: 98, key: 'SpO2' },
+      { l: 'Temp1', v: 36.7, key: 'Temp' },
+      { l: 'MAP', v: 79 },
+    ],
+    alert: opts.alert ?? null,
+    completion: {
+      pct,
+      status: watch ? 'watch' : 'on-track',
+      tag: opts.tag ?? 'Surgery',
+      priority: opts.priority ?? 2,
+      proc: `${procedure} · GA`,
+      hr: 76,
+      spo2: 98,
+      map: 79,
+      finish,
+      delay,
+      nextReady: opts.nextReady ?? !delay,
+    },
+    detail: sampleDetail,
+  };
+}
+
+export const rooms: Room[] = [
+  ...coreRooms,
+  demoRoom('OT-06', 'stable', 'Stable', 'Mia · ASA II', 'Knee arthroscopy', 55, '15:30'),
+  demoRoom('OT-07', 'caution', 'Caution', 'Omar · ASA III', 'Spinal fusion', 38, '18:00', { watch: true }),
+  demoRoom('OT-08', 'attention', 'Attention', 'Sara · ASA IV', 'Craniotomy', 22, '19:15', {
+    delay: '+50m',
+    alert: 'High ICP trend',
+  }),
+  demoRoom('OT-09', 'stable', 'Stable', 'Vikram · ASA I', 'Appendectomy', 81, '14:05'),
+  demoRoom('OT-10', 'stable', 'Stable', 'Nina · ASA II', 'C-section', 67, '16:45'),
+  demoRoom('OT-11', 'caution', 'Caution', 'Tom · ASA III', 'Liver resection', 41, '17:55', { watch: true }),
+  demoRoom('OT-12', 'stable', 'Stable', 'Aisha · ASA II', 'Hernia repair', 12, '11:30', { nextReady: true }),
 ];
 
 export function getRoom(id: string): Room | undefined {

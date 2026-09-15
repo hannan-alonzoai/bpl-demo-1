@@ -62,7 +62,7 @@ export function LayoutGalleryPage() {
       <div className="dash-body layout-gallery-body">
         <div className="layout-gallery-intro">
           <h1>Choose a monitoring layout</h1>
-          <p>Select a prototype to preview the standalone HTML demo full screen. The live React app uses the compact grid on <Link to="/board">/board</Link>.</p>
+          <p>Select a prototype to preview the standalone HTML demo full screen. The live React app uses the schedule strip on <Link to="/board">/board</Link>.</p>
         </div>
         <div className="layout-gallery-grid">
           {BOARD_LAYOUTS.map(layout => (
