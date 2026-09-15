@@ -25,13 +25,13 @@ function AllergyIcon() {
   );
 }
 
-function ValidateBtn({ compact, short }: { compact?: boolean; short?: boolean }) {
+function ValidateBtn({ compact }: { compact?: boolean }) {
   return (
     <button type="button" className={compact ? 'btn-validate btn-validate-compact' : 'btn-validate'}>
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
         <path d="M3 8l4 4 6-7" />
       </svg>
-      {short ? 'Validate' : 'Validate Parameter'}
+      Validate Parameter
     </button>
   );
 }
@@ -222,10 +222,6 @@ export function PatientHeader({ patient, currentStageIdx }: Props) {
           >
             <ChevronDownIcon />
           </button>
-        </div>
-
-        <div className="patient-mobile-quick">
-          <ValidateBtn compact short />
         </div>
 
         <div
