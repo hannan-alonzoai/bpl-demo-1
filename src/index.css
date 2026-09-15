@@ -1,13 +1,44 @@
-* { box-sizing: border-box; }
-html, body, #root {
+@import './styles/bpl-tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   min-height: 100%;
   width: 100%;
 }
+
 #root {
   max-width: none;
   text-align: initial;
   border: none;
   display: block;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Clinical numerics — Sora tabular where design specifies alternate face */
+.font-clinical-alt {
+  font-family: var(--font-alt);
+  font-variant-numeric: tabular-nums;
+}
+
+.font-clinical-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }

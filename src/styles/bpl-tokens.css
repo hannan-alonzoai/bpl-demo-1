@@ -1,0 +1,81 @@
+/**
+ * BPL Cortex OT design tokens — source: src/assets/bpl_design_system.html
+ */
+:root {
+  /* primary: blue scale */
+  --blue-50: #f0f9ff;
+  --blue-100: #e0f2fe;
+  --blue-200: #bae6fd;
+  --blue-300: #7dd3fc;
+  --blue-400: #38bdf8;
+  --blue-500: #0ea5e9;
+  --blue-600: #0284c7;
+  --blue-700: #0369a1;
+  --blue-800: #075985;
+  --blue-900: #0c4a6e;
+
+  /* primary: white / neutral-light */
+  --white: #ffffff;
+  --white-100: #f8fafc;
+  --white-200: #eef2f8;
+  --white-300: #e4e9f0;
+  --white-400: #dde5f0;
+
+  /* secondary: gray scale */
+  --gray-900: #1c2530;
+  --gray-800: #2e3a46;
+  --gray-700: #465361;
+  --gray-600: #5b6b85;
+  --gray-500: #7c8aa0;
+  --gray-400: #a3aec0;
+  --gray-300: #c3ccd9;
+  --gray-200: #dde5f0;
+  --gray-100: #eef2f8;
+
+  /* semantic: vital status */
+  --critical: #8a0f1f;
+  --critical-bg: #f9dde1;
+  --typical: #b8600f;
+  --typical-bg: #f7e3cf;
+  --normal: #0369a1;
+  --normal-bg: #e0f2fe;
+
+  /* semantic: case stage */
+  --completed: #1c8a5c;
+  --completed-bg: #dcf5e7;
+  --inprogress: #0ea5e9;
+  --inprogress-bg: #e0f2fe;
+  --upcoming: #5b6b85;
+  --upcoming-bg: #eef1f4;
+
+  /* layout aliases */
+  --line: var(--gray-200);
+  --bg: var(--white-200);
+  --card: var(--white);
+  --ink: var(--gray-900);
+  --ink-soft: var(--gray-600);
+  --track: var(--white-200);
+  --ring-track: var(--white-200);
+
+  /* typography */
+  --font-ui: 'Sentient', 'Georgia', serif;
+  --font-mono: 'Sentient', 'Georgia', serif;
+  --font-alt: 'Sora', 'Segoe UI', sans-serif;
+
+  /* legacy names used across board / schedule (mapped to design system) */
+  --navy: var(--gray-900);
+  --navy-2: var(--gray-800);
+  --blue: var(--blue-500);
+  --blue-dark: var(--blue-700);
+  --caution: var(--typical);
+  --caution-bg: var(--typical-bg);
+  --attention: var(--typical);
+  --attention-bg: var(--typical-bg);
+  --stable: var(--completed);
+  --stable-bg: var(--completed-bg);
+  --priority: #6b46c1;
+  --accent-top-critical: var(--critical);
+  --accent-top-attention: var(--typical);
+  --accent-top-caution: var(--typical);
+  --accent-top-stable: var(--completed);
+}

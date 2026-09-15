@@ -1,71 +1,7 @@
-:root{
-  --navy: #0d2846;
-  --navy-2: #123a68;
-  --blue: #0ea5e9;
-  --blue-dark: #0369a1;
-  --ink: #16213a;
-  --ink-soft: #5b6b85;
-  --line: #d3ddec;
-  --bg: #dfe6f0;
-  --card: #f8fafc;
-  --ring-track: #eef1f6;
-  --track: #eef1f6;
-
-  --critical: #e0122e;
-  --critical-bg: #fbd2da;
-  --attention: #a8760a;
-  --attention-bg: #f9e6ae;
-  --caution: #bb4c12;
-  --caution-bg: #f6d8bf;
-  --stable: #0f7a4e;
-  --stable-bg: #cdefdd;
-  --priority: #a63fc7;
-  --accent-top-critical: #ef4444;
-  --accent-top-attention: #f59e0b;
-  --accent-top-caution: #f97316;
-  --accent-top-stable: #22c55e;
-}
-
-html[data-theme="dark"]{
-  --navy: #0a1a30;
-  --navy-2: #123a68;
-  --blue: #38bdf8;
-  --blue-dark: #0ea5e9;
-  --ink: #eef3fa;
-  --ink-soft: #93a8c2;
-  --line: #223a58;
-  --bg: #0a1626;
-  --card: #102640;
-  --ring-track: #1c3350;
-  --track: #1c3350;
-
-  --critical: #ff7b81;
-  --critical-bg: rgba(217,45,67,0.22);
-  --attention: #ffcc5c;
-  --attention-bg: rgba(184,134,11,0.28);
-  --caution: #ff9d5c;
-  --caution-bg: rgba(193,90,31,0.28);
-  --stable: #55d99a;
-  --stable-bg: rgba(28,138,92,0.28);
-  --priority: #c96be0;
-  --accent-top-critical: #f87171;
-  --accent-top-attention: #fbbf24;
-  --accent-top-caution: #fb923c;
-  --accent-top-stable: #4ade80;
-}
-
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;height:100%;}
-body{
-  font-family:'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  transition:background .2s ease, color .2s ease;
-}
+/* Tokens: src/styles/bpl-tokens.css (via index.css) */
 
 /* ---------- top strip ---------- */
-.top-strip{height:4px;background:linear-gradient(90deg, var(--navy) 0%, var(--blue) 100%);}
+.top-strip{height:4px;background:linear-gradient(90deg, var(--gray-900) 0%, var(--blue-500) 100%);}
 
 /* ================= LOGIN SCREEN ================= */
 #login-screen{
@@ -74,7 +10,7 @@ body{
 }
 .login-hero{
   flex:0 0 40%;
-  background:linear-gradient(160deg,var(--blue) 0%, var(--blue-dark) 100%);
+  background:linear-gradient(160deg, var(--gray-800) 0%, var(--gray-900) 100%);
   color:#fff;
   padding:40px 40px;
   display:flex;
@@ -134,7 +70,7 @@ body{
 /* ================= DASHBOARD SCREEN ================= */
 #dashboard-screen{display:none;}
 header.dash-header{
-  background:#4b9cd3;
+  background:linear-gradient(90deg, var(--gray-900) 0%, var(--gray-800) 100%);
   padding:0 24px;
   height:68px;
   display:flex;
@@ -406,10 +342,9 @@ table.ranges-table td.base{color:var(--blue-dark);}
   font-size:11.5px;
   font-weight:700;
   letter-spacing:.4px;
-  color:var(--critical);
+  text-transform:uppercase;
+  color:var(--ink-soft);
 }
-.modal-detail .detail-group.vent h4{color:var(--blue-dark);}
-.modal-detail .detail-group.temp h4{color:var(--caution);}
 
 /* ---- detail modal ---- */
 .modal-overlay{
@@ -539,8 +474,8 @@ table.ranges-table td.base{color:var(--blue-dark);}
 
 /* shared 3-tier clinical colour coding, driven by the reference-range
    table: normal = blue, low/borderline = orange, high/severe = red */
-.vclass-normal{ --vc: var(--blue-dark); }
-.vclass-caution{ --vc: var(--caution); }
+.vclass-normal{ --vc: var(--normal); }
+.vclass-caution{ --vc: var(--typical); }
 .vclass-critical{ --vc: var(--critical); }
 .vital .value.vclass-normal,
 .vital .value.vclass-caution,
@@ -564,8 +499,9 @@ table.ranges-table td.base{color:var(--blue-dark);}
   color:var(--critical);
   font-size:13px;
   font-weight:600;
-  padding:8px 12px;
-  border-radius:6px;
+  padding:10px 14px;
+  border-radius:7px;
+  border-left:4px solid var(--critical);
   display:flex;
   align-items:center;
   gap:7px;

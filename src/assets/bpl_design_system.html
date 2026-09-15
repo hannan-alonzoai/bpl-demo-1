@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPL Cortex OT — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=sentient@1,2,3,4,5,6,7&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- primary: blue scale ---- */
+    --blue-50:#f0f9ff; --blue-100:#e0f2fe; --blue-200:#bae6fd; --blue-300:#7dd3fc;
+    --blue-400:#38bdf8; --blue-500:#0ea5e9; --blue-600:#0284c7; --blue-700:#0369a1;
+    --blue-800:#075985; --blue-900:#0c4a6e;
+
+    /* ---- primary: white / neutral-light scale ---- */
+    --white:#ffffff; --white-100:#f8fafc; --white-200:#eef2f8; --white-300:#e4e9f0; --white-400:#dde5f0;
+
+    /* ---- secondary: dark gray scale (anchored near BPL's own dark gray) ---- */
+    --gray-900:#1c2530; --gray-800:#2e3a46; --gray-700:#465361; --gray-600:#5b6b85;
+    --gray-500:#7c8aa0; --gray-400:#a3aec0; --gray-300:#c3ccd9; --gray-200:#dde5f0; --gray-100:#eef2f8;
+
+    /* ---- semantic: vital status ---- */
+    --critical:#8a0f1f; --critical-bg:#f9dde1;
+    --typical:#b8600f; --typical-bg:#f7e3cf;
+    --normal:#0369a1; --normal-bg:#e0f2fe;
+
+    /* ---- semantic: stage / workflow ---- */
+    --completed:#1c8a5c; --completed-bg:#dcf5e7;
+    --inprogress:#0ea5e9; --inprogress-bg:#e0f2fe;
+    --upcoming:#5b6b85; --upcoming-bg:#eef1f4;
+
+    --line:var(--gray-200); --bg:var(--white-200); --card:var(--white);
+    --ink:var(--gray-900); --ink-soft:var(--gray-600);
+
+    --font-ui:'Sentient','Georgia',serif;
+    --font-mono:'Sentient','Georgia',serif;
+    --font-alt:'Sora','Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);font-size:15px;}
+
+  .page-head{background:linear-gradient(90deg,var(--gray-900) 0%,var(--gray-800) 100%);color:#fff;padding:26px 32px;}
+  .page-head .eyebrow{color:var(--blue-300);font-size:12.5px;font-weight:700;letter-spacing:.3px;}
+  .page-head h1{margin:4px 0 6px;font-size:27px;font-weight:600;}
+  .page-head p{margin:0;font-size:13.5px;color:#c7d2de;max-width:800px;line-height:1.55;}
+
+  nav.toc{
+    display:flex;gap:18px;flex-wrap:wrap;
+    background:var(--card);border-bottom:1px solid var(--line);
+    padding:12px 32px;position:sticky;top:0;z-index:10;
+  }
+  nav.toc a{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-decoration:none;}
+  nav.toc a:hover{color:var(--blue-700);}
+
+  .wrap{padding:36px 32px 70px;max-width:1200px;margin:0 auto;}
+  section{margin-bottom:52px;}
+  section h2{font-size:21px;font-weight:600;margin:0 0 6px;}
+  section .lede{font-size:14.5px;color:var(--ink-soft);margin:0 0 22px;max-width:760px;line-height:1.55;}
+  section h3{font-size:14px;font-weight:600;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;margin:26px 0 12px;}
+  section h3:first-of-type{margin-top:0;}
+
+  /* ---------- swatches ---------- */
+  .swatch-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .swatch{width:108px;}
+  .swatch .chip{height:64px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);}
+  .swatch .name{font-size:12.5px;font-weight:600;margin-top:6px;}
+  .swatch .hex{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);}
+
+  .usage-table{width:100%;border-collapse:collapse;margin-top:6px;}
+  .usage-table th{text-align:left;font-size:11px;color:var(--ink-soft);font-weight:600;padding:8px 10px;border-bottom:2px solid var(--line);}
+  .usage-table td{padding:10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle;}
+  .usage-swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:8px;border:1px solid rgba(0,0,0,0.08);}
+  .usage-table code{font-family:var(--font-mono);font-size:11.5px;background:var(--white-200);padding:2px 6px;border-radius:4px;}
+
+  /* ---------- typography samples ---------- */
+  .type-row{display:grid;grid-template-columns:110px 1fr 1fr;align-items:baseline;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .type-row:last-child{border-bottom:none;}
+  .type-row.head{padding-top:0;padding-bottom:8px;}
+  .type-row .tag{font-size:12px;color:var(--ink-soft);font-family:var(--font-mono);}
+  .type-row .col-label{font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--blue-700);}
+  .type-row .sample{min-width:0;}
+  .type-row .sample.secondary{font-family:var(--font-alt);font-variant-numeric:tabular-nums;}
+  .t-h1{font-size:30px;font-weight:600;}
+  .t-h2{font-size:23px;font-weight:600;}
+  .t-h3{font-size:17px;font-weight:600;}
+  .t-body{font-size:14px;font-weight:400;}
+  .t-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-soft);}
+  .t-mono{font-family:var(--font-mono);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .t-alt{font-family:var(--font-alt);}
+
+  .font-cards{display:flex;gap:16px;flex-wrap:wrap;}
+  .font-card{flex:1;min-width:260px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .font-card .role{font-size:11px;font-weight:700;color:var(--blue-700);background:var(--blue-50);display:inline-block;padding:3px 10px;border-radius:12px;margin-bottom:10px;}
+  .font-card h4{margin:0 0 4px;font-size:17px;font-weight:600;}
+  .font-card p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+  .font-card .glyphs{margin-top:12px;font-size:24px;}
+  .font-card .glyphs.mono{font-family:var(--font-mono);}
+  .font-card .glyphs.ui{font-family:var(--font-ui);}
+  .font-card .glyphs.alt{font-family:var(--font-alt);}
+
+  /* ---------- components ---------- */
+  .comp-grid{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;}
+  .comp-block{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .comp-block h4{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;}
+
+  /* vital value pills */
+  .vital-demo{display:flex;gap:14px;}
+  .vital-box{background:var(--white-200);border-radius:8px;padding:12px 16px;text-align:center;min-width:80px;}
+  .vital-box .v{font-family:var(--font-mono);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .vital-box .v.critical{color:var(--critical);}
+  .vital-box .v.typical{color:var(--typical);}
+  .vital-box .v.normal{color:var(--normal);}
+  .vital-box .l{font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
+
+  /* stage chips */
+  .stage-demo{display:flex;gap:12px;flex-wrap:wrap;}
+  .stage-chip{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:20px;border:1.5px solid var(--line);
+    font-size:12.5px;font-weight:600;background:var(--card);
+  }
+  .stage-chip .dot{width:8px;height:8px;border-radius:50%;}
+  .stage-chip.completed{border-color:var(--completed);background:var(--completed-bg);color:var(--completed);}
+  .stage-chip.completed .dot{background:var(--completed);}
+  .stage-chip.inprogress{border-color:var(--inprogress);background:var(--inprogress-bg);color:var(--blue-700);}
+  .stage-chip.inprogress .dot{background:var(--inprogress);}
+  .stage-chip.upcoming{border-color:var(--gray-300);background:var(--upcoming-bg);color:var(--upcoming);}
+  .stage-chip.upcoming .dot{background:var(--gray-400);}
+
+  /* status pill */
+  .pill-demo{display:flex;gap:10px;flex-wrap:wrap;}
+  .pill{font-size:11.5px;font-weight:700;padding:5px 13px;border-radius:20px;}
+  .pill.critical{color:var(--critical);background:var(--critical-bg);}
+  .pill.typical{color:var(--typical);background:var(--typical-bg);}
+  .pill.normal{color:var(--normal);background:var(--normal-bg);}
+
+  /* sample OT card using the full system */
+  .ot-card-demo{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--critical);border-radius:10px;padding:16px 18px;width:260px;}
+  .ot-card-demo .oid{font-size:11px;font-weight:700;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;}
+  .ot-card-demo .proc{font-family:var(--font-ui);font-size:15px;font-weight:700;margin-top:4px;}
+  .ot-card-demo .who{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .ot-card-demo .row{display:flex;gap:16px;margin-top:14px;}
+  .ot-card-demo .row .v{font-family:var(--font-mono);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;}
+  .ot-card-demo .row .v.critical{color:var(--critical);}
+  .ot-card-demo .row .l{font-size:10px;color:var(--ink-soft);}
+
+  /* pie */
+  .pie-demo{width:74px;height:74px;border-radius:50%;position:relative;background:conic-gradient(var(--blue-500) 62%, var(--gray-100) 0);}
+  .pie-demo .hole{position:absolute;inset:8px;background:var(--card);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;}
+
+  /* alarm banners */
+  .alarm-banner{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;border-radius:7px;font-size:13px;font-weight:600;margin-bottom:10px;
+  }
+  .alarm-banner:last-child{margin-bottom:0;}
+  .alarm-banner .icon{font-size:14px;flex:none;}
+  .alarm-banner.critical{background:var(--critical-bg);color:var(--critical);border-left:4px solid var(--critical);}
+  .alarm-banner.typical{background:var(--typical-bg);color:var(--typical);border-left:4px solid var(--typical);}
+  .alarm-card-demo{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--critical);border-radius:10px;padding:16px 18px;max-width:320px;}
+  .alarm-card-demo .oid{font-size:11px;font-weight:700;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;}
+  .alarm-card-demo .proc{font-size:14.5px;font-weight:700;margin:4px 0 12px;}
+
+  /* HCI table */
+  .hci-table{width:100%;border-collapse:collapse;}
+  .hci-table th{text-align:left;font-size:11px;color:var(--ink-soft);font-weight:600;padding:8px 10px;border-bottom:2px solid var(--line);}
+  .hci-table td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top;line-height:1.5;}
+  .hci-table td.principle{font-weight:600;white-space:nowrap;color:var(--ink);}
+  .hci-table td.principle span{display:block;font-size:11px;font-weight:500;color:var(--ink-soft);margin-top:2px;}
+
+  @media (max-width:760px){
+    nav.toc{display:none;}
+    .comp-grid{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="eyebrow">BPL Cortex OT · Design System v1.0</div>
+  <h1>Colour, typography &amp; components</h1>
+  <p>The reference system behind every screen in BPL Cortex OT: a blue-and-white primary palette, a dark-gray
+  secondary palette, semantic colour rules for vital status and case-stage, and a two-tier typography system
+  built around Sentient for anything clinical, with Sora as the secondary/alternate face.</p>
+</div>
+
+<nav class="toc">
+  <a href="#colour">Colour palette</a>
+  <a href="#semantic">Semantic usage</a>
+  <a href="#stage">Stage colours</a>
+  <a href="#alarms">Alarms</a>
+  <a href="#type">Typography</a>
+  <a href="#components">Components</a>
+  <a href="#hci">HCI principles</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ COLOUR PALETTE ============ -->
+  <section id="colour">
+    <h2>Colour palette</h2>
+    <p class="lede">Primary is blue plus a scale of whites, used for almost everything structural. Secondary is a
+    dark gray scale — approximated from BPL Medical Technologies' own dark gray.</p>
+
+    <h3>Primary — blue scale</h3>
+    <div class="swatch-row">
+      <div class="swatch"><div class="chip" style="background:var(--blue-50)"></div><div class="name">blue-50</div><div class="hex">#f0f9ff</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-100)"></div><div class="name">blue-100</div><div class="hex">#e0f2fe</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-200)"></div><div class="name">blue-200</div><div class="hex">#bae6fd</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-300)"></div><div class="name">blue-300</div><div class="hex">#7dd3fc</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-400)"></div><div class="name">blue-400</div><div class="hex">#38bdf8</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-500)"></div><div class="name">blue-500 · base</div><div class="hex">#0ea5e9</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-600)"></div><div class="name">blue-600</div><div class="hex">#0284c7</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-700)"></div><div class="name">blue-700</div><div class="hex">#0369a1</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-800)"></div><div class="name">blue-800</div><div class="hex">#075985</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-900)"></div><div class="name">blue-900</div><div class="hex">#0c4a6e</div></div>
+    </div>
+
+    <h3>Primary — white scale</h3>
+    <div class="swatch-row">
+      <div class="swatch"><div class="chip" style="background:var(--white)"></div><div class="name">white</div><div class="hex">#ffffff</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--white-100)"></div><div class="name">white-100</div><div class="hex">#f8fafc</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--white-200)"></div><div class="name">white-200 · bg</div><div class="hex">#eef2f8</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--white-300)"></div><div class="name">white-300</div><div class="hex">#e4e9f0</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--white-400)"></div><div class="name">white-400 · line</div><div class="hex">#dde5f0</div></div>
+    </div>
+
+    <h3>Secondary — dark gray scale (from BPL)</h3>
+    <div class="swatch-row">
+      <div class="swatch"><div class="chip" style="background:var(--gray-900)"></div><div class="name">gray-900 · ink</div><div class="hex">#1c2530</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-800)"></div><div class="name">gray-800 · BPL gray</div><div class="hex">#2e3a46</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-700)"></div><div class="name">gray-700</div><div class="hex">#465361</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-600)"></div><div class="name">gray-600 · ink-soft</div><div class="hex">#5b6b85</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-500)"></div><div class="name">gray-500</div><div class="hex">#7c8aa0</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-400)"></div><div class="name">gray-400</div><div class="hex">#a3aec0</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gray-300)"></div><div class="name">gray-300</div><div class="hex">#c3ccd9</div></div>
+    </div>
+  </section>
+
+  <!-- ============ SEMANTIC USAGE ============ -->
+  <section id="semantic">
+    <h2>Semantic colour — vital status</h2>
+    <p class="lede">Every clinical reading on screen resolves to exactly one of three states. Colour is the
+    fastest signal a clinician reads, so these three never get reused for anything else in the product.</p>
+
+    <table class="usage-table">
+      <thead><tr><th>State</th><th>Colour</th><th>Token</th><th>When to use it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Critical</b></td>
+          <td><span class="usage-swatch" style="background:var(--critical)"></span>Dark red</td>
+          <td><code>--critical</code></td>
+          <td>A vital is outside its safe range badly enough to need attention now (e.g. HR ≤40 severe bradycardia, SpO₂ below threshold, temperature critically low).</td>
+        </tr>
+        <tr>
+          <td><b>Average / typical deviation</b></td>
+          <td><span class="usage-swatch" style="background:var(--typical)"></span>Orange</td>
+          <td><code>--typical</code></td>
+          <td>A vital has drifted from normal but isn't yet dangerous — a borderline or trending reading worth watching.</td>
+        </tr>
+        <tr>
+          <td><b>Normal</b></td>
+          <td><span class="usage-swatch" style="background:var(--normal)"></span>Blue</td>
+          <td><code>--normal</code></td>
+          <td>The default state. Everything reads in blue until it earns a different colour.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:28px;">In practice — vital readouts</h3>
+    <div class="vital-demo">
+      <div class="vital-box"><div class="v critical">25.6</div><div class="l">TEMP1 · critical</div></div>
+      <div class="vital-box"><div class="v typical">93</div><div class="l">SPO2 · typical</div></div>
+      <div class="vital-box"><div class="v normal">90</div><div class="l">HR · normal</div></div>
+    </div>
+  </section>
+
+  <!-- ============ STAGE COLOURS ============ -->
+  <section id="stage">
+    <h2>Semantic colour — case stage</h2>
+    <p class="lede">A separate colour language for workflow/progress state, so it's never confused with clinical
+    urgency. Applied to a step's border and its chip fill together, never colour alone.</p>
+
+    <table class="usage-table">
+      <thead><tr><th>Stage</th><th>Colour</th><th>Token</th><th>When to use it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Completed</b></td>
+          <td><span class="usage-swatch" style="background:var(--completed)"></span>Light green</td>
+          <td><code>--completed</code></td>
+          <td>A step in the process flow (e.g. Positioning, Incision) has already happened.</td>
+        </tr>
+        <tr>
+          <td><b>In progress</b></td>
+          <td><span class="usage-swatch" style="background:var(--inprogress)"></span>Light blue</td>
+          <td><code>--inprogress</code></td>
+          <td>The current active step, right now.</td>
+        </tr>
+        <tr>
+          <td><b>Upcoming</b></td>
+          <td><span class="usage-swatch" style="background:var(--upcoming)"></span>Gray</td>
+          <td><code>--upcoming</code></td>
+          <td>Not started yet — deliberately quiet so it doesn't compete with what's active or done.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:28px;">In practice — stage chips</h3>
+    <div class="stage-demo">
+      <div class="stage-chip completed"><span class="dot"></span>Positioning · done</div>
+      <div class="stage-chip inprogress"><span class="dot"></span>Incision · in progress</div>
+      <div class="stage-chip upcoming"><span class="dot"></span>Hand to surgeon · upcoming</div>
+    </div>
+  </section>
+
+  <!-- ============ ALARMS ============ -->
+  <section id="alarms">
+    <h2>Alarms</h2>
+    <p class="lede">Alarms are shown inline, attached to the room they concern — never in a separate global list
+    the clinician has to go check. That's a deliberate anti-click-count decision: the alarm reaches you at the
+    same moment and in the same place as the room it belongs to, not one navigation step later.</p>
+
+    <h3>Rule</h3>
+    <table class="usage-table">
+      <thead><tr><th>Signal</th><th>Always present?</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Colour (dark red / orange)</td>
+          <td>Yes</td>
+          <td>Fastest possible read for someone scanning quickly.</td>
+        </tr>
+        <tr>
+          <td>⚠ icon</td>
+          <td>Yes</td>
+          <td>Colour alone fails for colour-blind users — the icon is a second, non-colour channel carrying the same "this needs attention" meaning.</td>
+        </tr>
+        <tr>
+          <td>Left border accent</td>
+          <td>Yes</td>
+          <td>A third, position-based signal — visible even out of the corner of your eye, before you've read any text.</td>
+        </tr>
+        <tr>
+          <td>Plain-language text</td>
+          <td>Yes</td>
+          <td>Never colour/icon only — always says exactly what's wrong ("Low urine output"), no decoding required.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:28px;">In practice — alarm banner</h3>
+    <div class="comp-grid">
+      <div class="alarm-card-demo">
+        <div class="oid">OT-01</div>
+        <div class="proc">CABG</div>
+        <div class="alarm-banner critical"><span class="icon">⚠</span>Temp2 sensor fall off</div>
+      </div>
+      <div class="comp-block">
+        <h4>Severity variants</h4>
+        <div class="alarm-banner critical"><span class="icon">⚠</span>HR 128 bpm — sustained tachycardia</div>
+        <div class="alarm-banner typical"><span class="icon">⚠</span>SpO2 dipped to 93%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TYPOGRAPHY ============ -->
+  <section id="type">
+    <h2>Typography</h2>
+    <p class="lede">Sentient is the primary typeface — used for every label, heading and vital number across the
+    clinical product, with tabular figures switched on wherever numerals appear so digits stay aligned as they
+    update. Sora is the secondary option: a drop-in alternative wherever a lighter, more geometric, more generic
+    feel is preferred (e.g. a marketing page, not the live monitor screens).</p>
+
+    <div class="font-cards">
+      <div class="font-card">
+        <span class="role">Primary</span>
+        <h4>Sentient</h4>
+        <p>UI text, headings and vital numerals all in Sentient, with <code>font-variant-numeric: tabular-nums</code>
+        turned on for numbers so figures stay in fixed-width columns. Use this everywhere inside the clinical product.</p>
+        <div class="glyphs ui">Aa Gg 12:40</div>
+        <div class="glyphs mono">90 93 128</div>
+      </div>
+      <div class="font-card">
+        <span class="role">Secondary</span>
+        <h4>Sora</h4>
+        <p>Use for anything outside the live clinical screens — marketing pages, onboarding, emails — or as a
+        fallback if Sentient fails to load. Not used for vital numerals.</p>
+        <div class="glyphs alt">Aa Gg 12:40</div>
+        <div class="glyphs alt" style="font-variant-numeric:tabular-nums;">90 93 128</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px;">Type scale</h3>
+    <div class="type-row head">
+      <span class="tag"></span>
+      <span class="col-label">Sentient · primary</span>
+      <span class="col-label">Sora · secondary</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">H1 / 28 / 700</span>
+      <span class="sample t-h1">OT-01 — CABG</span>
+      <span class="sample t-h1 secondary">OT-01 — CABG</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">H2 / 21 / 700</span>
+      <span class="sample t-h2">Surgery Schedule</span>
+      <span class="sample t-h2 secondary">Surgery Schedule</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">H3 / 16 / 600</span>
+      <span class="sample t-h3">James · ASA I</span>
+      <span class="sample t-h3 secondary">James · ASA I</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">Body / 14 / 400</span>
+      <span class="sample t-body">Predicted finish 16:20, no active delay.</span>
+      <span class="sample t-body secondary">Predicted finish 16:20, no active delay.</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">Label / 11 / 700</span>
+      <span class="sample t-label">Hemodynamics</span>
+      <span class="sample t-label secondary">Hemodynamics</span>
+    </div>
+    <div class="type-row">
+      <span class="tag">Tabular / 22 / 700</span>
+      <span class="sample t-mono">90&nbsp;&nbsp;93&nbsp;&nbsp;128</span>
+      <span class="sample t-mono secondary">90&nbsp;&nbsp;93&nbsp;&nbsp;128</span>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section id="components">
+    <h2>Components, assembled</h2>
+    <p class="lede">The palette and type system applied together, the way they actually appear in the product.</p>
+
+    <div class="comp-grid">
+      <div class="comp-block">
+        <h4>Status pills</h4>
+        <div class="pill-demo">
+          <span class="pill critical">Critical</span>
+          <span class="pill typical">Attention</span>
+          <span class="pill normal">Stable</span>
+        </div>
+      </div>
+
+      <div class="comp-block">
+        <h4>Surgery progress — pie</h4>
+        <div class="pie-demo"><div class="hole">62%</div></div>
+      </div>
+
+      <div class="comp-block">
+        <h4>OT card, fully assembled</h4>
+        <div class="ot-card-demo">
+          <div class="oid">OT-01</div>
+          <div class="proc">CABG</div>
+          <div class="who">James · ASA I</div>
+          <div class="row">
+            <div><div class="v normal">90</div><div class="l">HR</div></div>
+            <div><div class="v normal">98</div><div class="l">SpO2</div></div>
+            <div><div class="v critical">25.6</div><div class="l">Temp1</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HCI PRINCIPLES ============ -->
+  <section id="hci">
+    <h2>Human-computer interaction principles</h2>
+    <p class="lede">The palette and typography above aren't decoration — each one exists to serve a specific
+    HCI principle, applied because this is a clinical monitoring surface, not a general dashboard.</p>
+
+    <table class="hci-table">
+      <thead><tr><th>Principle</th><th>How it's applied here</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="principle">Recognition over recall<span>Nielsen heuristic #6</span></td>
+          <td>Colour + icon tell you a vital's state instantly — no need to remember what "93" means for SpO₂ before deciding whether to worry.</td>
+        </tr>
+        <tr>
+          <td class="principle">Redundant coding<span>Accessibility / WCAG</span></td>
+          <td>Every critical signal is colour <em>and</em> icon <em>and</em> position <em>and</em> text, together — never colour alone. Protects colour-blind users specifically, who can't rely on red-vs-blue distinction at all.</td>
+        </tr>
+        <tr>
+          <td class="principle">Hick's Law<span>Fewer choices, faster decisions</span></td>
+          <td>The highest-priority information (status, alarms) is visible with zero clicks; everything else is one click away at most. No screen ever asks the clinician to choose from a long menu to find something urgent.</td>
+        </tr>
+        <tr>
+          <td class="principle">Progressive disclosure</td>
+          <td>The carousel shows a summary; clicking a card reveals full vitals and process flow in place — depth is available on demand, but never forced on the default view.</td>
+        </tr>
+        <tr>
+          <td class="principle">Fitts's Law<span>Target size vs. speed/error rate</span></td>
+          <td>Carousel cards, rail entries and tab buttons are sized generously — relevant when a clinician may be gloved, moving quickly, or using a shared touch display.</td>
+        </tr>
+        <tr>
+          <td class="principle">Consistency<span>Jakob's Law</span></td>
+          <td>Blue always means normal, dark red always means critical, everywhere in the product. Meaning learned on one screen transfers to every other screen without re-learning.</td>
+        </tr>
+        <tr>
+          <td class="principle">Gestalt grouping<span>Proximity &amp; common region</span></td>
+          <td>Patient, procedure and vitals sit inside one bordered card — physically grouping information that belongs together, so the eye doesn't have to hunt across the screen to assemble it.</td>
+        </tr>
+        <tr>
+          <td class="principle">Chunking<span>Miller's Law</span></td>
+          <td>Vitals are split into three labelled groups of ≤6 items (Hemodynamics / Ventilation / Temperature) instead of one long list — matches working-memory limits for scanning under pressure.</td>
+        </tr>
+        <tr>
+          <td class="principle">Error prevention</td>
+          <td>Tabular figures stop digits from shifting width as values update mid-scan — a genuine patient-safety property, not just a style choice. (Note: Sentient doesn't disambiguate 0/O or 1/l as aggressively as a coding monospace font would — worth a second look if that specific risk matters more than the type choice here.)</td>
+        </tr>
+        <tr>
+          <td class="principle">Visibility of system status<span>Nielsen heuristic #1</span></td>
+          <td>Selected states (active carousel card, active tab, current process-flow step) are always visually distinct, so the clinician always knows exactly what they're looking at.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+</body>
+</html>

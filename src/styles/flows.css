@@ -1,17 +1,6 @@
+@import './bpl-tokens.css';
+
 :root {
-    --blue-900: #005a8a;
-    --blue-700: #0077b3;
-    --blue-600: #0088cc;
-    --blue-500: #0099dd;
-    --blue-100: #e6f4fb;
-    --blue-50: #f3f9fd;
-    --gray-900: #1a2332;
-    --gray-700: #4a5568;
-    --gray-500: #718096;
-    --gray-300: #cbd5e0;
-    --gray-200: #e2e8f0;
-    --gray-100: #f1f5f9;
-    --white: #ffffff;
     --accent: #6b46c1;
     --accent-hover: #553c9a;
     --radius: 8px;
@@ -23,7 +12,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-ui);
     font-size: 13px;
     color: var(--gray-900);
     background: var(--gray-100);
@@ -52,7 +41,7 @@
   .scroll-y::-webkit-scrollbar-thumb:hover { background: var(--gray-500); background-clip: padding-box; }
 
   .topbar {
-    background: #4b9cd3;
+    background: linear-gradient(90deg, var(--gray-900) 0%, var(--gray-800) 100%);
     color: var(--white);
     display: flex;
     align-items: center;
@@ -74,7 +63,7 @@
     padding: 6px 14px; border-radius: 20px;
     background: rgba(255,255,255,0.15); font-size: 12px; font-weight: 500;
   }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--completed); flex-shrink: 0; }
   .topbar-center { display: flex; align-items: center; gap: 4px; }
   .topbar-btn {
     display: flex; align-items: center; gap: 7px; padding: 7px 14px;
@@ -430,25 +419,28 @@
   .stage-box {
     display: flex; flex-direction: column; align-items: flex-start;
     min-width: 100px; max-width: 124px; padding: 10px 12px;
-    border: 2px solid var(--gray-200); border-radius: var(--radius);
-    background: var(--white); cursor: pointer; text-align: left;
-    transition: all 0.15s; flex-shrink: 0;
+    border: 1.5px solid var(--gray-300); border-radius: var(--radius);
+    background: var(--upcoming-bg); cursor: pointer; text-align: left;
+    transition: all 0.15s; flex-shrink: 0; color: var(--upcoming);
   }
   .stage-box:hover:not(.selected) {
     border-color: var(--blue-300); background: var(--blue-50);
   }
   .stage-box.done {
-    border-color: rgba(0, 136, 204, 0.35); background: #f0f9ff;
+    border-color: var(--completed); background: var(--completed-bg);
   }
   .stage-box.done .stage-box-num {
-    background: rgba(0, 136, 204, 0.15); color: var(--blue-700);
+    background: rgba(28, 138, 92, 0.15); color: var(--completed);
   }
-  .stage-box.done .stage-box-name { color: var(--blue-900); }
-  .stage-box.done .stage-box-time { color: var(--blue-600); }
+  .stage-box.done .stage-box-name { color: var(--completed); }
+  .stage-box.done .stage-box-time { color: var(--completed); opacity: 0.85; }
   .stage-box.selected {
-    border-color: var(--blue-600); background: var(--blue-600);
-    box-shadow: 0 4px 14px rgba(0, 136, 204, 0.35);
+    border-color: var(--inprogress); background: var(--inprogress-bg);
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);
   }
+  .stage-box.selected .stage-box-name { color: var(--blue-700); }
+  .stage-box.selected .stage-box-time { color: var(--upcoming); }
+  .stage-box.selected .stage-box-num { background: rgba(14, 165, 233, 0.2); color: var(--blue-700); }
   .stage-box.viewing {
     box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-400);
   }
@@ -461,23 +453,18 @@
     display: flex; align-items: center; justify-content: center;
     background: var(--gray-100); margin-bottom: 6px;
   }
-  .stage-box.selected .stage-box-num {
-    background: rgba(255,255,255,0.25); color: var(--white);
-  }
   .stage-box-name {
-    font-size: 11px; font-weight: 600; color: var(--gray-800);
+    font-size: 11px; font-weight: 600; color: var(--upcoming);
     line-height: 1.25;
   }
-  .stage-box.selected .stage-box-name { color: var(--white); }
   .stage-box-time {
-    font-size: 10px; color: var(--gray-400); margin-top: 4px;
+    font-size: 10px; color: var(--gray-500); margin-top: 4px;
   }
-  .stage-box.selected .stage-box-time { color: rgba(255,255,255,0.85); }
 
   .stage-selected-banner {
     display: flex; align-items: center; gap: 12px;
     padding: 12px 16px; margin-bottom: 14px;
-    background: linear-gradient(to right, var(--blue-900), #4b9cd3);
+    background: linear-gradient(90deg, var(--gray-900) 0%, var(--gray-800) 100%);
     border-radius: var(--radius); color: var(--white);
   }
   .stage-selected-banner .banner-icon {
