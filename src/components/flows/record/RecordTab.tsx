@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
-import { STAFFING } from '../../../data/flows';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useState } from 'react';
+import { OR_STAGES, STAFFING } from '../../../data/flows';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
-type RecordSubMobile = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
-type RecordSubDesktop = 'flowsheet' | 'fluidsMeds' | 'staffing';
-type RecordSub = RecordSubMobile | RecordSubDesktop;
+type RecordSub = 'flowsheet' | 'fluids_medications' | 'staffing';
 
 interface Props {
   currentStageIdx: number;
@@ -16,20 +13,13 @@ interface Props {
   onRequestStageAdvance: (targetIdx: number) => void;
 }
 
-const MOBILE_SUBS: { id: RecordSubMobile; label: string }[] = [
-  { id: 'flowsheet', label: 'Flowsheet' },
-  { id: 'fluids', label: 'Fluids' },
-  { id: 'medications', label: 'Medications' },
-  { id: 'staffing', label: 'Staffing' },
+const SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
+  { id: 'fluids_medications', label: 'Fluids & Medications', mobileLabel: 'Fluids & Meds' },
+  { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
 ];
 
-const DESKTOP_SUBS: { id: RecordSubDesktop; label: string }[] = [
-  { id: 'flowsheet', label: 'Flowsheet' },
-  { id: 'fluidsMeds', label: 'Fluids & Medications' },
-  { id: 'staffing', label: 'Staffing' },
-];
-
-function FluidsGanttCard() {
+function FluidsCard() {
   return (
     <div className="record-card record-card-gantt" title="Fluids intake / output">
       <div className="record-card-header">
@@ -45,7 +35,7 @@ function FluidsGanttCard() {
   );
 }
 
-function MedicationsGanttCard() {
+function MedicationsCard() {
   return (
     <div className="record-card record-card-gantt" title="Medications timeline">
       <div className="record-card-header">
@@ -67,38 +57,37 @@ export function RecordTab({
   onViewStageChange,
   onRequestStageAdvance,
 }: Props) {
-  const isMobile = useIsMobile();
-  const subs = isMobile ? MOBILE_SUBS : DESKTOP_SUBS;
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
-
-  useEffect(() => {
-    if (!isMobile && (recordSub === 'fluids' || recordSub === 'medications')) {
-      setRecordSub('fluidsMeds');
-    } else if (isMobile && recordSub === 'fluidsMeds') {
-      setRecordSub('fluids');
-    }
-  }, [isMobile, recordSub]);
-
-  const isActive = (id: RecordSub) => recordSub === id;
+  const stageNum = currentStageIdx + 1;
+  const totalStages = OR_STAGES.length;
+  const activeMeta = SUBS.find(s => s.id === recordSub);
 
   return (
     <div className="record-view record-view-shell">
+      <div className="record-mobile-stage-head">
+        <span className="record-mobile-stage-title">
+          OT Stage — {activeMeta?.label ?? 'Flowsheet'}
+        </span>
+        <span className="record-mobile-stage-pill">Stage {stageNum} of {totalStages}</span>
+      </div>
+
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
-        {subs.map(s => (
+        {SUBS.map(s => (
           <button
             key={s.id}
             type="button"
             role="tab"
-            className={`record-subtab${isActive(s.id) ? ' active' : ''}`}
-            aria-selected={isActive(s.id)}
+            className={`record-subtab${recordSub === s.id ? ' active' : ''}`}
+            aria-selected={recordSub === s.id}
             onClick={() => setRecordSub(s.id)}
           >
             <span className="record-subtab-label">{s.label}</span>
+            <span className="record-subtab-label-mobile">{s.mobileLabel}</span>
           </button>
         ))}
       </div>
 
-      <div className={`record-subpanel${isActive('flowsheet') ? ' active' : ''}`} hidden={!isActive('flowsheet')}>
+      <div className={`record-subpanel${recordSub === 'flowsheet' ? ' active' : ''}`} hidden={recordSub !== 'flowsheet'}>
         <div className="record-card flowsheet-record-card">
           <div className="record-card-body flowsheet-panel">
             <Flowsheet
@@ -111,31 +100,15 @@ export function RecordTab({
         </div>
       </div>
 
-      {!isMobile ? (
-        <div
-          className={`record-subpanel record-fluids-meds-panel${isActive('fluidsMeds') ? ' active' : ''}`}
-          hidden={!isActive('fluidsMeds')}
-        >
-          <div className="record-fluids-meds-grid">
-            <FluidsGanttCard />
-            <MedicationsGanttCard />
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className={`record-subpanel${isActive('fluids') ? ' active' : ''}`} hidden={!isActive('fluids')}>
-            <FluidsGanttCard />
-          </div>
-          <div
-            className={`record-subpanel${isActive('medications') ? ' active' : ''}`}
-            hidden={!isActive('medications')}
-          >
-            <MedicationsGanttCard />
-          </div>
-        </>
-      )}
+      <div
+        className={`record-subpanel record-subpanel-charts${recordSub === 'fluids_medications' ? ' active' : ''}`}
+        hidden={recordSub !== 'fluids_medications'}
+      >
+        <FluidsCard />
+        <MedicationsCard />
+      </div>
 
-      <div className={`record-subpanel${isActive('staffing') ? ' active' : ''}`} hidden={!isActive('staffing')}>
+      <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
         <div className="record-card record-card-staff">
           <div className="record-card-header">
             <h3>Staffing</h3>
