@@ -790,7 +790,6 @@
   .vitals-param-item.validation .pval { color: var(--critical); }
 
   .flowsheet-waveform-block { display: flex; flex-direction: column; min-height: 0; }
-  .flowsheet-waveform-block.maximized .flowsheet-chart { height: 320px; }
   .flowsheet-chart-wrap {
     position: relative;
     background: var(--white); border: 1px solid var(--gray-200);
@@ -1821,3 +1820,137 @@
     background: none; border: none; font-size: 12px; padding: 0;
   }
   .form-breadcrumb .action-link:hover { text-decoration: underline; }
+
+  /* Monitor zoom view — opened from the chart maximize control */
+  .monitor-zoom-overlay {
+    position: fixed; inset: 0; z-index: 400;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .monitor-zoom-modal {
+    width: min(1080px, 100%);
+    max-height: calc(100dvh - 48px);
+    display: flex; flex-direction: column;
+    background: var(--white); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
+  }
+  .monitor-zoom-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+  }
+  .monitor-zoom-heading { display: flex; align-items: center; gap: 10px; }
+  .monitor-zoom-heading h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .monitor-zoom-header .flowsheet-live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: var(--completed);
+  }
+  .monitor-zoom-header .flowsheet-live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--completed);
+  }
+  .monitor-zoom-close {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-600);
+    font-size: 14px; line-height: 1; cursor: pointer; font-family: inherit;
+  }
+  .monitor-zoom-close:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-body {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 14px 18px 18px; overflow-y: auto; min-height: 0;
+  }
+  .monitor-zoom-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .monitor-zoom-vital {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 6px; background: var(--white);
+    border: 1px solid var(--gray-200); border-radius: 12px; min-width: 0;
+  }
+  .monitor-zoom-vital-label {
+    font-size: 10px; font-weight: 700; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: var(--ls-label);
+  }
+  .monitor-zoom-vital-value {
+    font-size: 18px; font-weight: 800; line-height: 1.1;
+    font-variant-numeric: tabular-nums; text-align: center; color: var(--gray-900);
+  }
+  .monitor-zoom-vital-value small {
+    display: block; font-size: 10px; font-weight: 600; color: var(--gray-500); margin-top: 2px;
+  }
+  .monitor-zoom-vital.tone-hr .monitor-zoom-vital-value { color: #dc2626; }
+  .monitor-zoom-vital.tone-resp .monitor-zoom-vital-value { color: #16a34a; }
+  .monitor-zoom-vital.tone-spo2 .monitor-zoom-vital-value { color: #2563eb; }
+  .monitor-zoom-vital.tone-temp .monitor-zoom-vital-value { color: #ea580c; }
+  .monitor-zoom-chart-card {
+    border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px;
+  }
+  .monitor-zoom-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
+  }
+  .monitor-zoom-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+  .monitor-zoom-legend-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border: 1px solid var(--gray-200); border-radius: 999px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .monitor-zoom-legend-item i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .monitor-zoom-legend-item.off { opacity: 0.45; background: var(--gray-100); }
+  .monitor-zoom-actions { display: flex; gap: 6px; }
+  .monitor-zoom-actions button {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 15px; line-height: 1; cursor: pointer;
+  }
+  .monitor-zoom-actions button:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-plot {
+    position: relative; height: 320px;
+    border: 1px solid var(--gray-100); border-radius: 8px;
+    background: var(--white); overflow: hidden;
+    touch-action: none; cursor: grab;
+  }
+  .monitor-zoom-plot:active { cursor: grabbing; }
+  .monitor-zoom-plot svg { display: block; width: 100%; height: 100%; }
+  .monitor-zoom-times {
+    display: flex; justify-content: space-between; margin-top: 6px;
+    font-size: 10px; font-weight: 600; color: var(--gray-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .monitor-zoom-ranges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .monitor-zoom-range {
+    padding: 6px 14px; border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .monitor-zoom-range:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-range.active {
+    background: var(--blue-700); border-color: var(--blue-700); color: var(--white);
+  }
+  .monitor-zoom-custom {
+    display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    font-size: 11px; font-weight: 700; color: var(--gray-600);
+  }
+  .monitor-zoom-custom input { flex: 1; accent-color: var(--blue-600); }
+  .monitor-zoom-custom-value { min-width: 56px; text-align: right; font-variant-numeric: tabular-nums; }
+  .monitor-zoom-scrub {
+    position: relative; height: 24px; margin-top: 12px;
+    background: var(--gray-100); border-radius: 8px;
+  }
+  .monitor-zoom-scrub-window {
+    position: absolute; top: 3px; bottom: 3px;
+    min-width: 12px; border-radius: 6px;
+    background: var(--blue-200); border: 1px solid var(--blue-400);
+  }
+  .monitor-zoom-scrub input {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    margin: 0; opacity: 0; cursor: grab;
+  }
+  .monitor-zoom-scrub input:disabled { cursor: default; }
+  .monitor-zoom-scrub:focus-within .monitor-zoom-scrub-window {
+    box-shadow: 0 0 0 2px var(--blue-300);
+  }
+  .monitor-zoom-hint {
+    margin-top: 8px; text-align: center;
+    font-size: 11px; color: var(--gray-500);
+  }

@@ -4,6 +4,7 @@ import { useIsMobile } from '../../../hooks/useIsMobile';
 import { stageVitals } from '../../../utils/stageVitals';
 import { StageProgressTracker } from '../../shared/StageProgressTracker';
 import { ParamChip } from '../shared/ParamChip';
+import { MonitorZoomModal } from './MonitorZoomModal';
 
 interface FlowsheetProps {
   currentStageIdx: number;
@@ -122,27 +123,16 @@ function Waveform({ stageIdx, params }: { stageIdx: number; params: MonitorParam
   const isMobile = useIsMobile();
   const lanes = buildMonitorLanes(stageIdx, params);
   const mobileLanes = lanes.filter(l => l.key !== 'temp');
-  const [maximized, setMaximized] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   return (
-    <div className={`flowsheet-waveform-block${maximized ? ' maximized' : ''}${isMobile ? ' is-mobile-monitor' : ''}`}>
+    <div className={`flowsheet-waveform-block${isMobile ? ' is-mobile-monitor' : ''}`}>
       <div className="flowsheet-live-header">
         <span className="flowsheet-live-title">Live Patient Monitor</span>
         <span className="flowsheet-live-badge">
           <span className="flowsheet-live-dot" aria-hidden />
           Live
         </span>
-        {isMobile ? (
-          <button
-            type="button"
-            className="chart-maximize-btn chart-maximize-btn-inline"
-            title={maximized ? 'Exit fullscreen' : 'Maximize chart'}
-            aria-label={maximized ? 'Exit fullscreen' : 'Maximize chart'}
-            onClick={() => setMaximized(v => !v)}
-          >
-            <MaximizeIcon />
-          </button>
-        ) : null}
       </div>
 
       {isMobile ? (
@@ -169,17 +159,15 @@ function Waveform({ stageIdx, params }: { stageIdx: number; params: MonitorParam
       )}
 
       <div className="flowsheet-chart-wrap">
-        {!isMobile ? (
-          <button
-            type="button"
-            className="chart-maximize-btn"
-            title={maximized ? 'Exit fullscreen' : 'Maximize chart'}
-            aria-label={maximized ? 'Exit fullscreen' : 'Maximize chart'}
-            onClick={() => setMaximized(v => !v)}
-          >
-            <MaximizeIcon />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="chart-maximize-btn"
+          title="Open zoom view"
+          aria-label="Open zoom view"
+          onClick={() => setZoomOpen(true)}
+        >
+          <MaximizeIcon />
+        </button>
 
         {isMobile ? (
           <>
@@ -269,6 +257,10 @@ function Waveform({ stageIdx, params }: { stageIdx: number; params: MonitorParam
           </div>
         )}
       </div>
+
+      {zoomOpen ? (
+        <MonitorZoomModal stageIdx={stageIdx} params={params} onClose={() => setZoomOpen(false)} />
+      ) : null}
     </div>
   );
 }
