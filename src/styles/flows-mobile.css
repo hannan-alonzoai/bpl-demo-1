@@ -55,10 +55,6 @@
     display: none !important;
   }
 
-  .tab-staff-desktop {
-    display: none !important;
-  }
-
   /* Patient header: desktop off, mobile on */
   .patient-header-panel {
     padding: 0;
@@ -69,19 +65,19 @@
   }
   .patient-header-mobile {
     display: block;
-    padding: 8px 12px 0;
+    padding: 10px 16px 0;
   }
 
   .patient-mobile-card {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 10px 12px;
+    padding: 14px 16px;
     background: var(--white);
     border: 1px solid var(--gray-200);
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   }
   .patient-mobile-back {
     width: 30px;
@@ -103,17 +99,56 @@
     cursor: pointer;
     font-family: inherit;
     min-width: 0;
+    width: 100%;
+    display: block;
   }
-  .patient-mobile-name-row {
+  .patient-mobile-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .patient-mobile-toggle {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    box-shadow: inset 0 0 0 1px rgba(2, 132, 199, 0.12);
+  }
+  .patient-mobile-toggle svg {
+    transition: transform 0.2s ease;
+  }
+  .patient-mobile-toggle.open svg {
+    transform: rotate(180deg);
+  }
+  .patient-mobile-detail-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.22s ease;
+  }
+  .patient-mobile-detail-wrap.open {
+    grid-template-rows: 1fr;
+  }
+  .patient-mobile-detail-inner {
+    overflow: hidden;
+    min-height: 0;
   }
   .patient-mobile-name {
-    font-size: 15px;
+    display: block;
+    font-size: 18px;
     font-weight: 700;
     color: var(--gray-900);
-    line-height: 1.2;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
   }
   .patient-mobile-chevron {
     display: inline-block;
@@ -126,23 +161,48 @@
     transform: rotate(-90deg);
   }
   .patient-mobile-meta {
-    display: block;
-    margin-top: 2px;
-    font-size: 11px;
-    color: var(--gray-500);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 5px;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--gray-600);
     font-weight: 500;
+  }
+  .patient-mobile-meta-sep {
+    color: var(--gray-400);
+    font-weight: 600;
+  }
+  .patient-mobile-stage {
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  .patient-mobile-stage-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    margin-left: 2px;
+    border-radius: 999px;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
   .patient-mobile-allergy {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 999px;
     background: var(--critical-bg);
     color: var(--critical);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     border: 1px solid var(--critical-line);
+    white-space: nowrap;
   }
   .patient-mobile-quick {
     display: flex;
@@ -173,7 +233,8 @@
   }
   .patient-mobile-proc {
     font-weight: 700;
-    color: var(--blue-700);
+    color: var(--blue-600);
+    letter-spacing: 0.01em;
   }
   .patient-mobile-quick-allergy {
     display: inline-flex;
@@ -187,13 +248,18 @@
     font-size: 11px;
     flex-shrink: 0;
   }
+  .patient-mobile-detail-wrap.open .patient-mobile-detail {
+    margin-top: 8px;
+  }
   .patient-mobile-detail {
     max-height: 50vh;
-    margin-top: 8px;
     padding: 12px 14px;
     background: var(--white);
     border: 1px solid var(--gray-200);
     border-radius: 12px;
+  }
+  .patient-header-panel.mobile-expanded {
+    flex-shrink: 0;
   }
   .patient-mobile-row {
     display: flex;
@@ -386,25 +452,16 @@
     overflow: visible;
     padding: 8px 10px 10px;
   }
-  /* Single time axis: medications reuses fluids scale */
-  .record-subpanel-charts .record-card-gantt + .record-card-gantt .gantt-c-head {
-    display: none;
-  }
   .record-subpanel-charts .record-card-gantt + .record-card-gantt {
-    margin-top: 0;
-    border-top: 1px solid var(--gray-100);
-    border-radius: 0 0 12px 12px;
-    box-shadow: none;
+    margin-top: 8px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   }
   .record-subpanel-charts .record-card-gantt:first-of-type {
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px;
   }
   .record-subpanel-charts .record-card-gantt:only-of-type {
     border-radius: 12px;
-  }
-  .record-subpanel-charts .record-card-gantt + .record-card-gantt .record-card-header {
-    border-top: none;
-    padding-top: 6px;
   }
   .record-card-gantt .record-card-header {
     padding: 8px 12px;
@@ -496,6 +553,7 @@
     position: relative;
     height: 24px;
     min-width: 0;
+    overflow: visible;
   }
   .gantt-c-grid {
     position: absolute;
@@ -519,6 +577,45 @@
     height: 13px;
     min-width: 8px;
     border-radius: 999px;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 1;
+  }
+  .gantt-c-bar::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--gray-900);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.12s ease;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+    z-index: 3;
+  }
+  .gantt-c-bar.show-tip::after {
+    opacity: 1;
+    visibility: visible;
+  }
+  .gantt-c-bar.show-tip {
+    z-index: 2;
+    filter: brightness(1.08);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .gantt-c-bar:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
   }
   .gantt-c-legend {
     display: flex;

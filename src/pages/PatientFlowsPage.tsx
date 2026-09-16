@@ -6,7 +6,6 @@ import { MedicationsOverlay } from '../components/flows/overlays/MedicationsOver
 import { PatientHeader } from '../components/flows/PatientHeader';
 import { FormTab } from '../components/flows/form/FormTab';
 import { RecordTab } from '../components/flows/record/RecordTab';
-import { StaffTab } from '../components/flows/record/StaffTab';
 import { ReportTab } from '../components/flows/report/ReportTab';
 import { ScoreTab } from '../components/flows/score/ScoreTab';
 import { SectionTabs } from '../components/flows/SectionTabs';
@@ -46,10 +45,6 @@ export function PatientFlowsPage() {
     setCurrentStageIdx(idx);
     setViewStageIdx(idx);
   }, [roomId]);
-
-  useEffect(() => {
-    if (isMobile && tab === 'staff') setTab('record');
-  }, [isMobile, tab]);
 
   if (!roomId || !getRoom(roomId)) {
     return <Navigate to="/board" replace />;
@@ -121,16 +116,8 @@ export function PatientFlowsPage() {
       <div id="tabReport" className={`tab-content${tab === 'report' ? ' active' : ''}`}>
         {tab === 'report' && <ReportTab patient={patient} />}
       </div>
-      <div className={`tab-content tab-staff-desktop${tab === 'staff' ? ' active' : ''}`}>
-        {tab === 'staff' && <StaffTab />}
-      </div>
 
-      {isMobile ? (
-        <MobileBottomNav
-          active={tab === 'staff' ? 'record' : tab}
-          onChange={setTab}
-        />
-      ) : null}
+      {isMobile ? <MobileBottomNav active={tab} onChange={setTab} /> : null}
 
       {pendingAdvanceIdx != null && (
         <StageProceedDialog

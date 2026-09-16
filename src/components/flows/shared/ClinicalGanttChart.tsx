@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const GANTT_LABEL_W = 160;
@@ -34,6 +35,17 @@ function pct(min: number) {
   return ((min - CHART_START_MIN) / CHART_SPAN) * 100;
 }
 
+function formatGanttClock(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+/** Hover tooltip: segment window on the timeline (volume/dose stays on the chart labels). */
+function segmentTimeRange(seg: GanttSegment) {
+  return `${formatGanttClock(seg.startMin)} – ${formatGanttClock(seg.endMin)}`;
+}
+
 function SegmentBar({ seg, barClass }: { seg: GanttSegment; barClass: string }) {
   const left = pct(seg.startMin);
   const width = pct(seg.endMin) - left;
@@ -41,7 +53,7 @@ function SegmentBar({ seg, barClass }: { seg: GanttSegment; barClass: string }) 
 
   return (
     <div className="fluids-gantt-segment-wrap" style={{ left: `${left}%`, width: `${width}%` }}>
-      <div className={`fluids-gantt-bar ${barClass}`} title={seg.label}>
+      <div className={`fluids-gantt-bar ${barClass}`} title={segmentTimeRange(seg)}>
         {pos === 'on-bar' ? <span className="fluids-gantt-bar-label">{seg.label}</span> : null}
       </div>
       {pos === 'below' ? <span className="fluids-gantt-bar-label fluids-gantt-bar-label--below">{seg.label}</span> : null}
@@ -89,6 +101,21 @@ function segmentSummary(row: GanttRow) {
 function CompactGantt({ sections, ariaLabel }: Props) {
   const legendRows = sections.flatMap(s => s.rows);
   const lastTick = COMPACT_TICKS.length - 1;
+  const [activeBar, setActiveBar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeBar) return;
+    const dismiss = (e: MouseEvent | TouchEvent) => {
+      const t = e.target as HTMLElement;
+      if (!t.closest('.gantt-c-bar')) setActiveBar(null);
+    };
+    document.addEventListener('touchstart', dismiss, { passive: true });
+    document.addEventListener('click', dismiss);
+    return () => {
+      document.removeEventListener('touchstart', dismiss);
+      document.removeEventListener('click', dismiss);
+    };
+  }, [activeBar]);
 
   return (
     <div className="gantt-c" aria-label={ariaLabel}>
@@ -126,12 +153,27 @@ function CompactGantt({ sections, ariaLabel }: Props) {
                 </div>
                 {row.segments.map((seg, i) => {
                   const left = pct(seg.startMin);
+                  const barKey = `${row.id}-${i}`;
+                  const tip = segmentTimeRange(seg);
                   return (
                     <span
-                      key={`${row.id}-${i}`}
-                      className={`gantt-c-bar ${row.barClass}`}
+                      key={barKey}
+                      className={`gantt-c-bar ${row.barClass}${activeBar === barKey ? ' show-tip' : ''}`}
                       style={{ left: `${left}%`, width: `${pct(seg.endMin) - left}%` }}
-                      title={`${row.name} — ${seg.label}`}
+                      data-tip={tip}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${row.name}, ${tip}`}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setActiveBar(prev => (prev === barKey ? null : barKey));
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setActiveBar(prev => (prev === barKey ? null : barKey));
+                        }
+                      }}
                     />
                   );
                 })}
