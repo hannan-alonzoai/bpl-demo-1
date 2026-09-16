@@ -30,6 +30,15 @@
   }
   .topbar-mobile .topbar-left {
     gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+  .topbar-mobile .topbar-back-mobile {
+    padding: 6px 11px;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 700;
+    flex-shrink: 0;
   }
   .topbar-mobile .topbar-logo {
     height: 32px;

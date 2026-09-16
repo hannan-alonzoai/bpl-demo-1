@@ -10,11 +10,14 @@ export function Topbar({ mobile }: Props) {
   return (
     <header className={`topbar${mobile ? ' topbar-mobile' : ''}`}>
       <div className="topbar-left">
-        {!mobile ? (
-          <button type="button" className="topbar-back" onClick={() => navigate('/board')}>
-            ← Back
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className={`topbar-back${mobile ? ' topbar-back-mobile' : ''}`}
+          onClick={() => navigate('/board')}
+          aria-label="Back to surgery schedule"
+        >
+          {mobile ? '←' : '← Back'}
+        </button>
         <div className="topbar-brand">
           <img src="/assets/bpl-cortex-ot-logo.png" alt="BPL Cortex OT" className="topbar-logo" />
         </div>
