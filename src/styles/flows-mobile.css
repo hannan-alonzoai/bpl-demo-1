@@ -977,9 +977,19 @@
     min-height: 0;
     width: 100%;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: scroll;
     align-content: start;
     -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-300) transparent;
+  }
+  .score-card-list.score-card-list-mobile::-webkit-scrollbar {
+    width: 8px;
+  }
+  .score-card-list.score-card-list-mobile::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 4px;
   }
   .score-card-list-mobile .score-select-card {
     padding: 10px 8px;
@@ -1173,6 +1183,29 @@
   }
 
   /* Report */
+  #tabReport.tab-content.active {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .report-tab-root {
+    flex: 1;
+    min-height: 0;
+    overflow: visible;
+  }
+  .report-sections-panel {
+    display: none;
+  }
+  .report-shell {
+    display: block;
+    padding: 0;
+    overflow: visible;
+    flex: none;
+  }
+  .report-view-main {
+    overflow: visible;
+    padding: 0;
+  }
   .report-view {
     padding: 12px;
   }

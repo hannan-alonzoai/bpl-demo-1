@@ -10,6 +10,16 @@ const TIME_OPTIONS = [
   '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00',
 ];
 
+const INCLUDED_SECTIONS = [
+  'Flowsheet',
+  'Vitals',
+  'Fluids',
+  'Medications',
+  'Staffing',
+  'APACHE II',
+  'Forms (all selected)',
+];
+
 const NOTES = [
   'If surgery duration is < 1hr, time interval is auto-selected to 5 mins.',
   'If surgery duration is 1–2 hrs, time interval is auto-selected to 10 mins.',
@@ -38,7 +48,7 @@ export function ReportTab({ patient }: Props) {
   const [mobileFormOpen, setMobileFormOpen] = useState(false);
 
   return (
-    <div className="report-view">
+    <div className="report-tab-root">
       <div className="report-mobile-hero">
         <h2 className="report-mobile-title">OT Report</h2>
         <p className="report-mobile-sub">
@@ -67,6 +77,27 @@ export function ReportTab({ patient }: Props) {
         )}
       </div>
 
+      <div className="report-shell">
+        <aside className="report-sections-panel" aria-label="Report sections">
+          <div className="report-sections-header">
+            <h2>Included sections</h2>
+            <p className="report-sections-sub">Included in the generated OT report</p>
+          </div>
+          <ul className="report-sections-list scroll-y">
+            {INCLUDED_SECTIONS.map(section => (
+              <li key={section} className="report-sections-item">
+                {section}
+              </li>
+            ))}
+            {FORM_LIST.map(form => (
+              <li key={form.id} className="report-sections-item report-sections-item-form">
+                {form.title}
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <div className={`report-view report-view-main${mobileFormOpen ? ' report-mobile-form-open-wrap' : ''}`}>
       <div className={`report-card report-card-desktop${mobileFormOpen ? ' report-mobile-form-open' : ''}`}>
         <h2 className="report-title">Choose time Interval</h2>
 
@@ -137,6 +168,8 @@ export function ReportTab({ patient }: Props) {
               <li key={note}>{note}</li>
             ))}
           </ol>
+        </div>
+      </div>
         </div>
       </div>
     </div>
