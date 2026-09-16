@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { STAFFING } from '../../../data/flows';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
-type RecordSub = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
+type RecordSubMobile = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
+type RecordSubDesktop = 'flowsheet' | 'fluidsMeds' | 'staffing';
+type RecordSub = RecordSubMobile | RecordSubDesktop;
 
 interface Props {
   currentStageIdx: number;
@@ -13,12 +16,50 @@ interface Props {
   onRequestStageAdvance: (targetIdx: number) => void;
 }
 
-const SUBS: { id: RecordSub; label: string }[] = [
+const MOBILE_SUBS: { id: RecordSubMobile; label: string }[] = [
   { id: 'flowsheet', label: 'Flowsheet' },
   { id: 'fluids', label: 'Fluids' },
   { id: 'medications', label: 'Medications' },
   { id: 'staffing', label: 'Staffing' },
 ];
+
+const DESKTOP_SUBS: { id: RecordSubDesktop; label: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet' },
+  { id: 'fluidsMeds', label: 'Fluids & Medications' },
+  { id: 'staffing', label: 'Staffing' },
+];
+
+function FluidsGanttCard() {
+  return (
+    <div className="record-card record-card-gantt" title="Fluids intake / output">
+      <div className="record-card-header">
+        <h3>Fluids</h3>
+        <button type="button" className="gantt-add-btn" disabled title="Demo only">
+          + Add Entry
+        </button>
+      </div>
+      <div className="record-card-body">
+        <FluidsGanttChart />
+      </div>
+    </div>
+  );
+}
+
+function MedicationsGanttCard() {
+  return (
+    <div className="record-card record-card-gantt" title="Medications timeline">
+      <div className="record-card-header">
+        <h3>Medications</h3>
+        <button type="button" className="gantt-add-btn" disabled title="Demo only">
+          + Add Medication
+        </button>
+      </div>
+      <div className="record-card-body">
+        <MedicationsGanttChart />
+      </div>
+    </div>
+  );
+}
 
 export function RecordTab({
   currentStageIdx,
@@ -26,18 +67,30 @@ export function RecordTab({
   onViewStageChange,
   onRequestStageAdvance,
 }: Props) {
+  const isMobile = useIsMobile();
+  const subs = isMobile ? MOBILE_SUBS : DESKTOP_SUBS;
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
+
+  useEffect(() => {
+    if (!isMobile && (recordSub === 'fluids' || recordSub === 'medications')) {
+      setRecordSub('fluidsMeds');
+    } else if (isMobile && recordSub === 'fluidsMeds') {
+      setRecordSub('fluids');
+    }
+  }, [isMobile, recordSub]);
+
+  const isActive = (id: RecordSub) => recordSub === id;
 
   return (
     <div className="record-view record-view-shell">
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
-        {SUBS.map(s => (
+        {subs.map(s => (
           <button
             key={s.id}
             type="button"
             role="tab"
-            className={`record-subtab${recordSub === s.id ? ' active' : ''}`}
-            aria-selected={recordSub === s.id}
+            className={`record-subtab${isActive(s.id) ? ' active' : ''}`}
+            aria-selected={isActive(s.id)}
             onClick={() => setRecordSub(s.id)}
           >
             <span className="record-subtab-label">{s.label}</span>
@@ -45,7 +98,7 @@ export function RecordTab({
         ))}
       </div>
 
-      <div className={`record-subpanel${recordSub === 'flowsheet' ? ' active' : ''}`} hidden={recordSub !== 'flowsheet'}>
+      <div className={`record-subpanel${isActive('flowsheet') ? ' active' : ''}`} hidden={!isActive('flowsheet')}>
         <div className="record-card flowsheet-record-card">
           <div className="record-card-body flowsheet-panel">
             <Flowsheet
@@ -58,35 +111,31 @@ export function RecordTab({
         </div>
       </div>
 
-      <div className={`record-subpanel${recordSub === 'fluids' ? ' active' : ''}`} hidden={recordSub !== 'fluids'}>
-        <div className="record-card record-card-gantt" title="Fluids intake / output">
-          <div className="record-card-header">
-            <h3>Fluids</h3>
-            <button type="button" className="gantt-add-btn" disabled title="Demo only">
-              + Add Entry
-            </button>
-          </div>
-          <div className="record-card-body">
-            <FluidsGanttChart />
+      {!isMobile ? (
+        <div
+          className={`record-subpanel record-fluids-meds-panel${isActive('fluidsMeds') ? ' active' : ''}`}
+          hidden={!isActive('fluidsMeds')}
+        >
+          <div className="record-fluids-meds-grid">
+            <FluidsGanttCard />
+            <MedicationsGanttCard />
           </div>
         </div>
-      </div>
-
-      <div className={`record-subpanel${recordSub === 'medications' ? ' active' : ''}`} hidden={recordSub !== 'medications'}>
-        <div className="record-card record-card-gantt" title="Medications timeline">
-          <div className="record-card-header">
-            <h3>Medications</h3>
-            <button type="button" className="gantt-add-btn" disabled title="Demo only">
-              + Add Medication
-            </button>
+      ) : (
+        <>
+          <div className={`record-subpanel${isActive('fluids') ? ' active' : ''}`} hidden={!isActive('fluids')}>
+            <FluidsGanttCard />
           </div>
-          <div className="record-card-body">
-            <MedicationsGanttChart />
+          <div
+            className={`record-subpanel${isActive('medications') ? ' active' : ''}`}
+            hidden={!isActive('medications')}
+          >
+            <MedicationsGanttCard />
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
-      <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
+      <div className={`record-subpanel${isActive('staffing') ? ' active' : ''}`} hidden={!isActive('staffing')}>
         <div className="record-card record-card-staff">
           <div className="record-card-header">
             <h3>Staffing</h3>
