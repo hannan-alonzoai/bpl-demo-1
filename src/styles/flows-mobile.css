@@ -24,12 +24,15 @@
 
   /* Top bar */
   .topbar.topbar-mobile {
-    height: 52px;
+    height: 56px;
     padding: 0 14px;
     justify-content: space-between;
+    align-items: center;
   }
   .topbar-mobile .topbar-left {
-    gap: 8px;
+    gap: 10px;
+    align-items: center;
+    min-height: 0;
   }
   .topbar-mobile .topbar-logo {
     height: 28px;
@@ -50,17 +53,30 @@
     font-size: 12px;
   }
   .topbar-back-mobile {
-    min-width: 44px;
-    min-height: 44px;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-size: 26px;
+    gap: 0;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .topbar-back-mobile .topbar-back-arrow-only {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
     font-weight: 700;
     line-height: 1;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    background: rgba(255, 255, 255, 0.16);
+    transform: translateX(1px);
   }
 
   /* Hide desktop section tabs — bottom nav replaces them */
@@ -377,67 +393,57 @@
   .tab-content.active:has(.record-view-shell) {
     min-height: 0;
   }
-  .record-mobile-stage-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 4px 2px;
-    font-size: 11px;
-    min-width: 0;
-    flex-shrink: 0;
-  }
-  .record-mobile-stage-title {
-    font-weight: 700;
-    color: var(--gray-800);
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-family: var(--font-ui);
-    font-size: 11px;
-  }
-  .record-mobile-stage-pill {
-    font-weight: 700;
-    color: var(--blue-700);
-    white-space: nowrap;
-    flex-shrink: 0;
-    font-size: 11px;
-  }
   .record-subtabs {
     position: sticky;
     top: 0;
-    z-index: 6;
+    z-index: 12;
+    isolation: isolate;
+    box-sizing: border-box;
+    width: calc(100% + 24px);
+    max-width: none;
+    margin: 0 -12px 8px;
+    padding: 0 12px;
     background: var(--gray-100);
     border: none;
     border-bottom: 1px solid var(--gray-200);
-    background: transparent;
-    padding: 0;
-    margin: 0 0 8px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
     gap: 0;
     justify-content: flex-start;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    width: fit-content;
-    max-width: 100%;
     flex-shrink: 0;
-    box-shadow: none;
+  }
+  .record-subtabs::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 8px;
+    background: linear-gradient(to bottom, var(--gray-100) 0%, transparent 100%);
+    pointer-events: none;
   }
   .record-subtabs::-webkit-scrollbar {
     display: none;
   }
   .record-subtab {
+    position: relative;
+    z-index: 1;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px 12px;
     font-size: 11px;
+    border: none;
     border-bottom: 2px solid transparent;
     color: var(--gray-600);
     min-height: 40px;
+    background: var(--gray-100);
+    cursor: pointer;
+    font-family: inherit;
   }
   .record-subpanel.active {
     display: flex;
@@ -1460,9 +1466,6 @@
     display: none;
   }
   .report-mobile-hero {
-    display: none;
-  }
-  .record-mobile-stage-head {
     display: none;
   }
   .flowsheet-mobile-source-row {
