@@ -1,7 +1,5 @@
 @import './bpl-tokens.css';
-@import './stage-tracker.css';
-/* flows-mobile.css is imported after this file (see PatientFlowsPage) so its
-   media-query rules win same-specificity ties against the desktop rules here. */
+@import './flows-mobile.css';
 
 :root {
     --accent: var(--blue-600);
@@ -118,30 +116,46 @@
     transform: rotate(90deg);
   }
   .patient-compact-summary {
-    flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 16px;
-    font-size: 12px; min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font-size: 12px;
+    min-width: 0;
   }
   .compact-kv {
-    display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
   }
   .compact-kv .compact-key {
-    font-size: var(--fs-label); font-weight: 700; color: var(--ink-soft);
-    text-transform: uppercase; letter-spacing: var(--ls-label);
+    font-size: var(--fs-label);
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    line-height: 16px;
+    flex-shrink: 0;
   }
   .compact-kv .compact-val {
-    font-size: 13px; font-weight: 600; color: var(--ink);
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
+    line-height: 16px;
   }
   .compact-kv .compact-val.highlight { color: var(--normal); }
-  .compact-kv .compact-val-count {
-    margin-left: 3px; padding: 1px 7px;
-    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-    font-size: 11px; font-weight: 700; color: var(--blue-700);
-    background: var(--blue-50); border: 1px solid var(--blue-100);
-    border-radius: 999px;
+  .compact-kv .compact-val.allergy { color: var(--critical); }
+  .compact-kv .compact-val.allergy svg {
+    vertical-align: -1px;
+    margin-right: 4px;
   }
-  .compact-kv .compact-val.allergy {
-    color: var(--critical); display: inline-flex; align-items: center; gap: 4px;
+  .compact-kv .compact-val-count {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
   .patient-header-expanded {
     border: 1px solid var(--gray-200); border-top: none;
@@ -436,11 +450,19 @@
   }
   .record-subtab:hover { color: var(--gray-900); }
   .record-subtab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+  @media (min-width: 769px) {
+    .record-subtab-label-mobile { display: none; }
+  }
+  .record-subpanel-charts.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
   .record-subpanel { display: none; }
   .record-subpanel.active { display: block; }
   .flowsheet-record-card { box-shadow: none; }
   .flowsheet-panel { padding: 16px 18px 18px; }
-  .flowsheet-panel .ot-stage-tracker-wrap { margin-bottom: 16px; padding: 4px 0 14px; }
+  .flowsheet-panel .ot-stage-tracker-wrap { margin-bottom: 16px; padding: 4px 0 2px; }
   .flowsheet-vitals-main { flex: 1; min-width: 0; width: 100%; }
   @media (min-width: 769px) {
     .flowsheet-vitals-layout {
@@ -554,38 +576,6 @@
   .gantt-add-btn:not(:disabled):hover { background: var(--blue-700); }
   .record-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 900px) { .record-grid-2 { grid-template-columns: 1fr; } }
-  .record-fluids-meds-panel.active {
-    display: block;
-    min-height: 0;
-  }
-  .record-fluids-meds-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  .record-fluids-meds-grid .record-card-gantt {
-    min-width: 0;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-  }
-  .record-fluids-meds-grid .record-card-gantt .record-card-body {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .record-fluids-meds-grid .record-card-gantt .fluids-gantt {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .record-fluids-meds-grid .record-card-gantt .fluids-gantt-scroll {
-    flex: 1;
-    min-height: 200px;
-  }
 
   .flowsheet-toolbar {
     display: flex; align-items: center; justify-content: flex-end;
@@ -596,6 +586,89 @@
     font-size: 12px; background: var(--white); min-width: 220px; outline: none;
   }
   .flowsheet-source-select:focus { border-color: var(--blue-500); box-shadow: 0 0 0 2px var(--blue-100); }
+
+  /* OR stage tracker — horizontal progress rail */
+  .ot-stage-tracker-wrap {
+    overflow-x: auto; margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 4px 10px;
+  }
+  .ot-stage-tracker {
+    position: relative;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 0; min-width: 720px; padding: 0 8px 4px;
+  }
+  .ot-stage-track {
+    position: absolute; left: 28px; right: 28px; top: 16px;
+    height: 3px; background: var(--gray-200); border-radius: 2px; z-index: 0;
+  }
+  .ot-stage-track-fill {
+    height: 100%; background: var(--blue-500); border-radius: 2px;
+    transition: width 0.25s ease;
+  }
+  .ot-stage-node {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; flex: 1; min-width: 0;
+    padding: 0 4px; border: none; background: transparent;
+    font: inherit; color: inherit; cursor: pointer; text-align: center;
+  }
+  .ot-stage-node.locked { cursor: not-allowed; opacity: 0.72; }
+  .ot-stage-marker {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--white); border: 2px solid var(--gray-300);
+    color: var(--gray-500); font-size: 11px; font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .ot-stage-num { line-height: 1; }
+  .ot-stage-name {
+    font-size: 11px; font-weight: 600; color: var(--gray-500);
+    line-height: 1.2; max-width: 88px;
+  }
+  .ot-stage-time {
+    font-size: 10px; color: var(--gray-400); font-variant-numeric: tabular-nums;
+  }
+  .ot-stage-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.2px;
+    text-transform: uppercase;
+  }
+  .ot-stage-badge.current {
+    background: var(--blue-100); color: var(--blue-700);
+  }
+  .ot-stage-badge.upcoming {
+    background: var(--gray-100); color: var(--gray-500);
+  }
+  .ot-stage-node.done .ot-stage-marker {
+    background: var(--blue-600); border-color: var(--blue-600); color: var(--white);
+  }
+  .ot-stage-node.done .ot-stage-name { color: var(--blue-800); }
+  .ot-stage-node.done .ot-stage-time { color: var(--blue-600); }
+  .ot-stage-node.current .ot-stage-marker {
+    width: 34px; height: 34px; margin-top: -3px;
+    background: var(--blue-600); border-color: var(--blue-600); color: var(--white);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.22);
+  }
+  .ot-stage-node.current .ot-stage-name {
+    color: var(--blue-800); font-weight: 700; font-size: 12px;
+  }
+  .ot-stage-node.current .ot-stage-time { color: var(--blue-600); font-weight: 600; }
+  .ot-stage-node.next .ot-stage-marker {
+    border-style: dashed; border-color: var(--blue-400); color: var(--blue-600);
+    background: var(--blue-50);
+  }
+  .ot-stage-node.next .ot-stage-name { color: var(--blue-700); }
+  .ot-stage-node.next:hover .ot-stage-marker {
+    border-color: var(--blue-600); background: var(--blue-100);
+  }
+  .ot-stage-node.viewing .ot-stage-marker {
+    box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-400);
+  }
+  .ot-stage-node.current.viewing .ot-stage-marker {
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.22), 0 0 0 2px var(--white), 0 0 0 5px var(--blue-400);
+  }
 
   /* Legacy stage-box styles retained for any residual markup */
   .flowsheet-panel .stage-boxes-wrap {
@@ -717,7 +790,6 @@
   .vitals-param-item.validation .pval { color: var(--critical); }
 
   .flowsheet-waveform-block { display: flex; flex-direction: column; min-height: 0; }
-  .flowsheet-waveform-block.maximized .flowsheet-chart { height: 320px; }
   .flowsheet-chart-wrap {
     position: relative;
     background: var(--white); border: 1px solid var(--gray-200);
@@ -1037,7 +1109,7 @@
   .fluids-gantt-label {
     flex-shrink: 0;
     display: flex; align-items: center;
-    padding: 10px 12px;
+    padding: 10px 12px 10px 4px;
     border-right: 1px solid var(--line);
     box-sizing: border-box;
   }
@@ -1180,6 +1252,11 @@
   .score-count-line {
     font-size: 11px; color: var(--gray-500); margin: 0 16px 8px;
   }
+  .scores-view-all {
+    border: none; background: transparent; color: var(--blue-600);
+    font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; padding: 0;
+  }
+  .scores-view-all:disabled { opacity: 0.55; cursor: default; }
   .score-list { flex: 1; min-height: 0; padding: 8px; }
   .score-card-list {
     flex: 1; min-height: 0; padding: 4px 12px 12px;
@@ -1189,8 +1266,6 @@
     display: flex;
     flex-direction: column;
   }
-  /* Cards keep their height so the list scrolls instead of squashing them. */
-  .score-card-list:not(.score-card-list-mobile) > .score-select-card { flex: 0 0 auto; }
   .score-list-item {
     display: flex; align-items: center; gap: 10px; width: 100%;
     padding: 10px 12px; border: none; background: transparent;
@@ -1560,11 +1635,6 @@
     min-height: 100vh; min-height: 100dvh;
     background: var(--gray-100);
   }
-  /* Score is a fixed-height workspace: the list scrolls in place instead of
-     stretching the page, which is what kept the left panel from scrolling. */
-  .dashboard-view:has(#tabScore.tab-content.active) {
-    height: 100dvh; max-height: 100dvh; min-height: 0; overflow: hidden;
-  }
   .dashboard-view.hidden { display: none; }
   .form-view {
     display: none; flex-direction: column;
@@ -1750,3 +1820,137 @@
     background: none; border: none; font-size: 12px; padding: 0;
   }
   .form-breadcrumb .action-link:hover { text-decoration: underline; }
+
+  /* Monitor zoom view — opened from the chart maximize control */
+  .monitor-zoom-overlay {
+    position: fixed; inset: 0; z-index: 400;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .monitor-zoom-modal {
+    width: min(1080px, 100%);
+    max-height: calc(100dvh - 48px);
+    display: flex; flex-direction: column;
+    background: var(--white); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.32);
+  }
+  .monitor-zoom-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+  }
+  .monitor-zoom-heading { display: flex; align-items: center; gap: 10px; }
+  .monitor-zoom-heading h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .monitor-zoom-header .flowsheet-live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: var(--completed);
+  }
+  .monitor-zoom-header .flowsheet-live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--completed);
+  }
+  .monitor-zoom-close {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-600);
+    font-size: 14px; line-height: 1; cursor: pointer; font-family: inherit;
+  }
+  .monitor-zoom-close:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-body {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 14px 18px 18px; overflow-y: auto; min-height: 0;
+  }
+  .monitor-zoom-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .monitor-zoom-vital {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 6px; background: var(--white);
+    border: 1px solid var(--gray-200); border-radius: 12px; min-width: 0;
+  }
+  .monitor-zoom-vital-label {
+    font-size: 10px; font-weight: 700; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: var(--ls-label);
+  }
+  .monitor-zoom-vital-value {
+    font-size: 18px; font-weight: 800; line-height: 1.1;
+    font-variant-numeric: tabular-nums; text-align: center; color: var(--gray-900);
+  }
+  .monitor-zoom-vital-value small {
+    display: block; font-size: 10px; font-weight: 600; color: var(--gray-500); margin-top: 2px;
+  }
+  .monitor-zoom-vital.tone-hr .monitor-zoom-vital-value { color: #dc2626; }
+  .monitor-zoom-vital.tone-resp .monitor-zoom-vital-value { color: #16a34a; }
+  .monitor-zoom-vital.tone-spo2 .monitor-zoom-vital-value { color: #2563eb; }
+  .monitor-zoom-vital.tone-temp .monitor-zoom-vital-value { color: #ea580c; }
+  .monitor-zoom-chart-card {
+    border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px;
+  }
+  .monitor-zoom-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
+  }
+  .monitor-zoom-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+  .monitor-zoom-legend-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border: 1px solid var(--gray-200); border-radius: 999px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .monitor-zoom-legend-item i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .monitor-zoom-legend-item.off { opacity: 0.45; background: var(--gray-100); }
+  .monitor-zoom-actions { display: flex; gap: 6px; }
+  .monitor-zoom-actions button {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 15px; line-height: 1; cursor: pointer;
+  }
+  .monitor-zoom-actions button:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-plot {
+    position: relative; height: 320px;
+    border: 1px solid var(--gray-100); border-radius: 8px;
+    background: var(--white); overflow: hidden;
+    touch-action: none; cursor: grab;
+  }
+  .monitor-zoom-plot:active { cursor: grabbing; }
+  .monitor-zoom-plot svg { display: block; width: 100%; height: 100%; }
+  .monitor-zoom-times {
+    display: flex; justify-content: space-between; margin-top: 6px;
+    font-size: 10px; font-weight: 600; color: var(--gray-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .monitor-zoom-ranges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .monitor-zoom-range {
+    padding: 6px 14px; border: 1px solid var(--gray-200); border-radius: 8px;
+    background: var(--white); color: var(--gray-700);
+    font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .monitor-zoom-range:hover { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-200); }
+  .monitor-zoom-range.active {
+    background: var(--blue-700); border-color: var(--blue-700); color: var(--white);
+  }
+  .monitor-zoom-custom {
+    display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    font-size: 11px; font-weight: 700; color: var(--gray-600);
+  }
+  .monitor-zoom-custom input { flex: 1; accent-color: var(--blue-600); }
+  .monitor-zoom-custom-value { min-width: 56px; text-align: right; font-variant-numeric: tabular-nums; }
+  .monitor-zoom-scrub {
+    position: relative; height: 24px; margin-top: 12px;
+    background: var(--gray-100); border-radius: 8px;
+  }
+  .monitor-zoom-scrub-window {
+    position: absolute; top: 3px; bottom: 3px;
+    min-width: 12px; border-radius: 6px;
+    background: var(--blue-200); border: 1px solid var(--blue-400);
+  }
+  .monitor-zoom-scrub input {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    margin: 0; opacity: 0; cursor: grab;
+  }
+  .monitor-zoom-scrub input:disabled { cursor: default; }
+  .monitor-zoom-scrub:focus-within .monitor-zoom-scrub-window {
+    box-shadow: 0 0 0 2px var(--blue-300);
+  }
+  .monitor-zoom-hint {
+    margin-top: 8px; text-align: center;
+    font-size: 11px; color: var(--gray-500);
+  }

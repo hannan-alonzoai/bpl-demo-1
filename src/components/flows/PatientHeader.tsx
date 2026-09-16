@@ -194,11 +194,10 @@ export function PatientHeader({ patient, currentStageIdx }: Props) {
             className="patient-mobile-identity"
             aria-expanded={mobileExpanded}
             aria-controls={DETAIL_PANEL_ID}
+            aria-label={mobileExpanded ? 'Hide patient details' : 'Show patient details'}
             onClick={() => setMobileExpanded(v => !v)}
           >
-            <span className="patient-mobile-name-row">
-              <span className="patient-mobile-name">{patient.name}</span>
-            </span>
+            <span className="patient-mobile-name">{patient.name}</span>
             <span className="patient-mobile-meta">
               <span className="patient-mobile-proc">{procShort}</span>
               <span className="patient-mobile-meta-sep" aria-hidden>·</span>
@@ -206,22 +205,24 @@ export function PatientHeader({ patient, currentStageIdx }: Props) {
               <span className="patient-mobile-stage-count">{stageCount}</span>
             </span>
           </button>
-          {hasAllergy ? (
-            <span className="patient-mobile-allergy">
-              <AllergyIcon />
-              {patient.allergies}
-            </span>
-          ) : null}
-          <button
-            type="button"
-            className={`patient-mobile-toggle${mobileExpanded ? ' open' : ''}`}
-            aria-expanded={mobileExpanded}
-            aria-controls={DETAIL_PANEL_ID}
-            aria-label={mobileExpanded ? 'Hide patient details' : 'Show patient details'}
-            onClick={() => setMobileExpanded(v => !v)}
-          >
-            <ChevronDownIcon />
-          </button>
+          <div className="patient-mobile-actions">
+            {hasAllergy ? (
+              <span className="patient-mobile-allergy">
+                <AllergyIcon />
+                {patient.allergies}
+              </span>
+            ) : null}
+            <button
+              type="button"
+              className={`patient-mobile-toggle${mobileExpanded ? ' open' : ''}`}
+              aria-expanded={mobileExpanded}
+              aria-controls={DETAIL_PANEL_ID}
+              aria-label={mobileExpanded ? 'Hide patient details' : 'Show patient details'}
+              onClick={() => setMobileExpanded(v => !v)}
+            >
+              <ChevronDownIcon />
+            </button>
+          </div>
         </div>
 
         <div

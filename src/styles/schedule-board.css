@@ -245,6 +245,37 @@ animation:detail-load-spin .9s linear infinite;
 .detail-stages-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
 .schedule-board .detail-stages .ot-stage-tracker-wrap{margin-bottom:0;padding:4px 0 6px}
 .mobile-expand-body .detail-stages .ot-stage-tracker-wrap{padding:2px 0 16px;min-height:92px}
+.detail-stages-row{
+  display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;
+}
+.detail-stages-track{
+  flex:1;min-width:0;
+}
+.detail-case-track{
+  flex:0 0 188px;max-width:220px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.detail-case-track-item{
+  padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+  background:var(--white-100);display:flex;flex-direction:column;gap:2px;
+}
+.detail-case-track-label{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.35px;color:var(--ink-soft);
+}
+.detail-case-track-name{
+  font-size:12px;font-weight:700;color:var(--ink);line-height:1.25;
+}
+.detail-case-track-time{
+  font-size:11px;font-weight:600;color:var(--blue-700);font-variant-numeric:tabular-nums;
+}
+.detail-case-track-fluid{border-left:3px solid var(--blue-500)}
+.detail-case-track-med{border-left:3px solid var(--typical)}
+.detail-case-track-compact{
+  flex:1 1 100%;max-width:none;flex-direction:row;gap:8px;
+}
+.detail-case-track-compact .detail-case-track-item{flex:1;min-width:0;padding:8px 10px}
+.detail-case-track-compact .detail-case-track-name{font-size:11px}
+.detail-case-track-compact .detail-case-track-time{font-size:10px}
 /* Stage boxes: scoped under .schedule-board only (see block ~500+) */
 .detail-hero-main .alert-strip{margin-top:12px;margin-bottom:0}
 .status-critical{color:var(--critical);background:var(--critical-bg)}
@@ -528,6 +559,8 @@ text-transform:uppercase;color:var(--ink-soft);
 .schedule-board .detail-body{padding:18px 20px 24px;overflow-y:auto;flex:1}
 .schedule-board .detail-hero{display:flex;align-items:flex-start;gap:20px;margin-top:4px;flex-wrap:wrap}
 .schedule-board .detail-hero > .detail-stages{margin-top:0;width:100%}
+.schedule-board .detail-stages-row{align-items:stretch}
+.schedule-board .detail-stages-track .ot-stage-tracker-wrap--board{min-height:0}
 .schedule-board .detail-stages{margin-top:16px}
 .schedule-board .detail-stages-label{
   font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;
