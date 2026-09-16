@@ -59,8 +59,6 @@ function ScoreDetailPanel({
   selectedId,
   meta,
   score,
-  showAll,
-  onToggleShowAll,
   calcFlash,
   savedFlash,
   onCalculate,
@@ -71,8 +69,6 @@ function ScoreDetailPanel({
   selectedId: string;
   meta: ScoreTypeMeta;
   score: ScoreData;
-  showAll: boolean;
-  onToggleShowAll: () => void;
   calcFlash: boolean;
   savedFlash: boolean;
   onCalculate: () => void;
@@ -81,8 +77,6 @@ function ScoreDetailPanel({
   onCollapse?: () => void;
 }) {
   const fields = flattenFields(selectedId);
-  const primaryFields = fields.slice(0, 4);
-  const extraFields = fields.slice(4);
 
   return (
     <div className={`scores-detail-card${mobileAccordion ? ' scores-detail-card-mobile' : ''}`}>
@@ -118,7 +112,7 @@ function ScoreDetailPanel({
 
       <div className="scores-body scroll-y">
         <div className="score-form-grid">
-          {primaryFields.map(field => (
+          {fields.map(field => (
             <label className="score-field" key={field.key}>
               <span className="score-field-label">{field.label}</span>
               <span className="score-field-control">
@@ -163,34 +157,6 @@ function ScoreDetailPanel({
           </div>
         ) : null}
 
-        {extraFields.length > 0 || selectedId === 'apache2' ? (
-          <>
-            <button
-              type="button"
-              className={`score-expand-row${showAll ? ' open' : ''}`}
-              onClick={onToggleShowAll}
-            >
-              <span>Show all {score.title} parameters</span>
-              <span className="score-expand-chevron" aria-hidden>
-                ›
-              </span>
-            </button>
-            {showAll ? (
-              <div className="score-form-grid score-form-grid-extra">
-                {(extraFields.length > 0 ? extraFields : primaryFields).map(field => (
-                  <label className="score-field" key={`extra-${field.key}`}>
-                    <span className="score-field-label">{field.label}</span>
-                    <span className="score-field-control">
-                      <input type="text" className="score-field-input" defaultValue={String(field.value)} />
-                      {field.unit ? <span className="score-field-unit">{field.unit}</span> : null}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            ) : null}
-          </>
-        ) : null}
-
         {(calcFlash || savedFlash) && (
           <div className="score-feedback" role="status">
             {calcFlash ? `Calculated ${score.title}: total ${score.total}` : null}
@@ -215,7 +181,6 @@ export function ScoreTab() {
   const isMobile = useIsMobile();
   const [selectedId, setSelectedId] = useState('apache2');
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
   const [calcFlash, setCalcFlash] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
 
@@ -234,13 +199,11 @@ export function ScoreTab() {
 
   function openMobileScore(id: string) {
     setSelectedId(id);
-    setShowAll(false);
     setMobileExpandedId(prev => (prev === id ? null : id));
   }
 
   function selectDesktopScore(id: string) {
     setSelectedId(id);
-    setShowAll(false);
   }
 
   const detailProps =
@@ -249,8 +212,6 @@ export function ScoreTab() {
           selectedId,
           meta,
           score,
-          showAll,
-          onToggleShowAll: () => setShowAll(v => !v),
           calcFlash,
           savedFlash,
           onCalculate: handleCalculate,

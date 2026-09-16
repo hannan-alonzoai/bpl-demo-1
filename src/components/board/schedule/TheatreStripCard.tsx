@@ -78,7 +78,7 @@ export function TheatreStripCard({
                   className="theatre-card-record-link"
                   onClick={e => e.stopPropagation()}
                 >
-                  Open full record →
+                  Open full record <span className="record-link-arrow" aria-hidden>→</span>
                 </Link>
               )}
             </div>

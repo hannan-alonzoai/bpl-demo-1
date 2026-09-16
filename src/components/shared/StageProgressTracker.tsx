@@ -71,8 +71,9 @@ export function StageProgressTracker({
     .filter(Boolean)
     .join(' ');
 
-  const nodeWidth = boardCompact ? 62 : 88;
+  const nodeWidth = boardCompact ? 62 : mobileCompact ? 76 : 88;
   const minTrack = boardCompact ? 360 : 520;
+  const trackMinWidth = Math.max(minTrack, stages.length * nodeWidth);
 
   return (
     <div className={wrapClass} ref={trackerRef}>
@@ -80,7 +81,7 @@ export function StageProgressTracker({
         className="ot-stage-tracker"
         role="list"
         aria-label="OT stage progress"
-        style={mobileCompact ? undefined : { minWidth: Math.max(minTrack, stages.length * nodeWidth) }}
+        style={{ minWidth: trackMinWidth }}
       >
         {!mobileCompact ? (
           <div className="ot-stage-track" aria-hidden>

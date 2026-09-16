@@ -32,7 +32,7 @@ export function StageQuickActions({
             to={`/ot/${fullRecordRoomId}`}
             className="detail-record-link detail-record-link-mobile-expand"
           >
-            Open full record →
+            Open full record <span className="record-link-arrow" aria-hidden>→</span>
           </Link>
         </div>
       ) : null}

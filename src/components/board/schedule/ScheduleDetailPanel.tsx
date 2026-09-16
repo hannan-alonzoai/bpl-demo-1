@@ -40,7 +40,7 @@ export function ScheduleDetailPanel({
         </div>
         {room ? (
           <Link to={`/ot/${room.id}`} className="detail-record-link detail-record-link-head">
-            Open full record →
+            Open full record <span className="record-link-arrow" aria-hidden>→</span>
           </Link>
         ) : null}
       </div>
