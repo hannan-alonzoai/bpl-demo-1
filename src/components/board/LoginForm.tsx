@@ -58,7 +58,6 @@ export function LoginForm() {
   return (
     <div className="login-form-side">
       <form className="login-card" onSubmit={handleSubmit}>
-        <div className="brand-label">BPL Medical Technologies</div>
         <h2>Sign in</h2>
         <p className="sub">Enter your credentials to access the dashboard.</p>
 
@@ -115,11 +114,6 @@ export function LoginForm() {
         <button type="submit" className="signin-btn">
           Sign in
         </button>
-
-        <div className="meta-foot">
-          <span>Version 1.9.0</span>
-          <span>Technology partner: Rtwo</span>
-        </div>
       </form>
     </div>
   );
