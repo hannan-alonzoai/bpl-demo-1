@@ -35,6 +35,7 @@ export function ScheduleDetailBody({ room, view, stageIndex, onRequestStageAdvan
           currentIndex={stageIndex}
           onRequestAdvance={onRequestStageAdvance}
           upcomingOnly
+          fullRecordRoomId={room.id}
         />
         <div className="detail-vitals mobile-expand-vitals">
           <h3>Patient vitals</h3>

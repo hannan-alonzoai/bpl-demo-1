@@ -1,7 +1,13 @@
 export function LoginHero() {
   return (
     <div className="login-hero">
-      <div>
+      <div className="login-hero-intro">
+        <img
+          src="/assets/bpl-cortex-ot-logo.png"
+          alt=""
+          className="login-hero-logo"
+          aria-hidden
+        />
         <h1>BPL Cortex OT</h1>
         <p className="tag">Operating theatre monitoring</p>
       </div>

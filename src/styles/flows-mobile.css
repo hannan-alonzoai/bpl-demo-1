@@ -124,6 +124,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    margin-top: 4px;
+    padding-top: 2px;
   }
   .patient-mobile-name {
     font-size: 16px;
@@ -339,58 +341,6 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  /* Stage tracker — compact horizontal scroll */
-  .ot-stage-tracker-wrap {
-    padding: 4px 0 8px;
-  }
-  /* Window of 4 stages; nodes overflow the 100%-wide tracker so the wrap scrolls
-     back to the completed stages. */
-  .ot-stage-tracker {
-    min-width: 0;
-    width: 100%;
-    justify-content: flex-start;
-    padding: 0;
-  }
-  .ot-stage-tracker .ot-stage-node {
-    flex: 0 0 25%;
-    padding: 0 2px;
-  }
-  .ot-stage-tracker .ot-stage-name {
-    max-width: 100%;
-  }
-  /* A single absolute track can only span the visible window, so each node draws
-     the segment to its right instead — this scrolls with the nodes. */
-  .ot-stage-tracker .ot-stage-track {
-    display: none;
-  }
-  .ot-stage-tracker .ot-stage-node::before {
-    content: '';
-    position: absolute;
-    top: 13px;
-    left: 50%;
-    width: 100%;
-    height: 3px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    z-index: 0;
-  }
-  .ot-stage-tracker .ot-stage-node:last-child::before {
-    content: none;
-  }
-  .ot-stage-tracker .ot-stage-node.done::before {
-    background: var(--blue-500);
-  }
-  .ot-stage-tracker .ot-stage-marker {
-    position: relative;
-    z-index: 1;
-  }
-  .ot-stage-badge.upcoming {
-    display: none;
-  }
-  .ot-stage-node.current .ot-stage-badge.current {
-    display: inline-flex;
   }
 
   /* Vitals / monitor */

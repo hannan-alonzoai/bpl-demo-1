@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { OR_STAGES, VITAL_SOURCES } from '../../../data/flows';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { stageVitals } from '../../../utils/stageVitals';
+import { StageProgressTracker } from '../../shared/StageProgressTracker';
 import { ParamChip } from '../shared/ParamChip';
 
 interface FlowsheetProps {
@@ -9,25 +10,6 @@ interface FlowsheetProps {
   viewStageIdx: number;
   onViewStageChange: (idx: number) => void;
   onRequestAdvance: (targetIdx: number) => void;
-}
-
-function stageNodeClass(i: number, currentStageIdx: number, viewStageIdx: number) {
-  const nextIdx = currentStageIdx + 1;
-  let cls = 'ot-stage-node';
-  if (i > nextIdx) cls += ' locked';
-  else if (i === nextIdx) cls += ' next';
-  else if (i < currentStageIdx) cls += ' done';
-  else if (i === currentStageIdx) cls += ' current';
-  if (i === viewStageIdx && viewStageIdx !== currentStageIdx) cls += ' viewing';
-  return cls;
-}
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
-      <path d="M3 8.5l3.5 3.5 6.5-7" />
-    </svg>
-  );
 }
 
 function MaximizeIcon() {
@@ -354,80 +336,17 @@ function VitalsPanel({ stageIdx, sourceId }: { stageIdx: number; sourceId: strin
 export function Flowsheet({ currentStageIdx, viewStageIdx, onViewStageChange, onRequestAdvance }: FlowsheetProps) {
   const isMobile = useIsMobile();
   const [sourceId, setSourceId] = useState('monitor');
-  const trackerRef = useRef<HTMLDivElement>(null);
-  const nextIdx = currentStageIdx + 1;
-  const progressPct =
-    OR_STAGES.length <= 1 ? 0 : (Math.min(currentStageIdx, OR_STAGES.length - 1) / (OR_STAGES.length - 1)) * 100;
-
-  // Park the current stage at the left edge so it and the next three read first.
-  useEffect(() => {
-    if (!isMobile) return;
-    const wrap = trackerRef.current;
-    const node = wrap?.querySelectorAll<HTMLElement>('.ot-stage-node')[currentStageIdx];
-    if (!wrap || !node) return;
-    wrap.scrollTo({ left: node.offsetLeft, behavior: 'smooth' });
-  }, [isMobile, currentStageIdx]);
-
-  function onStageClick(targetIdx: number) {
-    if (targetIdx > nextIdx) return;
-    if (targetIdx === nextIdx) {
-      onRequestAdvance(targetIdx);
-      return;
-    }
-    onViewStageChange(targetIdx);
-  }
 
   return (
     <>
-      <div className="ot-stage-tracker-wrap" ref={trackerRef}>
-        <div className="ot-stage-tracker" role="list" aria-label="OT stage progress">
-          <div className="ot-stage-track" aria-hidden>
-            <div className="ot-stage-track-fill" style={{ width: `${progressPct}%` }} />
-          </div>
-          {OR_STAGES.map((s, i) => {
-            const cls = stageNodeClass(i, currentStageIdx, viewStageIdx);
-            const locked = i > nextIdx;
-            const isNext = i === nextIdx && nextIdx < OR_STAGES.length;
-            const isDone = i < currentStageIdx;
-            const isCurrent = i === currentStageIdx;
-            const isUpcoming = i > currentStageIdx;
-            const title = isNext ? `Proceed to ${s.name}` : s.desc;
-
-            const content = (
-              <>
-                <span className="ot-stage-marker">
-                  {isDone ? <CheckIcon /> : <span className="ot-stage-num">{i + 1}</span>}
-                </span>
-                <span className="ot-stage-name">{s.name}</span>
-                <span className="ot-stage-time">{s.time}</span>
-                {isCurrent ? <span className="ot-stage-badge current">Current</span> : null}
-                {isUpcoming ? <span className="ot-stage-badge upcoming">Upcoming</span> : null}
-              </>
-            );
-
-            if (locked) {
-              return (
-                <div key={s.id} className={cls} role="listitem" title="Complete prior stages first" aria-disabled="true">
-                  {content}
-                </div>
-              );
-            }
-
-            return (
-              <button
-                key={s.id}
-                type="button"
-                className={cls}
-                role="listitem"
-                title={title}
-                onClick={() => onStageClick(i)}
-              >
-                {content}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <StageProgressTracker
+        stages={OR_STAGES}
+        currentIndex={currentStageIdx}
+        viewIndex={viewStageIdx}
+        onRequestAdvance={onRequestAdvance}
+        onViewStageChange={onViewStageChange}
+        mobileCompact={isMobile}
+      />
 
       {isMobile ? (
         <div className="flowsheet-mobile-source-row">
