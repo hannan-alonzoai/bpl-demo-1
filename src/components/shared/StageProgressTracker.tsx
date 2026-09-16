@@ -81,7 +81,6 @@ export function StageProgressTracker({
           const locked = i > nextIdx;
           const isNext = i === nextIdx && nextIdx < stages.length;
           const isCurrent = i === currentIndex;
-          const isUpcoming = i > currentIndex;
           const title = isNext ? `Proceed to ${s.name}` : s.desc;
 
           const content = (
@@ -92,9 +91,6 @@ export function StageProgressTracker({
               <span className="ot-stage-name">{s.name}</span>
               <span className="ot-stage-time">{s.time}</span>
               {isCurrent ? <span className="ot-stage-badge current">Current</span> : null}
-              {!mobileCompact && isUpcoming ? (
-                <span className="ot-stage-badge upcoming">Upcoming</span>
-              ) : null}
             </>
           );
 

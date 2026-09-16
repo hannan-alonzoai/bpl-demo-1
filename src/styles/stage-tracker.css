@@ -5,7 +5,7 @@
   overflow-x: auto;
   margin-bottom: 12px;
   -webkit-overflow-scrolling: touch;
-  padding: 8px 4px 10px;
+  padding: 8px 4px 14px;
 }
 .ot-stage-tracker {
   position: relative;
@@ -153,7 +153,10 @@
 @media (max-width: 768px) {
   .ot-stage-tracker-wrap--compact,
   .flowsheet-panel .ot-stage-tracker-wrap {
-    padding: 4px 0 8px;
+    padding: 6px 0 18px;
+    min-height: 92px;
+    overflow-x: auto;
+    overflow-y: visible;
   }
   .ot-stage-tracker-wrap--compact .ot-stage-tracker,
   .flowsheet-panel .ot-stage-tracker {

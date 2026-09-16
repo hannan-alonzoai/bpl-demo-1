@@ -440,7 +440,7 @@
   .record-subpanel.active { display: block; }
   .flowsheet-record-card { box-shadow: none; }
   .flowsheet-panel { padding: 16px 18px 18px; }
-  .flowsheet-panel .ot-stage-tracker-wrap { margin-bottom: 16px; padding: 4px 0 2px; }
+  .flowsheet-panel .ot-stage-tracker-wrap { margin-bottom: 16px; padding: 4px 0 14px; }
   .flowsheet-vitals-main { flex: 1; min-width: 0; width: 100%; }
   @media (min-width: 769px) {
     .flowsheet-vitals-layout {

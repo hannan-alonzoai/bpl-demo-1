@@ -108,6 +108,17 @@ export function ScheduleBoard() {
     });
   }, []);
 
+  const scrollMobileOpenCardToTop = useCallback((id: string) => {
+    const item = topScrollRef.current?.querySelector(
+      `.ot-mobile-item[data-id="${CSS.escape(id)}"]`,
+    );
+    if (!(item instanceof HTMLElement)) return;
+    const card = item.querySelector('.ot-theatre-card');
+    const target = card instanceof HTMLElement ? card : item;
+    const top = target.getBoundingClientRect().top + window.scrollY - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }, []);
+
   const selectRoom = useCallback(
     (id: string, opts?: { fromMore?: boolean; scrollIntoView?: boolean }) => {
       const scroll = opts?.scrollIntoView !== false;
@@ -138,6 +149,21 @@ export function ScheduleBoard() {
     },
     [isMobile, promoteToStrip, scrollCardIntoView, selectedId],
   );
+
+  useEffect(() => {
+    if (!isMobile || !selectedId) return;
+    const id = selectedId;
+    let raf = 0;
+    const run = () => scrollMobileOpenCardToTop(id);
+    raf = requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+    const afterExpand = window.setTimeout(run, 420);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(afterExpand);
+    };
+  }, [isMobile, selectedId, scrollMobileOpenCardToTop]);
 
   useEffect(() => {
     if (selectedId && !filteredRooms.some(r => r.id === selectedId)) {
