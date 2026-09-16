@@ -34,7 +34,7 @@
     var(--bg);
 }
 .login-card{width:100%;max-width:360px;}
-.login-hero-logo{display:none;}
+.login-hero-logo{display:block;max-width:220px;width:auto;height:auto;margin:0 0 12px;}
 .login-card h2{font-size:28px;margin:0 0 8px;color:var(--ink);}
 .login-card .sub{color:var(--ink-soft);font-size:14.5px;margin:0 0 28px;}
 .field{margin-bottom:18px;}
@@ -652,12 +652,7 @@ table.ranges-table td.base{color:var(--blue-dark);}
     width:100%;
   }
   .login-hero-logo{
-    display:block;
-    height:40px;
-    width:auto;
-    object-fit:contain;
-    filter:brightness(0) invert(1);
-    margin-bottom:4px;
+    display:none !important;
   }
   .login-hero h1{
     font-size:26px;

@@ -1,4 +1,5 @@
 @import './bpl-tokens.css';
+@import './stage-tracker.css';
 @import './flows-mobile.css';
 
 :root {
@@ -53,11 +54,38 @@
   }
   .topbar-left { display: flex; align-items: center; gap: 12px; }
   .topbar-back {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 7px 12px; border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.12);
-    color: var(--white); font-size: 12px; font-weight: 600;
-    cursor: pointer; font-family: inherit; flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    flex-shrink: 0;
+  }
+  .topbar-back:not(.topbar-back-mobile) .topbar-back-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .topbar-back:not(.topbar-back-mobile) .topbar-back-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+  .topbar-back:not(.topbar-back-mobile) .topbar-back-label {
+    display: block;
+    line-height: 1;
   }
   .topbar-back:hover {
     background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.5);
@@ -110,7 +138,9 @@
   }
   .patient-expand-toggle:hover { background: var(--blue-100); }
   .patient-expand-toggle .chevron {
-    display: inline-block; transition: transform 0.2s; font-size: 10px;
+    display: inline-block; transition: transform 0.2s;
+    font-size: 13px; font-weight: 900; line-height: 1;
+    font-family: system-ui, -apple-system, sans-serif;
   }
   .patient-header-desktop:not(.collapsed) .patient-expand-toggle .chevron {
     transform: rotate(90deg);
@@ -118,7 +148,7 @@
   .patient-compact-summary {
     flex: 1;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     flex-wrap: wrap;
     gap: 8px 20px;
     font-size: 12px;
@@ -126,36 +156,84 @@
   }
   .compact-kv {
     display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
+    align-items: center;
+    gap: 8px;
     white-space: nowrap;
+    min-height: 28px;
   }
   .compact-kv .compact-key {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
     font-size: var(--fs-label);
     font-weight: 700;
     color: var(--ink-soft);
     text-transform: uppercase;
     letter-spacing: var(--ls-label);
-    line-height: 16px;
+    line-height: 1;
     flex-shrink: 0;
   }
   .compact-kv .compact-val {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 28px;
+    box-sizing: border-box;
     font-size: 13px;
     font-weight: 600;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
-    line-height: 16px;
+    line-height: 1;
   }
-  .compact-kv .compact-val.highlight { color: var(--normal); }
-  .compact-kv .compact-val.allergy { color: var(--critical); }
-  .compact-kv .compact-val.allergy svg {
-    vertical-align: -1px;
-    margin-right: 4px;
+  .compact-kv .compact-val-pill {
+    padding: 0 11px;
+    border-radius: 999px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+  }
+  .compact-kv .compact-val-pill.highlight {
+    color: var(--blue-700);
+    background: var(--blue-50);
+    border-color: rgba(2, 132, 199, 0.18);
+  }
+  .compact-kv .compact-val-stage.compact-val-pill {
+    padding: 0;
+    background: transparent;
+    border: none;
+    gap: 6px;
+    min-height: 28px;
+  }
+  .compact-kv .compact-val-stage .compact-stage-name {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    color: var(--blue-700);
+    font-weight: 600;
+    line-height: 1;
   }
   .compact-kv .compact-val-count {
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--blue-50);
+    border: 1px solid rgba(2, 132, 199, 0.18);
+    color: var(--blue-700);
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .compact-kv .compact-val-pill.allergy {
+    color: var(--critical);
+    background: var(--critical-bg);
+    border-color: var(--critical-line);
+  }
+  .compact-kv .compact-val.allergy svg {
+    flex-shrink: 0;
   }
   .patient-header-expanded {
     border: 1px solid var(--gray-200); border-top: none;
@@ -294,9 +372,40 @@
     width: calc(100% - 40px);
   }
   .tab-content.active { display: flex; }
-  #tabForm .shell, #tabForm .main { background: var(--white); }
-  #tabForm .shell { flex: 1; min-height: 0; }
-  #tabForm .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #tabForm.tab-content {
+    background: var(--gray-100);
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+  #tabForm .forms-desktop-shell {
+    flex: 1;
+    min-height: 0;
+    background: var(--gray-100);
+    gap: 14px;
+    padding: 14px 16px 16px;
+  }
+  #tabForm .forms-panel {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    background: var(--white);
+  }
+  #tabForm .main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+  }
   #tabForm .table-wrap {
     flex: 1;
     border: none;
@@ -560,16 +669,23 @@
   @media (min-width: 769px) {
     .record-subtab-label-mobile { display: none; }
   }
-  .record-subpanel-charts.active {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  @media (min-width: 769px) {
+    .record-subpanel-charts.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .record-subpanel { display: none; }
+    .record-subpanel.active { display: block; }
   }
-  .record-subpanel { display: none; }
-  .record-subpanel.active { display: block; }
-  .flowsheet-record-card { box-shadow: none; }
-  .flowsheet-panel { padding: 16px 18px 18px; }
-  .flowsheet-panel .ot-stage-tracker-wrap { margin-bottom: 16px; padding: 4px 0 2px; }
+  .flowsheet-record-card { box-shadow: none; overflow: visible; }
+  .flowsheet-panel { padding: 16px 18px 18px; overflow: visible; }
+  .flowsheet-panel .ot-stage-tracker-wrap {
+    margin-bottom: 16px;
+    padding: 12px 8px 18px;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
   .flowsheet-vitals-main { flex: 1; min-width: 0; width: 100%; }
   @media (min-width: 769px) {
     .flowsheet-vitals-layout {
@@ -1753,6 +1869,29 @@
       min-height: 0;
       overflow: hidden;
     }
+    .dashboard-view:not(.flows-mobile) #tabRecord.tab-content.active {
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(100, 116, 139, 0.55) rgba(226, 232, 240, 0.85);
+    }
+    .dashboard-view:not(.flows-mobile) #tabRecord.tab-content.active::-webkit-scrollbar {
+      width: 10px;
+    }
+    .dashboard-view:not(.flows-mobile) #tabRecord.tab-content.active::-webkit-scrollbar-track {
+      background: rgba(226, 232, 240, 0.9);
+    }
+    .dashboard-view:not(.flows-mobile) #tabRecord.tab-content.active::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.5);
+      border-radius: 999px;
+    }
+    .dashboard-view:not(.flows-mobile) .record-view.record-view-shell {
+      flex: 0 0 auto;
+      min-height: min-content;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+    }
     #tabForm.tab-content.active {
       margin: 0;
       width: 100%;
@@ -1761,8 +1900,6 @@
       min-height: 0;
     }
     #tabForm .forms-desktop-shell {
-      flex: 1;
-      min-height: 0;
       overflow: hidden;
     }
     #tabForm .forms-panel {

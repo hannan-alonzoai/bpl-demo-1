@@ -1,13 +1,19 @@
+import { useIsMobile } from '../../hooks/useIsMobile';
+
 export function LoginHero() {
+  const isMobile = useIsMobile();
+
   return (
     <div className="login-hero">
       <div className="login-hero-intro">
-        <img
-          src="/assets/bpl-cortex-ot-logo.png"
-          alt=""
-          className="login-hero-logo"
-          aria-hidden
-        />
+        {!isMobile ? (
+          <img
+            src="/assets/bpl-cortex-ot-logo.png"
+            alt=""
+            className="login-hero-logo"
+            aria-hidden
+          />
+        ) : null}
         <h1>BPL Cortex OT</h1>
         <p className="tag">Operating theatre monitoring</p>
       </div>

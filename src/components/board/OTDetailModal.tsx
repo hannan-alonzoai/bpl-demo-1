@@ -109,7 +109,7 @@ export function OTDetailModal({ room, view, open, onClose }: Props) {
 
         <div className="modal-footer">
           <button type="button" className="modal-link-btn" onClick={() => navigate(`/ot/${room.id}`)}>
-            Open full record →
+            Open full record <span className="record-link-arrow" aria-hidden>→</span>
           </button>
         </div>
       </div>

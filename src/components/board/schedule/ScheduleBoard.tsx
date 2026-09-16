@@ -5,7 +5,7 @@ import { ScheduleDetailBody } from './ScheduleDetailBody';
 import { ScheduleDetailPanel } from './ScheduleDetailPanel';
 import { StageProceedDialog } from './StageProceedDialog';
 import { TheatreStripCard } from './TheatreStripCard';
-import { pctForStageIndex, stageIndexFromPct } from './scheduleUtils';
+import { pctForStageIndex, roomMatchesScheduleSearch, stageIndexFromPct } from './scheduleUtils';
 const STRIP_SIZE = 4;
 const MOBILE_QUERY = '(max-width: 720px)';
 
@@ -72,21 +72,17 @@ export function ScheduleBoard() {
     setProceedTarget(null);
   }, [proceedTarget]);
 
-  const filteredRooms = useMemo(() => {
-    const q = filterQuery.trim().toLowerCase();
-    if (!q) return rooms;
-    return rooms.filter(
-      r =>
-        r.id.toLowerCase().includes(q) ||
-        r.patient.toLowerCase().includes(q) ||
-        r.procedure.toLowerCase().includes(q),
-    );
-  }, [filterQuery]);
-
-  const stripRoomsList = useMemo(
-    () => stripIds.map(id => getRoom(id)).filter((r): r is Room => Boolean(r)),
-    [stripIds],
+  const filteredRooms = useMemo(
+    () => rooms.filter(r => roomMatchesScheduleSearch(r, filterQuery)),
+    [filterQuery],
   );
+
+  const stripRoomsList = useMemo(() => {
+    const allowed = new Set(filteredRooms.map(r => r.id));
+    return stripIds
+      .map(id => getRoom(id))
+      .filter((r): r is Room => r != null && allowed.has(r.id));
+  }, [stripIds, filteredRooms]);
 
   const remainingRooms = useMemo(() => {
     const pinned = new Set(stripIds);
@@ -196,11 +192,6 @@ export function ScheduleBoard() {
               onChange={e => setFilterQuery(e.target.value)}
             />
             <span className="ot-count">{roomCountLabel}</span>
-            <button type="button" className="ot-filter-btn" aria-label="Filter options" title="Filter">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                <path d="M4 6h16M7 12h10M10 18h4" />
-              </svg>
-            </button>
           </div>
           <div className="ot-top-scroll" ref={topScrollRef}>
             <div className={`ot-top-row strip-row${isMobile ? ' mobile-stack' : ''}`}>

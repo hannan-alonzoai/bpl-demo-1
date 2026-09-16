@@ -71,7 +71,10 @@ export function PatientFlowsPage() {
         formId={formId}
         mode={formMode}
         recordId={formRecordId}
-        onBack={() => setOverlay(null)}
+        onBack={() => {
+          setOverlay(null);
+          setTab('form');
+        }}
       />
     );
   }
@@ -82,7 +85,7 @@ export function PatientFlowsPage() {
       <PatientHeader patient={patient} currentStageIdx={currentStageIdx} />
       <SectionTabs active={tab} onChange={setTab} patient={patient} className="section-tabs-desktop" />
 
-      <div className={`tab-content${tab === 'record' ? ' active' : ''}`}>
+      <div id="tabRecord" className={`tab-content${tab === 'record' ? ' active' : ''}`}>
         {tab === 'record' && (
           <RecordTab
             currentStageIdx={currentStageIdx}
@@ -102,12 +105,14 @@ export function PatientFlowsPage() {
               setFormId(id);
               setFormMode('create');
               setFormRecordId(null);
+              setTab('form');
               setOverlay('form');
             }}
             onViewEntry={(id, recordId) => {
               setFormId(id);
               setFormMode('view');
               setFormRecordId(recordId);
+              setTab('form');
               setOverlay('form');
             }}
           />

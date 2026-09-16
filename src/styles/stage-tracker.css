@@ -3,9 +3,10 @@
 /* OR stage tracker — shared by OT flowsheet and surgery schedule detail */
 .ot-stage-tracker-wrap {
   overflow-x: auto;
+  overflow-y: visible;
   margin-bottom: 12px;
   -webkit-overflow-scrolling: touch;
-  padding: 8px 4px 14px;
+  padding: 10px 4px 16px;
 }
 .ot-stage-tracker {
   position: relative;
@@ -20,7 +21,7 @@
   position: absolute;
   left: 28px;
   right: 28px;
-  top: 16px;
+  top: 17px;
   height: 3px;
   background: var(--gray-200);
   border-radius: 2px;
@@ -115,7 +116,7 @@
 .ot-stage-node.current .ot-stage-marker {
   width: 34px;
   height: 34px;
-  margin-top: -3px;
+  margin-top: 0;
   background: var(--blue-600);
   border-color: var(--blue-600);
   color: var(--white);
@@ -199,22 +200,23 @@
 @media (max-width: 768px) {
   .ot-stage-tracker-wrap--compact,
   .flowsheet-panel .ot-stage-tracker-wrap {
-    padding: 6px 0 18px;
-    min-height: 92px;
+    padding: 12px 0 18px;
+    min-height: 96px;
     overflow-x: auto;
     overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
   }
   .ot-stage-tracker-wrap--compact .ot-stage-tracker,
   .flowsheet-panel .ot-stage-tracker {
-    min-width: 0;
-    width: 100%;
+    width: max-content;
     justify-content: flex-start;
-    padding: 0;
+    padding: 0 4px;
   }
   .ot-stage-tracker-wrap--compact .ot-stage-tracker .ot-stage-node,
   .flowsheet-panel .ot-stage-tracker .ot-stage-node {
-    flex: 0 0 25%;
-    padding: 0 2px;
+    flex: 0 0 76px;
+    padding: 0 4px;
   }
   .ot-stage-tracker-wrap--compact .ot-stage-name,
   .flowsheet-panel .ot-stage-name {

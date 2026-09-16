@@ -131,6 +131,7 @@ align-self:flex-start;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 .theatre-card-record-link{
 margin-left:auto;flex-shrink:0;white-space:nowrap;text-decoration:none;
 font-size:11px;font-weight:700;color:var(--blue-dark);
+display:inline-flex;align-items:center;gap:5px;line-height:1.35;
 }
 .theatre-card-record-link:hover{text-decoration:underline;color:var(--blue)}
 .theatre-card-alert-below + .theatre-patient-line{margin-top:10px}
@@ -243,8 +244,11 @@ animation:detail-load-spin .9s linear infinite;
 .detail-hero-main .detail-stages,
 .detail-hero > .detail-stages{margin-top:0}
 .detail-stages-label{font-size:12px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
-.schedule-board .detail-stages .ot-stage-tracker-wrap{margin-bottom:0;padding:4px 0 6px}
-.mobile-expand-body .detail-stages .ot-stage-tracker-wrap{padding:2px 0 16px;min-height:92px}
+.schedule-board .detail-stages .ot-stage-tracker-wrap{margin-bottom:0;padding:8px 0 10px}
+.mobile-expand-body .detail-stages .ot-stage-tracker-wrap{
+  padding:12px 0 18px;min-height:96px;overflow-x:auto;overflow-y:visible;
+  -webkit-overflow-scrolling:touch;
+}
 .detail-stages-row{
   display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;
 }
@@ -447,14 +451,33 @@ text-transform:uppercase;color:var(--ink-soft);
   display:flex;justify-content:flex-end;margin-bottom:8px;
 }
 .schedule-board .detail-record-link-mobile-expand{
-  font-size:12px;font-weight:700;color:var(--blue-700);
+  font-size:13px;font-weight:700;color:var(--blue-700);
   text-decoration:none;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.record-link-arrow{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  font-size:1.65em;font-weight:900;line-height:1;
+  font-family:system-ui,-apple-system,sans-serif;
+  -webkit-text-stroke:0.45px currentColor;
+  transform:translateY(-0.05em);
+}
+.schedule-board .detail-record-link{
+  display:inline-flex;align-items:center;gap:6px;line-height:1.35;
+}
+.schedule-board .detail-record-link-mobile-expand .record-link-arrow{
+  font-size:1.35em;transform:translateY(-0.05em);
 }
 .schedule-board .detail-record-link-mobile-expand:hover{
   text-decoration:underline;color:var(--blue-600);
 }
 .mobile-expand-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .mobile-expand-body .detail-stages{margin-top:0}
+.mobile-expand-body .detail-stages-row{flex-direction:column;gap:10px;align-items:stretch}
+.mobile-expand-body .detail-stages-track{width:100%;min-width:0;overflow:visible}
+.mobile-expand-body .detail-case-track{flex:none;max-width:none;width:100%}
+.ot-mobile-item.is-open .ot-card-expand-inner.detail-body{overflow-x:auto;overflow-y:visible}
 .mobile-expand-vitals{margin-top:0!important;padding-top:14px!important;border-top:1px solid var(--line)}
 .mobile-expand-vitals h3{margin:0 0 12px;font-size:15px}
 .mobile-expand-vitals .detail-inner{grid-template-columns:1fr;gap:16px}
@@ -645,6 +668,7 @@ text-transform:uppercase;color:var(--ink-soft);
 .schedule-board .detail-record-link{
   font-size:12px;font-weight:600;color:var(--blue-dark);text-decoration:none;
   white-space:nowrap;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:6px;line-height:1.35;
 }
 .schedule-board .detail-record-link:hover{
   text-decoration:underline;color:var(--blue);

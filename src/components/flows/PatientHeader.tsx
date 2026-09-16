@@ -92,21 +92,22 @@ export function PatientHeader({ patient, currentStageIdx }: Props) {
           <div className="patient-compact-summary">
             <span className="compact-kv">
               <span className="compact-key">Name</span>
-              <span className="compact-val">{patient.name}</span>
+              <span className="compact-val compact-val-pill">{patient.name}</span>
             </span>
             <span className="compact-kv">
               <span className="compact-key">Procedure</span>
-              <span className="compact-val highlight">{procShort}</span>
+              <span className="compact-val compact-val-pill highlight">{procShort}</span>
             </span>
             <span className="compact-kv">
               <span className="compact-key">Stage</span>
-              <span className="compact-val highlight">
-                {stageName} <span className="compact-val-count">{stageCount}</span>
+              <span className="compact-val compact-val-pill highlight compact-val-stage">
+                <span className="compact-stage-name">{stageName}</span>
+                <span className="compact-val-count">{stageCount}</span>
               </span>
             </span>
             <span className="compact-kv">
               <span className="compact-key">Allergies</span>
-              <span className="compact-val allergy">
+              <span className="compact-val compact-val-pill allergy">
                 <AllergyIcon />
                 {patient.allergies}
               </span>
