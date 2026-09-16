@@ -1,0 +1,211 @@
+@import './bpl-tokens.css';
+
+/* OR stage tracker — shared by OT flowsheet and surgery schedule detail */
+.ot-stage-tracker-wrap {
+  overflow-x: auto;
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 4px 10px;
+}
+.ot-stage-tracker {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0;
+  min-width: 720px;
+  padding: 0 8px 4px;
+}
+.ot-stage-track {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 16px;
+  height: 3px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  z-index: 0;
+}
+.ot-stage-track-fill {
+  height: 100%;
+  background: var(--blue-500);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+.ot-stage-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.ot-stage-node.locked {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+.ot-stage-marker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 2px solid var(--gray-300);
+  color: var(--gray-500);
+  font-size: 11px;
+  font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+}
+.ot-stage-num {
+  line-height: 1;
+}
+.ot-stage-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  line-height: 1.2;
+  max-width: 88px;
+}
+.ot-stage-time {
+  font-size: 10px;
+  color: var(--gray-400);
+  font-variant-numeric: tabular-nums;
+}
+.ot-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+.ot-stage-badge.current {
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+.ot-stage-badge.upcoming {
+  background: var(--gray-100);
+  color: var(--gray-500);
+}
+.ot-stage-node.done .ot-stage-marker {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  color: var(--white);
+}
+.ot-stage-node.done .ot-stage-name {
+  color: var(--blue-800);
+}
+.ot-stage-node.done .ot-stage-time {
+  color: var(--blue-600);
+}
+.ot-stage-node.current .ot-stage-marker {
+  width: 34px;
+  height: 34px;
+  margin-top: -3px;
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  color: var(--white);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.22);
+}
+.ot-stage-node.current .ot-stage-name {
+  color: var(--blue-800);
+  font-weight: 700;
+  font-size: 12px;
+}
+.ot-stage-node.current .ot-stage-time {
+  color: var(--blue-600);
+  font-weight: 600;
+}
+.ot-stage-node.next .ot-stage-marker {
+  border-style: dashed;
+  border-color: var(--blue-400);
+  color: var(--blue-600);
+  background: var(--blue-50);
+}
+.ot-stage-node.next .ot-stage-name {
+  color: var(--blue-700);
+}
+.ot-stage-node.next:hover .ot-stage-marker {
+  border-color: var(--blue-600);
+  background: var(--blue-100);
+}
+.ot-stage-node.viewing .ot-stage-marker {
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-400);
+}
+.ot-stage-node.current.viewing .ot-stage-marker {
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.22), 0 0 0 2px var(--white), 0 0 0 5px var(--blue-400);
+}
+
+@media (max-width: 768px) {
+  .ot-stage-tracker-wrap--compact,
+  .flowsheet-panel .ot-stage-tracker-wrap {
+    padding: 4px 0 8px;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-tracker,
+  .flowsheet-panel .ot-stage-tracker {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-tracker .ot-stage-node,
+  .flowsheet-panel .ot-stage-tracker .ot-stage-node {
+    flex: 0 0 25%;
+    padding: 0 2px;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-name,
+  .flowsheet-panel .ot-stage-name {
+    max-width: 100%;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-track,
+  .flowsheet-panel .ot-stage-track {
+    display: none;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-node::before,
+  .flowsheet-panel .ot-stage-node::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: 50%;
+    width: 100%;
+    height: 3px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    z-index: 0;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-node:last-child::before,
+  .flowsheet-panel .ot-stage-node:last-child::before {
+    content: none;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-node.done::before,
+  .flowsheet-panel .ot-stage-node.done::before {
+    background: var(--blue-500);
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-marker,
+  .flowsheet-panel .ot-stage-marker {
+    position: relative;
+    z-index: 1;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-badge.upcoming,
+  .flowsheet-panel .ot-stage-badge.upcoming {
+    display: none;
+  }
+  .ot-stage-tracker-wrap--compact .ot-stage-node.current .ot-stage-badge.current,
+  .flowsheet-panel .ot-stage-node.current .ot-stage-badge.current {
+    display: inline-flex;
+  }
+}

@@ -198,7 +198,6 @@ export function ScheduleBoard() {
                           completionPct={getCompletionPct(room)}
                           selected={open}
                           expanded={open}
-                          showRecordLink
                           onSelect={() => selectRoom(room.id)}
                         />
                         <div className={`ot-card-expand${open ? ' open' : ''}`} aria-hidden={open ? 'false' : 'true'}>

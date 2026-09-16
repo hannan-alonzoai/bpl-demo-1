@@ -1,3 +1,5 @@
+@import './stage-tracker.css';
+
 /* Surgery schedule strip + detail panel (from index4.html) */
 .schedule-board{
   --schedule-surface:var(--white);
@@ -241,6 +243,8 @@ animation:detail-load-spin .9s linear infinite;
 .detail-hero-main .detail-stages,
 .detail-hero > .detail-stages{margin-top:0}
 .detail-stages-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
+.schedule-board .detail-stages .ot-stage-tracker-wrap{margin-bottom:0;padding:4px 0 6px}
+.mobile-expand-body .detail-stages .ot-stage-tracker-wrap{padding:2px 0 4px}
 /* Stage boxes: scoped under .schedule-board only (see block ~500+) */
 .detail-hero-main .alert-strip{margin-top:12px;margin-bottom:0}
 .status-critical{color:var(--critical);background:var(--critical-bg)}
@@ -408,6 +412,16 @@ text-transform:uppercase;color:var(--ink-soft);
 .ot-card-expand-inner{min-height:0;overflow:hidden}
 .ot-card-expand-inner.detail-empty.detail-loading{padding:28px 16px;min-height:120px}
 .mobile-expand-body{display:flex;flex-direction:column;gap:14px;width:100%}
+.detail-stages-record-row{
+  display:flex;justify-content:flex-end;margin-bottom:8px;
+}
+.schedule-board .detail-record-link-mobile-expand{
+  font-size:12px;font-weight:700;color:var(--blue-700);
+  text-decoration:none;white-space:nowrap;
+}
+.schedule-board .detail-record-link-mobile-expand:hover{
+  text-decoration:underline;color:var(--blue-600);
+}
 .mobile-expand-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .mobile-expand-body .detail-stages{margin-top:0}
 .mobile-expand-vitals{margin-top:0!important;padding-top:14px!important;border-top:1px solid var(--line)}
