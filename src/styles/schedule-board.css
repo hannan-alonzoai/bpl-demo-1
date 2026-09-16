@@ -244,7 +244,7 @@ animation:detail-load-spin .9s linear infinite;
 .detail-hero > .detail-stages{margin-top:0}
 .detail-stages-label{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.35px;margin-bottom:8px}
 .schedule-board .detail-stages .ot-stage-tracker-wrap{margin-bottom:0;padding:4px 0 6px}
-.mobile-expand-body .detail-stages .ot-stage-tracker-wrap{padding:2px 0 4px}
+.mobile-expand-body .detail-stages .ot-stage-tracker-wrap{padding:2px 0 16px;min-height:92px}
 /* Stage boxes: scoped under .schedule-board only (see block ~500+) */
 .detail-hero-main .alert-strip{margin-top:12px;margin-bottom:0}
 .status-critical{color:var(--critical);background:var(--critical-bg)}
