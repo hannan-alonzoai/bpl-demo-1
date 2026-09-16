@@ -757,12 +757,19 @@
   .flowsheet-live-header .flowsheet-live-badge {
     margin-left: auto;
   }
-  .chart-maximize-btn-inline {
-    position: static;
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+  .flowsheet-waveform-block.is-mobile-monitor .flowsheet-chart-wrap {
+    position: relative;
+    padding: 12px 10px 10px;
+  }
+  .flowsheet-waveform-block.is-mobile-monitor .chart-maximize-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .flowsheet-waveform-block.is-mobile-monitor .waveform-legend-mobile {
+    padding-right: 40px;
   }
   .flowsheet-vitals-summary {
     display: grid;
@@ -808,9 +815,6 @@
   .flowsheet-vital-card.tone-resp .flowsheet-vital-card-value { color: #16a34a; }
   .flowsheet-vital-card.tone-spo2 .flowsheet-vital-card-value { color: #2563eb; }
   .flowsheet-vital-card.tone-temp .flowsheet-vital-card-value { color: #ea580c; }
-  .flowsheet-waveform-block.is-mobile-monitor .flowsheet-chart-wrap {
-    padding: 12px 10px 10px;
-  }
   .waveform-legend-mobile {
     display: flex;
     flex-wrap: wrap;
@@ -879,9 +883,6 @@
   .flowsheet-chart-time-single {
     margin-top: 8px;
     padding-top: 4px;
-  }
-  .flowsheet-waveform-block.is-mobile-monitor.maximized .flowsheet-lane-chart {
-    height: 72px;
   }
   .flowsheet-live-title {
     font-size: 14px;
@@ -1303,6 +1304,59 @@
   .form-grid-b .check-grid.cols-3,
   .form-grid-b .check-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Monitor zoom view — full-screen sheet on phones */
+  .monitor-zoom-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+  .monitor-zoom-modal {
+    width: 100%;
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .monitor-zoom-header {
+    padding: 12px 14px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
+  .monitor-zoom-heading h3 {
+    font-size: 15px;
+  }
+  .monitor-zoom-body {
+    padding: 12px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+  }
+  .monitor-zoom-vitals {
+    gap: 8px;
+  }
+  .monitor-zoom-vital {
+    padding: 8px 4px;
+  }
+  .monitor-zoom-vital-value {
+    font-size: 16px;
+  }
+  .monitor-zoom-chart-card {
+    padding: 10px;
+  }
+  .monitor-zoom-plot {
+    height: 260px;
+  }
+  .monitor-zoom-legend-item {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  .monitor-zoom-actions button {
+    width: 36px;
+    height: 36px;
+  }
+  .monitor-zoom-range {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .monitor-zoom-hint {
+    font-size: 10px;
   }
 }
 
