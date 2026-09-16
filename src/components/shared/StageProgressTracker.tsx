@@ -28,6 +28,8 @@ interface Props {
   onViewStageChange?: (idx: number) => void;
   /** Narrow viewports: 4-stage window + scroll anchor (board mobile / flowsheet mobile). */
   mobileCompact?: boolean;
+  /** Surgery schedule detail: denser rail beside intake summary. */
+  boardCompact?: boolean;
 }
 
 export function StageProgressTracker({
@@ -37,6 +39,7 @@ export function StageProgressTracker({
   onRequestAdvance,
   onViewStageChange,
   mobileCompact,
+  boardCompact,
 }: Props) {
   const trackerRef = useRef<HTMLDivElement>(null);
   const nextIdx = currentIndex + 1;
@@ -60,16 +63,24 @@ export function StageProgressTracker({
     onViewStageChange?.(targetIdx);
   }
 
+  const wrapClass = [
+    'ot-stage-tracker-wrap',
+    mobileCompact && 'ot-stage-tracker-wrap--compact',
+    boardCompact && 'ot-stage-tracker-wrap--board',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const nodeWidth = boardCompact ? 62 : 88;
+  const minTrack = boardCompact ? 360 : 520;
+
   return (
-    <div
-      className={`ot-stage-tracker-wrap${mobileCompact ? ' ot-stage-tracker-wrap--compact' : ''}`}
-      ref={trackerRef}
-    >
+    <div className={wrapClass} ref={trackerRef}>
       <div
         className="ot-stage-tracker"
         role="list"
         aria-label="OT stage progress"
-        style={mobileCompact ? undefined : { minWidth: Math.max(520, stages.length * 88) }}
+        style={mobileCompact ? undefined : { minWidth: Math.max(minTrack, stages.length * nodeWidth) }}
       >
         {!mobileCompact ? (
           <div className="ot-stage-track" aria-hidden>

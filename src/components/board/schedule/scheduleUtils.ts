@@ -1,6 +1,15 @@
 import { RANGES } from '../../../data/ranges';
 import { OR_STAGES } from '../../../data/flows';
-import type { OrStage } from '../../../types';
+import type { CaseTrackSnapshot, OrStage, Room } from '../../../types';
+
+const DEFAULT_CASE_TRACK: CaseTrackSnapshot = {
+  lastFluid: { name: 'RL (continuous)', at: '08:42' },
+  lastMedication: { name: 'Fentanyl 50 µg', at: '08:38' },
+};
+
+export function caseTrackForRoom(room: Room): CaseTrackSnapshot {
+  return room.caseTrack ?? DEFAULT_CASE_TRACK;
+}
 
 /** Same rules as index4.html `classify()` for strip + detail vitals. */
 export function scheduleClassify(key: string | undefined, value: number | string | undefined): string {

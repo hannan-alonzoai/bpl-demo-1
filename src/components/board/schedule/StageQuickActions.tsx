@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
+import type { Room } from '../../../types';
 import { StageProgressTracker } from '../../shared/StageProgressTracker';
-import { SCHEDULE_STAGES } from './scheduleUtils';
+import { CaseTrackSummary } from './CaseTrackSummary';
+import { caseTrackForRoom, SCHEDULE_STAGES } from './scheduleUtils';
 
 interface Props {
+  room: Room;
   currentIndex: number;
   onRequestAdvance: (nextIndex: number) => void;
   /** Mobile expand: compact tracker window (same as OT flowsheet). */
@@ -12,11 +15,15 @@ interface Props {
 }
 
 export function StageQuickActions({
+  room,
   currentIndex,
   onRequestAdvance,
   upcomingOnly,
   fullRecordRoomId,
 }: Props) {
+  const track = caseTrackForRoom(room);
+  const boardCompact = !upcomingOnly;
+
   return (
     <div className="detail-stages">
       {fullRecordRoomId ? (
@@ -30,12 +37,18 @@ export function StageQuickActions({
         </div>
       ) : null}
       <div className="detail-stages-label">Quick actions · case stages</div>
-      <StageProgressTracker
-        stages={SCHEDULE_STAGES}
-        currentIndex={currentIndex}
-        onRequestAdvance={onRequestAdvance}
-        mobileCompact={upcomingOnly}
-      />
+      <div className="detail-stages-row">
+        <div className="detail-stages-track">
+          <StageProgressTracker
+            stages={SCHEDULE_STAGES}
+            currentIndex={currentIndex}
+            onRequestAdvance={onRequestAdvance}
+            mobileCompact={upcomingOnly}
+            boardCompact={boardCompact}
+          />
+        </div>
+        <CaseTrackSummary track={track} compact={upcomingOnly} />
+      </div>
     </div>
   );
 }

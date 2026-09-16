@@ -31,6 +31,11 @@ export interface RoomCompletion {
   nextReady: boolean;
 }
 
+export interface CaseTrackSnapshot {
+  lastFluid: { name: string; at: string };
+  lastMedication: { name: string; at: string };
+}
+
 export interface Room {
   id: string;
   status: RoomStatus;
@@ -40,6 +45,7 @@ export interface Room {
   vitals: VitalChip[];
   alert: string | null;
   completion: RoomCompletion;
+  caseTrack?: CaseTrackSnapshot;
   detail: {
     hemo: DetailVital[];
     vent: DetailVital[];
