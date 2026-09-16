@@ -427,6 +427,14 @@
   }
   .record-subtab:hover { color: var(--gray-900); }
   .record-subtab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+  @media (min-width: 769px) {
+    .record-subtab-label-mobile { display: none; }
+  }
+  .record-subpanel-charts.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
   .record-subpanel { display: none; }
   .record-subpanel.active { display: block; }
   .flowsheet-record-card { box-shadow: none; }

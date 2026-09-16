@@ -4,7 +4,7 @@ import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
-type RecordSub = 'flowsheet' | 'fluids' | 'medications' | 'staffing';
+type RecordSub = 'flowsheet' | 'fluids_medications' | 'staffing';
 
 interface Props {
   currentStageIdx: number;
@@ -15,10 +15,41 @@ interface Props {
 
 const SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
   { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
-  { id: 'fluids', label: 'Fluids', mobileLabel: 'Fluids' },
-  { id: 'medications', label: 'Medications', mobileLabel: 'Medications' },
+  { id: 'fluids_medications', label: 'Fluids & Medications', mobileLabel: 'Fluids & Meds' },
   { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
 ];
+
+function FluidsCard() {
+  return (
+    <div className="record-card record-card-gantt" title="Fluids intake / output">
+      <div className="record-card-header">
+        <h3>Fluids</h3>
+        <button type="button" className="gantt-add-btn" disabled title="Demo only">
+          + Add Entry
+        </button>
+      </div>
+      <div className="record-card-body">
+        <FluidsGanttChart />
+      </div>
+    </div>
+  );
+}
+
+function MedicationsCard() {
+  return (
+    <div className="record-card record-card-gantt" title="Medications timeline">
+      <div className="record-card-header">
+        <h3>Medications</h3>
+        <button type="button" className="gantt-add-btn" disabled title="Demo only">
+          + Add Medication
+        </button>
+      </div>
+      <div className="record-card-body">
+        <MedicationsGanttChart />
+      </div>
+    </div>
+  );
+}
 
 export function RecordTab({
   currentStageIdx,
@@ -29,11 +60,14 @@ export function RecordTab({
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
   const stageNum = currentStageIdx + 1;
   const totalStages = OR_STAGES.length;
+  const activeMeta = SUBS.find(s => s.id === recordSub);
 
   return (
     <div className="record-view record-view-shell">
       <div className="record-mobile-stage-head">
-        <span className="record-mobile-stage-title">OT Stage — {SUBS.find(s => s.id === recordSub)?.label ?? 'Flowsheet'}</span>
+        <span className="record-mobile-stage-title">
+          OT Stage — {activeMeta?.label ?? 'Flowsheet'}
+        </span>
         <span className="record-mobile-stage-pill">Stage {stageNum} of {totalStages}</span>
       </div>
 
@@ -66,32 +100,12 @@ export function RecordTab({
         </div>
       </div>
 
-      <div className={`record-subpanel${recordSub === 'fluids' ? ' active' : ''}`} hidden={recordSub !== 'fluids'}>
-        <div className="record-card record-card-gantt" title="Fluids intake / output">
-          <div className="record-card-header">
-            <h3>Fluids</h3>
-            <button type="button" className="gantt-add-btn" disabled title="Demo only">
-              + Add Entry
-            </button>
-          </div>
-          <div className="record-card-body">
-            <FluidsGanttChart />
-          </div>
-        </div>
-      </div>
-
-      <div className={`record-subpanel${recordSub === 'medications' ? ' active' : ''}`} hidden={recordSub !== 'medications'}>
-        <div className="record-card record-card-gantt" title="Medications timeline">
-          <div className="record-card-header">
-            <h3>Medications</h3>
-            <button type="button" className="gantt-add-btn" disabled title="Demo only">
-              + Add Medication
-            </button>
-          </div>
-          <div className="record-card-body">
-            <MedicationsGanttChart />
-          </div>
-        </div>
+      <div
+        className={`record-subpanel record-subpanel-charts${recordSub === 'fluids_medications' ? ' active' : ''}`}
+        hidden={recordSub !== 'fluids_medications'}
+      >
+        <FluidsCard />
+        <MedicationsCard />
       </div>
 
       <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>

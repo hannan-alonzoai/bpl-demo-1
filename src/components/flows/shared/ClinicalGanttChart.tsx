@@ -1,3 +1,5 @@
+import { useIsMobile } from '../../../hooks/useIsMobile';
+
 export const GANTT_LABEL_W = 160;
 export const GANTT_TRACK_W = 720;
 /** Space after the timeline for dose/rate labels (right of bars) */
@@ -73,8 +75,91 @@ interface Props {
   ariaLabel: string;
 }
 
-export function ClinicalGanttChart({ sections, ariaLabel }: Props) {
+/** Hour marks only — half-hour labels do not fit a phone-width track. */
+const COMPACT_TICKS = GANTT_TIME_TICKS.filter(t => t.endsWith(':00'));
+
+/** Dose / rate values move under the row name when bars are too narrow to carry labels. */
+function segmentSummary(row: GanttRow) {
+  return row.segments
+    .map(s => s.label)
+    .filter(Boolean)
+    .join(' · ');
+}
+
+function CompactGantt({ sections, ariaLabel }: Props) {
   const legendRows = sections.flatMap(s => s.rows);
+  const lastTick = COMPACT_TICKS.length - 1;
+
+  return (
+    <div className="gantt-c" aria-label={ariaLabel}>
+      <div className="gantt-c-head">
+        <div className="gantt-c-head-track">
+          {COMPACT_TICKS.map((t, i) => (
+            <span
+              key={t}
+              className="gantt-c-time"
+              style={{
+                left: `${(i / lastTick) * 100}%`,
+                transform: i === 0 ? 'none' : i === lastTick ? 'translateX(-100%)' : 'translateX(-50%)',
+              }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {sections.map(section => (
+        <div className="gantt-c-section" key={section.title}>
+          <div className="gantt-c-section-title">{section.title}</div>
+          {section.rows.map(row => (
+            <div className="gantt-c-row" key={row.id}>
+              <div className="gantt-c-label">
+                <span className="gantt-c-name">{row.name}</span>
+                <span className="gantt-c-sub">{segmentSummary(row)}</span>
+              </div>
+              <div className="gantt-c-track">
+                <div className="gantt-c-grid" aria-hidden="true">
+                  {COMPACT_TICKS.map((t, i) => (
+                    <span key={t} className="gantt-c-grid-line" style={{ left: `${(i / lastTick) * 100}%` }} />
+                  ))}
+                </div>
+                {row.segments.map((seg, i) => {
+                  const left = pct(seg.startMin);
+                  return (
+                    <span
+                      key={`${row.id}-${i}`}
+                      className={`gantt-c-bar ${row.barClass}`}
+                      style={{ left: `${left}%`, width: `${pct(seg.endMin) - left}%` }}
+                      title={`${row.name} — ${seg.label}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+
+      <div className="gantt-c-legend">
+        {legendRows.map(row => (
+          <span key={row.id} className="gantt-c-legend-item">
+            <i className={row.legendClass} aria-hidden="true" />
+            {row.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ClinicalGanttChart({ sections, ariaLabel }: Props) {
+  const isMobile = useIsMobile();
+  const legendRows = sections.flatMap(s => s.rows);
+
+  if (isMobile) {
+    return <CompactGantt sections={sections} ariaLabel={ariaLabel} />;
+  }
 
   return (
     <div className="fluids-gantt">

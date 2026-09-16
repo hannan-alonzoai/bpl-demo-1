@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>BPL Cortex OT · Record (Mobile Preview)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue-50: #f0f9ff;
+      --blue-100: #e0f2fe;
+      --blue-500: #0ea5e9;
+      --blue-600: #0284c7;
+      --blue-700: #0369a1;
+      --blue-800: #075985;
+      --white: #ffffff;
+      --gray-100: #eef2f8;
+      --gray-200: #dde5f0;
+      --gray-400: #a3aec0;
+      --gray-500: #7c8aa0;
+      --gray-600: #5b6b85;
+      --gray-700: #465361;
+      --gray-900: #1c2530;
+      --critical: #8a0f1f;
+      --critical-bg: #f9dde1;
+      --critical-line: #e8b4bc;
+      --completed: #1c8a5c;
+      --typical: #b8600f;
+      --priority: #7c3aed;
+      --font-ui: 'Sora', 'Segoe UI', sans-serif;
+      --font-mono: 'Sora', 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--gray-900);
+      background: #cbd5e1;
+      line-height: 1.45;
+      min-height: 100dvh;
+    }
+    .share-note {
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: var(--gray-700);
+      background: #e2e8f0;
+    }
+    .phone-shell {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: calc(100dvh - 40px);
+      background: var(--gray-100);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 40px rgba(15, 23, 42, 0.12);
+    }
+
+    /* Top bar */
+    .topbar {
+      height: 52px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, var(--blue-700) 0%, var(--blue-600) 55%, var(--blue-500) 100%);
+      flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 8px; }
+    .topbar-logo {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--white); color: var(--blue-700);
+      font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-title { font-size: 14px; font-weight: 700; color: var(--white); }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); color: var(--white);
+      font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Patient header */
+    .patient-wrap { padding: 8px 12px 0; flex-shrink: 0; }
+    .patient-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+    }
+    .btn-back {
+      width: 30px; height: 30px; border: 1px solid var(--gray-200);
+      border-radius: 8px; background: var(--gray-100); font-size: 18px; cursor: pointer;
+    }
+    .patient-name { font-size: 15px; font-weight: 700; }
+    .patient-meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .allergy {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 999px;
+      background: var(--critical-bg); color: var(--critical);
+      font-size: 10px; font-weight: 700; border: 1px solid var(--critical-line);
+    }
+    .patient-quick {
+      display: flex; flex-wrap: nowrap; align-items: center; gap: 8px;
+      margin-top: 6px; padding: 0 2px 6px;
+    }
+    .btn-details {
+      border: none; background: var(--blue-50); color: var(--blue-700);
+      font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 6px;
+    }
+    .proc { font-weight: 700; color: var(--blue-700); font-size: 12px; }
+    .btn-validate {
+      margin-left: auto;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 11px; border: none; border-radius: 8px;
+      background: var(--critical); color: var(--white);
+      font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Record shell */
+    .record-view {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column;
+      padding: 0 12px 8px;
+      overflow: hidden;
+    }
+    .stage-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 2px; font-size: 11px; flex-shrink: 0;
+    }
+    .stage-head strong { font-weight: 700; color: var(--gray-900); }
+    .stage-pill { font-weight: 700; color: var(--blue-700); }
+
+    .record-subtabs {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; overflow-x: auto; scrollbar-width: none;
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      margin: 0 -4px 8px; padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .record-subtabs::-webkit-scrollbar { display: none; }
+    .record-subtab {
+      flex: 0 0 auto; padding: 10px 12px; min-height: 40px;
+      border: none; background: transparent; cursor: pointer;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      color: var(--gray-600); border-bottom: 2px solid transparent;
+    }
+    .record-subtab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+
+    .record-panel {
+      display: none; flex: 1; min-height: 0;
+      flex-direction: column; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 12px;
+    }
+    .record-panel.active { display: flex; }
+
+    .record-card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+    }
+    .record-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-bottom: 1px solid var(--gray-200);
+      min-height: 34px;
+    }
+    .record-card-header h3 { font-size: 14px; font-weight: 600; }
+    .gantt-add-btn {
+      border: none; border-radius: 6px; background: var(--blue-600); color: var(--white);
+      font-size: 11px; font-weight: 600; padding: 6px 10px; cursor: pointer;
+    }
+    .record-card-body { padding: 12px; }
+
+    /* Stage tracker */
+    .ot-stage-tracker-wrap { overflow-x: auto; padding: 2px 0 6px; margin-bottom: 8px; }
+    .ot-stage-tracker { display: flex; gap: 8px; min-width: 520px; position: relative; }
+    .ot-stage-node {
+      flex: 1; min-width: 72px; text-align: center; border: none; background: transparent;
+      font-family: inherit; cursor: pointer; padding: 4px 2px;
+    }
+    .ot-stage-marker {
+      width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; background: var(--gray-200); color: var(--gray-600);
+    }
+    .ot-stage-node.done .ot-stage-marker { background: var(--blue-100); color: var(--blue-700); }
+    .ot-stage-node.current .ot-stage-marker { background: var(--blue-600); color: var(--white); }
+    .ot-stage-name { display: block; font-size: 9px; font-weight: 600; color: var(--gray-600); }
+    .ot-stage-time { display: block; font-size: 8px; color: var(--gray-500); }
+
+    .field-label { font-size: 11px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; }
+    .field-select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200);
+      border-radius: 10px; font-size: 13px; margin-bottom: 10px; font-family: inherit;
+    }
+    .live-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; gap: 10px;
+    }
+    .live-title { font-size: 14px; font-weight: 700; }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: var(--completed);
+    }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--completed); }
+    .vitals-summary {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;
+    }
+    .vital-card {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 6px; background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: 12px;
+    }
+    .vital-card .lbl { font-size: 10px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; }
+    .vital-card .val { font-size: 16px; font-weight: 800; }
+    .vital-card.hr .val { color: #dc2626; }
+    .vital-card.resp .val { color: #16a34a; }
+    .vital-card.spo2 .val { color: #2563eb; }
+    .vital-card.temp .val { color: #ea580c; }
+    .vital-card small { font-size: 10px; font-weight: 600; color: var(--gray-500); }
+
+    .chart-wrap {
+      border: 1px solid var(--gray-200); border-radius: 10px; padding: 12px 10px 10px;
+      background: var(--white);
+    }
+    .lane { margin-bottom: 12px; }
+    .lane-head { font-size: 11px; font-weight: 800; margin-bottom: 4px; }
+    .lane-head.ecg { color: #16a34a; }
+    .lane-head.resp { color: #1d4ed8; }
+    .lane-head.spo2 { color: #dc2626; }
+    .lane-body {
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px;
+      background: #f8fafc; border: 1px solid var(--gray-100); border-radius: 10px; padding: 6px 8px;
+    }
+    .lane-body svg { width: 100%; height: 44px; }
+    .lane-val { font-size: 13px; font-weight: 800; white-space: nowrap; }
+
+    /* Compact gantt */
+    .gantt-c { --gantt-c-label: 92px; width: 100%; }
+    .gantt-c-head {
+      display: grid; grid-template-columns: var(--gantt-c-label) 1fr; gap: 8px;
+      padding-bottom: 5px; border-bottom: 1px solid var(--gray-100);
+    }
+    .gantt-c-head-track { grid-column: 2; position: relative; height: 13px; }
+    .gantt-c-time {
+      position: absolute; top: 0; font-size: 9.5px; font-weight: 700;
+      color: var(--gray-500); font-variant-numeric: tabular-nums;
+    }
+    .gantt-c-section-title {
+      margin: 6px 0 2px; padding: 3px 8px; border-radius: 4px;
+      background: var(--blue-50); color: var(--blue-800);
+      font-size: 9px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .gantt-c-row {
+      display: grid; grid-template-columns: var(--gantt-c-label) 1fr;
+      align-items: center; gap: 8px; min-height: 32px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .gantt-c-name { font-size: 11px; font-weight: 700; line-height: 1.2; }
+    .gantt-c-sub { font-size: 9.5px; font-weight: 600; color: var(--gray-500); }
+    .gantt-c-track { position: relative; height: 24px; overflow: visible; }
+    .gantt-c-bar {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      height: 13px; min-width: 8px; border-radius: 999px;
+      cursor: default;
+    }
+    .gantt-c-bar:hover {
+      filter: brightness(1.08);
+      z-index: 2;
+    }
+    .gantt-c-bar::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 6px);
+      transform: translateX(-50%);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--gray-900);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.12s ease;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+    }
+    .gantt-c-bar:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+    .bar-dextrose { background: var(--blue-700); }
+    .bar-rl { background: var(--blue-500); }
+    .bar-blood { background: var(--typical); }
+    .bar-urine { background: var(--completed); }
+    .bar-catheter { background: var(--priority); }
+    .bar-med-stat { background: var(--blue-800); }
+    .bar-med-prn { background: var(--typical); }
+    .bar-med-infused { background: var(--blue-500); }
+    .gantt-c-legend {
+      display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px;
+      padding-top: 8px; border-top: 1px solid var(--gray-100);
+      font-size: 9.5px; font-weight: 700; color: var(--gray-600);
+    }
+    .gantt-c-legend i {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px;
+    }
+    .charts-stack { display: flex; flex-direction: column; gap: 8px; }
+    .charts-stack .record-card-gantt + .record-card-gantt { border-radius: 0 0 12px 12px; border-top: 1px solid var(--gray-100); box-shadow: none; }
+    .charts-stack .record-card-gantt:first-child { border-radius: 12px 12px 0 0; }
+    .charts-stack .record-card-gantt + .record-card-gantt .gantt-c-head { display: none; }
+    .charts-stack .record-card-gantt + .record-card-gantt .record-card-header { border-top: none; padding-top: 6px; }
+
+    .staff-row {
+      display: flex; justify-content: space-between; padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100); font-size: 13px;
+    }
+    .staff-name { font-weight: 600; }
+    .staff-time { font-weight: 700; color: var(--gray-700); font-variant-numeric: tabular-nums; }
+
+    .bottom-nav {
+      flex-shrink: 0;
+      display: flex; justify-content: space-around; align-items: center;
+      height: 64px; padding-bottom: env(safe-area-inset-bottom, 0);
+      background: var(--white); border-top: 1px solid var(--gray-200);
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600; color: var(--gray-500);
+      border: none; background: none; cursor: pointer; font-family: inherit;
+    }
+    .nav-item.active { color: var(--blue-700); }
+    .nav-icon { font-size: 18px; }
+  </style>
+</head>
+<body>
+  <p class="share-note">BPL Cortex OT — mobile Record preview for team review. Open on phone or narrow browser window.</p>
+
+  <div class="phone-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo">BPL</div>
+        <span class="topbar-title">BPL Cortex OT</span>
+      </div>
+      <div class="avatar">JJ</div>
+    </header>
+
+    <div class="patient-wrap">
+      <div class="patient-card">
+        <button type="button" class="btn-back" aria-label="Back">‹</button>
+        <div>
+          <div class="patient-name">James Wilson ▾</div>
+          <div class="patient-meta">CRN3185 | 62Y | Male</div>
+        </div>
+        <span class="allergy">⚠ Latex</span>
+      </div>
+      <div class="patient-quick">
+        <button type="button" class="btn-details">▸ Details</button>
+        <span class="proc">CABG</span>
+        <span class="allergy" style="padding:2px 6px;font-size:9px">⚠ Latex</span>
+        <button type="button" class="btn-validate">✓ Validate</button>
+      </div>
+    </div>
+
+    <div class="record-view">
+      <div class="stage-head">
+        <strong id="stage-title">OT Stage — Flowsheet</strong>
+        <span class="stage-pill">Stage 7 of 9</span>
+      </div>
+
+      <div class="record-subtabs" role="tablist">
+        <button type="button" class="record-subtab active" data-panel="flowsheet" role="tab">Flowsheet</button>
+        <button type="button" class="record-subtab" data-panel="charts" role="tab">Fluids &amp; Meds</button>
+        <button type="button" class="record-subtab" data-panel="staffing" role="tab">Staffing</button>
+      </div>
+
+      <!-- Flowsheet -->
+      <section class="record-panel active" id="panel-flowsheet" role="tabpanel">
+        <div class="record-card">
+          <div class="record-card-body">
+            <div class="ot-stage-tracker-wrap">
+              <div class="ot-stage-tracker">
+                <button type="button" class="ot-stage-node done"><span class="ot-stage-marker">✓</span><span class="ot-stage-name">Positioning</span><span class="ot-stage-time">08:28</span></button>
+                <button type="button" class="ot-stage-node done"><span class="ot-stage-marker">✓</span><span class="ot-stage-name">OR</span><span class="ot-stage-time">08:32</span></button>
+                <button type="button" class="ot-stage-node done"><span class="ot-stage-marker">✓</span><span class="ot-stage-name">Anes Ready</span><span class="ot-stage-time">08:35</span></button>
+                <button type="button" class="ot-stage-node done"><span class="ot-stage-marker">✓</span><span class="ot-stage-name">Catheter</span><span class="ot-stage-time">08:42</span></button>
+                <button type="button" class="ot-stage-node current"><span class="ot-stage-marker">7</span><span class="ot-stage-name">Surgery</span><span class="ot-stage-time">09:02</span></button>
+                <button type="button" class="ot-stage-node"><span class="ot-stage-marker">8</span><span class="ot-stage-name">Incision</span><span class="ot-stage-time">09:08</span></button>
+              </div>
+            </div>
+
+            <label class="field-label" for="vitals-source">Vitals Source</label>
+            <select id="vitals-source" class="field-select">
+              <option>Monitor</option>
+              <option>Anes machine</option>
+              <option>Syringe pump</option>
+            </select>
+
+            <div class="live-header">
+              <span class="live-title">Live Patient Monitor</span>
+              <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+
+            <div class="vitals-summary">
+              <div class="vital-card hr"><span class="lbl">HR</span><span class="val">90</span><small>bpm</small></div>
+              <div class="vital-card resp"><span class="lbl">Resp</span><span class="val">17</span><small>/min</small></div>
+              <div class="vital-card spo2"><span class="lbl">SpO₂</span><span class="val">99</span><small>%</small></div>
+              <div class="vital-card temp"><span class="lbl">Temp</span><span class="val">36.9</span><small>°C</small></div>
+            </div>
+
+            <div class="chart-wrap">
+              <div class="lane">
+                <div class="lane-head ecg">ECG · mV</div>
+                <div class="lane-body">
+                  <svg viewBox="0 0 320 44" preserveAspectRatio="none"><polyline fill="none" stroke="#16a34a" stroke-width="2" points="0,28 20,8 40,35 60,22 80,30 100,12 120,32 140,24 160,30 180,10 200,28 220,22 240,32 260,18 280,30 300,24 320,26"/></svg>
+                  <span class="lane-val" style="color:#16a34a">90 bpm</span>
+                </div>
+              </div>
+              <div class="lane">
+                <div class="lane-head resp">Resp · a.u.</div>
+                <div class="lane-body">
+                  <svg viewBox="0 0 320 44" preserveAspectRatio="none"><polyline fill="none" stroke="#1d4ed8" stroke-width="2" points="0,24 40,34 80,14 120,34 160,14 200,34 240,14 280,34 320,24"/></svg>
+                  <span class="lane-val" style="color:#1d4ed8">17 /min</span>
+                </div>
+              </div>
+              <div class="lane">
+                <div class="lane-head spo2">SpO₂ · %</div>
+                <div class="lane-body">
+                  <svg viewBox="0 0 320 44" preserveAspectRatio="none"><polyline fill="none" stroke="#dc2626" stroke-width="2" points="0,20 15,26 30,18 45,28 60,16 75,26 90,18 105,28 120,16 135,26 150,18 165,28 180,16 195,26 210,18 225,28 240,16 255,26 270,18 285,28 300,16 315,26"/></svg>
+                  <span class="lane-val" style="color:#dc2626">99 %</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fluids & Medications -->
+      <section class="record-panel" id="panel-charts" role="tabpanel">
+        <div class="charts-stack">
+          <div class="record-card record-card-gantt">
+            <div class="record-card-header">
+              <h3>Fluids</h3>
+              <button type="button" class="gantt-add-btn">+ Add Entry</button>
+            </div>
+            <div class="record-card-body">
+              <div class="gantt-c">
+                <div class="gantt-c-head">
+                  <div class="gantt-c-head-track">
+                    <span class="gantt-c-time" style="left:0">17:00</span>
+                    <span class="gantt-c-time" style="left:33.33%;transform:translateX(-50%)">18:00</span>
+                    <span class="gantt-c-time" style="left:66.66%;transform:translateX(-50%)">19:00</span>
+                    <span class="gantt-c-time" style="left:100%;transform:translateX(-100%)">20:00</span>
+                  </div>
+                </div>
+                <div class="gantt-c-section">
+                  <div class="gantt-c-section-title">Intake</div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">25% Dextrose</div><div class="gantt-c-sub">50 ml</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-dextrose" style="left:8%;width:12%" data-tip="17:15 – 17:45"></span></div>
+                  </div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">RL (continuous)</div><div class="gantt-c-sub">100 ml/hr</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-rl" style="left:16%;width:78%" data-tip="17:30 – 20:00"></span></div>
+                  </div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Blood</div><div class="gantt-c-sub">1 unit</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-blood" style="left:33%;width:16%" data-tip="18:00 – 18:30"></span></div>
+                  </div>
+                </div>
+                <div class="gantt-c-section">
+                  <div class="gantt-c-section-title">Output</div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Urine Output</div><div class="gantt-c-sub">80 ml · 60 ml · 70 ml</div></div>
+                    <div class="gantt-c-track">
+                      <span class="gantt-c-bar bar-urine" style="left:16%;width:8%" data-tip="17:30 – 17:50"></span>
+                      <span class="gantt-c-bar bar-urine" style="left:50%;width:8%" data-tip="18:30 – 18:50"></span>
+                      <span class="gantt-c-bar bar-urine" style="left:83%;width:8%" data-tip="19:30 – 19:50"></span>
+                    </div>
+                  </div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Urinary Catheter</div><div class="gantt-c-sub">Active</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-catheter" style="left:16%;width:78%" data-tip="17:30 – 20:00"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-card record-card-gantt">
+            <div class="record-card-header">
+              <h3>Medications</h3>
+              <button type="button" class="gantt-add-btn">+ Add Medication</button>
+            </div>
+            <div class="record-card-body">
+              <div class="gantt-c">
+                <div class="gantt-c-section">
+                  <div class="gantt-c-section-title">STAT Medications</div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Fentanyl</div><div class="gantt-c-sub">100 mcg · 50 mcg</div></div>
+                    <div class="gantt-c-track">
+                      <span class="gantt-c-bar bar-med-stat" style="left:3%;width:6%" data-tip="17:06 – 17:18"></span>
+                      <span class="gantt-c-bar bar-med-stat" style="left:26%;width:6%" data-tip="17:48 – 18:00"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="gantt-c-section">
+                  <div class="gantt-c-section-title">PRN Medications</div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Propofol</div><div class="gantt-c-sub">40 mg</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-med-prn" style="left:19%;width:10%" data-tip="17:35 – 17:55"></span></div>
+                  </div>
+                </div>
+                <div class="gantt-c-section">
+                  <div class="gantt-c-section-title">INFUSED Medications</div>
+                  <div class="gantt-c-row">
+                    <div><div class="gantt-c-name">Dopamine</div><div class="gantt-c-sub">17 ml/h</div></div>
+                    <div class="gantt-c-track"><span class="gantt-c-bar bar-med-infused" style="left:11%;width:83%" data-tip="17:20 – 20:00"></span></div>
+                  </div>
+                </div>
+                <div class="gantt-c-legend">
+                  <span><i class="bar-med-stat"></i>Fentanyl</span>
+                  <span><i class="bar-med-prn"></i>Propofol</span>
+                  <span><i class="bar-med-infused"></i>Dopamine</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Staffing -->
+      <section class="record-panel" id="panel-staffing" role="tabpanel">
+        <div class="record-card">
+          <div class="record-card-header"><h3>Staffing</h3></div>
+          <div class="record-card-body">
+            <div class="staff-row"><span class="staff-name">Dr. Ajay Tiwari</span><span class="staff-time">Surgeon · 08:30</span></div>
+            <div class="staff-row"><span class="staff-name">Dr. Meera Shah</span><span class="staff-time">Anaesthetist · 08:35</span></div>
+            <div class="staff-row"><span class="staff-name">Sister Priya</span><span class="staff-time">OT Nurse · 08:28</span></div>
+            <div class="staff-row"><span class="staff-name">Tech Ravi</span><span class="staff-time">Perfusion · 09:00</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Main">
+      <button type="button" class="nav-item active"><span class="nav-icon">📋</span>Record</button>
+      <button type="button" class="nav-item"><span class="nav-icon">📈</span>Score</button>
+      <button type="button" class="nav-item"><span class="nav-icon">📄</span>Form</button>
+      <button type="button" class="nav-item"><span class="nav-icon">📊</span>Report</button>
+    </nav>
+  </div>
+
+  <script>
+    const titles = {
+      flowsheet: 'OT Stage — Flowsheet',
+      charts: 'OT Stage — Fluids & Medications',
+      staffing: 'OT Stage — Staffing',
+    };
+    document.querySelectorAll('.record-subtab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.panel;
+        document.querySelectorAll('.record-subtab').forEach(t => t.classList.toggle('active', t === tab));
+        document.querySelectorAll('.record-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
+        document.getElementById('stage-title').textContent = titles[id] || titles.flowsheet;
+      });
+    });
+  </script>
+</body>
+</html>
