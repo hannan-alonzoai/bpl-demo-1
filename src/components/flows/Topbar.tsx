@@ -30,7 +30,9 @@ export function Topbar({ mobile }: Props) {
           aria-label="Back to surgery schedule"
         >
           {mobile ? (
-            '←'
+            <span className="topbar-back-arrow-only" aria-hidden>
+              ←
+            </span>
           ) : (
             <>
               <span className="topbar-back-icon">

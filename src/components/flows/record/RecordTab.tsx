@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { OR_STAGES, STAFFING } from '../../../data/flows';
+import { STAFFING } from '../../../data/flows';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
@@ -58,19 +58,9 @@ export function RecordTab({
   onRequestStageAdvance,
 }: Props) {
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
-  const stageNum = currentStageIdx + 1;
-  const totalStages = OR_STAGES.length;
-  const activeMeta = SUBS.find(s => s.id === recordSub);
 
   return (
     <div className="record-view record-view-shell">
-      <div className="record-mobile-stage-head">
-        <span className="record-mobile-stage-title">
-          OT Stage — {activeMeta?.label ?? 'Flowsheet'}
-        </span>
-        <span className="record-mobile-stage-pill">Stage {stageNum} of {totalStages}</span>
-      </div>
-
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
         {SUBS.map(s => (
           <button
