@@ -66,3 +66,19 @@ export const STAFFING = [
   { name: 'Dr A. Rao — Anaesthetist', time: '08:30 → —' },
   { name: 'Dr J. Belita — Surgeon', time: '08:35 → —' },
 ];
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  group: string;
+}
+
+export const STAFF_DIRECTORY: StaffMember[] = [
+  { id: 'jacob-jenner', name: 'Dr. Jacob Jenner', role: 'Anaesthetist', group: 'Anaesthesia' },
+  { id: 'jane-belita', name: 'Dr. Jane Belita', role: 'Surgeon', group: 'Surgery' },
+  { id: 'ajay-tiwari', name: 'Ajay Tiwari', role: 'OT Technician', group: 'Support' },
+  { id: 'sheila-s', name: 'Ms. Sheila S', role: 'Scrub Nurse', group: 'Nursing' },
+  { id: 'gopal-swamy', name: 'Dr. Gopal Swamy', role: 'Assistant Surgeon', group: 'Surgery' },
+  { id: 'riya-saklani', name: 'DRx. Riya Saklani', role: 'Clinical Pharmacist', group: 'Pharmacy' },
+];

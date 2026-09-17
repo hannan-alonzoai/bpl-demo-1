@@ -5,11 +5,12 @@ interface Props {
   onChange: (tab: FlowTab) => void;
 }
 
-const ITEMS: { id: FlowTab; label: string; icon: 'record' | 'score' | 'form' | 'report' }[] = [
+const ITEMS: { id: FlowTab; label: string; icon: 'record' | 'score' | 'form' | 'report' | 'staffing' }[] = [
   { id: 'record', label: 'Record', icon: 'record' },
   { id: 'score', label: 'Score', icon: 'score' },
   { id: 'form', label: 'Form', icon: 'form' },
   { id: 'report', label: 'Report', icon: 'report' },
+  { id: 'staffing', label: 'Staffing', icon: 'staffing' },
 ];
 
 function NavIcon({ kind }: { kind: string }) {
@@ -40,6 +41,14 @@ function NavIcon({ kind }: { kind: string }) {
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
           <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3" />
           <path d="M2 10h4M10 8h4M18 12h4" />
+        </svg>
+      );
+    case 'staffing':
+      return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 19 7a4 4 0 0 1-3 3.87" />
         </svg>
       );
     default:
