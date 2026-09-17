@@ -12,6 +12,7 @@ const TABS: { id: FlowTab; label: string; count?: string }[] = [
   { id: 'score', label: 'Score' },
   { id: 'form', label: 'Form', count: '(3)' },
   { id: 'report', label: 'Report' },
+  { id: 'staffing', label: 'Staffing' },
 ];
 
 export function SectionTabs({ active, onChange, patient, className }: Props) {

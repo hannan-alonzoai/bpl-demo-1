@@ -8,6 +8,7 @@ import { FormTab } from '../components/flows/form/FormTab';
 import { RecordTab } from '../components/flows/record/RecordTab';
 import { ReportTab } from '../components/flows/report/ReportTab';
 import { ScoreTab } from '../components/flows/score/ScoreTab';
+import { StaffTab } from '../components/flows/record/StaffTab';
 import { SectionTabs } from '../components/flows/SectionTabs';
 import { Topbar } from '../components/flows/Topbar';
 import { MobileBottomNav } from '../components/flows/MobileBottomNav';
@@ -120,6 +121,9 @@ export function PatientFlowsPage() {
       </div>
       <div id="tabReport" className={`tab-content${tab === 'report' ? ' active' : ''}`}>
         {tab === 'report' && <ReportTab patient={patient} />}
+      </div>
+      <div id="tabStaffing" className={`tab-content${tab === 'staffing' ? ' active' : ''}`}>
+        {tab === 'staffing' && <StaffTab />}
       </div>
 
       {isMobile ? <MobileBottomNav active={tab} onChange={setTab} /> : null}
