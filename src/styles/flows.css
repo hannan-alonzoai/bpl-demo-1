@@ -1140,31 +1140,31 @@
       margin-right: auto;
     }
     .flowsheet-vitals-layout .vitals-source-tabs-stack {
-      width: clamp(140px, 9vw, 320px);
+      width: clamp(132px, 5.5vw, 200px);
     }
     .flowsheet-vitals-layout .vitals-source-tab {
-      font-size: clamp(13px, 0.95vw, 34px);
+      font-size: clamp(12px, 0.58vw, 20px);
       line-height: 1.35;
-      padding: clamp(14px, 1.1vw, 36px) clamp(12px, 0.85vw, 28px);
+      padding: clamp(13px, 0.7vw, 22px) clamp(11px, 0.55vw, 17px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .waveform-chart-body {
-      grid-template-columns: clamp(104px, 8vw, 300px) 1fr clamp(128px, 9.5vw, 340px);
+      grid-template-columns: clamp(92px, 5vw, 170px) 1fr clamp(108px, 6vw, 200px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .waveform-lane-label {
-      font-size: clamp(18px, 1.35vw, 46px);
+      font-size: clamp(15px, 0.8vw, 26px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .waveform-lane-label i {
-      width: clamp(10px, 0.7vw, 22px);
-      height: clamp(10px, 0.7vw, 22px);
+      width: clamp(9px, 0.42vw, 13px);
+      height: clamp(9px, 0.42vw, 13px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .waveform-lane-values {
-      padding-right: clamp(16px, 1.4vw, 48px);
+      padding-right: clamp(14px, 0.85vw, 28px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .waveform-lane-value {
-      font-size: clamp(19px, 1.45vw, 50px);
+      font-size: clamp(16px, 0.85vw, 28px);
     }
     .flowsheet-waveform-block:not(.is-mobile-monitor) .flowsheet-chart-time {
-      font-size: clamp(13px, 0.9vw, 30px);
+      font-size: clamp(11px, 0.52vw, 17px);
     }
   }
   .flowsheet-chart-time {
