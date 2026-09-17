@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { STAFFING } from '../../../data/flows';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
@@ -13,9 +14,14 @@ interface Props {
   onRequestStageAdvance: (targetIdx: number) => void;
 }
 
-const SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
+const MOBILE_SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
   { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
   { id: 'fluids_medications', label: 'Fluids & Medications', mobileLabel: 'Fluids & Meds' },
+  { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
+];
+
+const DESKTOP_SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
+  { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
   { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
 ];
 
@@ -57,12 +63,33 @@ export function RecordTab({
   onViewStageChange,
   onRequestStageAdvance,
 }: Props) {
+  const isMobile = useIsMobile();
+  const subs = isMobile ? MOBILE_SUBS : DESKTOP_SUBS;
   const [recordSub, setRecordSub] = useState<RecordSub>('flowsheet');
+
+  useEffect(() => {
+    if (!isMobile && recordSub === 'fluids_medications') {
+      setRecordSub('flowsheet');
+    }
+  }, [isMobile, recordSub]);
+
+  const flowsheetBlock = (
+    <div className="record-card flowsheet-record-card">
+      <div className="record-card-body flowsheet-panel">
+        <Flowsheet
+          currentStageIdx={currentStageIdx}
+          viewStageIdx={viewStageIdx}
+          onViewStageChange={onViewStageChange}
+          onRequestAdvance={onRequestStageAdvance}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="record-view record-view-shell">
       <div className="record-subtabs" role="tablist" aria-label="Record sections">
-        {SUBS.map(s => (
+        {subs.map(s => (
           <button
             key={s.id}
             type="button"
@@ -78,25 +105,28 @@ export function RecordTab({
       </div>
 
       <div className={`record-subpanel${recordSub === 'flowsheet' ? ' active' : ''}`} hidden={recordSub !== 'flowsheet'}>
-        <div className="record-card flowsheet-record-card">
-          <div className="record-card-body flowsheet-panel">
-            <Flowsheet
-              currentStageIdx={currentStageIdx}
-              viewStageIdx={viewStageIdx}
-              onViewStageChange={onViewStageChange}
-              onRequestAdvance={onRequestStageAdvance}
-            />
+        {isMobile ? (
+          flowsheetBlock
+        ) : (
+          <div className="record-flowsheet-stack">
+            {flowsheetBlock}
+            <div className="record-fluids-meds-row">
+              <FluidsCard />
+              <MedicationsCard />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <div
-        className={`record-subpanel record-subpanel-charts${recordSub === 'fluids_medications' ? ' active' : ''}`}
-        hidden={recordSub !== 'fluids_medications'}
-      >
-        <FluidsCard />
-        <MedicationsCard />
-      </div>
+      {isMobile ? (
+        <div
+          className={`record-subpanel record-subpanel-charts${recordSub === 'fluids_medications' ? ' active' : ''}`}
+          hidden={recordSub !== 'fluids_medications'}
+        >
+          <FluidsCard />
+          <MedicationsCard />
+        </div>
+      ) : null}
 
       <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
         <div className="record-card record-card-staff">

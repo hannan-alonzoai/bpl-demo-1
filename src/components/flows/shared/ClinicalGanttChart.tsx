@@ -1,10 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const GANTT_LABEL_W = 160;
 export const GANTT_TRACK_W = 720;
 /** Space after the timeline for dose/rate labels (right of bars) */
 export const GANTT_TRACK_VALUE_GUTTER = 96;
+
+/** Side-by-side Record layout — narrowest the track may get before it scrolls; it grows to fill wider cards */
+export const GANTT_COMPACT_LABEL_W = 148;
+export const GANTT_COMPACT_TRACK_W = 440;
+export const GANTT_COMPACT_TRACK_VALUE_GUTTER = 76;
+
+function ganttDims(compact: boolean) {
+  return compact
+    ? {
+        labelW: GANTT_COMPACT_LABEL_W,
+        trackW: GANTT_COMPACT_TRACK_W,
+        gutter: GANTT_COMPACT_TRACK_VALUE_GUTTER,
+      }
+    : { labelW: GANTT_LABEL_W, trackW: GANTT_TRACK_W, gutter: GANTT_TRACK_VALUE_GUTTER };
+}
 const CHART_START_MIN = 17 * 60;
 const CHART_END_MIN = 20 * 60;
 const CHART_SPAN = CHART_END_MIN - CHART_START_MIN;
@@ -63,12 +78,14 @@ function SegmentBar({ seg, barClass }: { seg: GanttSegment; barClass: string }) 
 }
 
 function GanttRowView({ row }: { row: GanttRow }) {
+  const hasBelowLabel = row.segments.some(s => s.labelPosition === 'below');
+
   return (
-    <div className="fluids-gantt-row">
-      <div className="fluids-gantt-label" style={{ width: GANTT_LABEL_W }}>
+    <div className={`fluids-gantt-row${hasBelowLabel ? ' fluids-gantt-row--below-labels' : ''}`}>
+      <div className="fluids-gantt-label">
         <span className="fluids-gantt-label-name">{row.name}</span>
       </div>
-      <div className="fluids-gantt-track" style={{ width: GANTT_TRACK_W }}>
+      <div className="fluids-gantt-track">
         <div className="fluids-gantt-grid-lines" aria-hidden="true">
           {GANTT_TIME_TICKS.map(t => (
             <span key={t} className="fluids-gantt-grid-line" />
@@ -85,6 +102,8 @@ function GanttRowView({ row }: { row: GanttRow }) {
 interface Props {
   sections: GanttSection[];
   ariaLabel: string;
+  /** Narrower chart for two-column Record layout (default). */
+  compact?: boolean;
 }
 
 /** Hour marks only — half-hour labels do not fit a phone-width track. */
@@ -195,24 +214,28 @@ function CompactGantt({ sections, ariaLabel }: Props) {
   );
 }
 
-export function ClinicalGanttChart({ sections, ariaLabel }: Props) {
+export function ClinicalGanttChart({ sections, ariaLabel, compact = true }: Props) {
   const isMobile = useIsMobile();
   const legendRows = sections.flatMap(s => s.rows);
+  const { labelW, trackW, gutter } = ganttDims(compact && !isMobile);
 
   if (isMobile) {
     return <CompactGantt sections={sections} ariaLabel={ariaLabel} />;
   }
 
+  const ganttVars = {
+    '--gantt-label-w': `${labelW}px`,
+    '--gantt-track-w': `${trackW}px`,
+    '--gantt-gutter': `${gutter}px`,
+  } as CSSProperties;
+
   return (
-    <div className="fluids-gantt">
+    <div className="fluids-gantt" style={ganttVars}>
       <div className="fluids-gantt-scroll" tabIndex={0} aria-label={ariaLabel}>
-        <div
-          className="fluids-gantt-inner"
-          style={{ minWidth: GANTT_LABEL_W + GANTT_TRACK_W + GANTT_TRACK_VALUE_GUTTER + 24 }}
-        >
+        <div className="fluids-gantt-inner">
           <div className="fluids-gantt-head">
-            <div className="fluids-gantt-label fluids-gantt-head-spacer" style={{ width: GANTT_LABEL_W }} />
-            <div className="fluids-gantt-times" style={{ width: GANTT_TRACK_W }}>
+            <div className="fluids-gantt-label fluids-gantt-head-spacer" />
+            <div className="fluids-gantt-times">
               {GANTT_TIME_TICKS.map(t => (
                 <span key={t} className="fluids-gantt-time">
                   {t}

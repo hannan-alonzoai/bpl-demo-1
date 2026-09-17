@@ -677,6 +677,47 @@
     }
     .record-subpanel { display: none; }
     .record-subpanel.active { display: block; }
+    .record-flowsheet-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .record-fluids-meds-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .record-fluids-meds-row .record-card-gantt {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .record-fluids-meds-row .record-card-gantt .record-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px 10px;
+    }
+    .record-fluids-meds-row .record-card-gantt .fluids-gantt {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .record-fluids-meds-row .record-card-gantt .fluids-gantt-scroll {
+      flex: 0 0 auto;
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+  }
+  /* Half-width cards cannot hold the timeline below this — stack so it never scrolls */
+  @media (min-width: 769px) and (max-width: 1380px) {
+    .record-fluids-meds-row {
+      grid-template-columns: 1fr;
+    }
   }
   .flowsheet-record-card { box-shadow: none; overflow: visible; }
   .flowsheet-panel { padding: 16px 18px 18px; overflow: visible; }
@@ -1276,7 +1317,12 @@
   }
 
   /* Fluids Gantt (design system — bpl-tokens) */
-  .fluids-gantt { min-width: 0; }
+  .fluids-gantt {
+    min-width: 0;
+    --gantt-label-w: 160px;
+    --gantt-track-w: 720px;
+    --gantt-gutter: 96px;
+  }
   .fluids-gantt-scroll {
     overflow-x: auto; overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -1287,15 +1333,27 @@
   .fluids-gantt-scroll:focus-visible {
     outline: 2px solid var(--blue-500); outline-offset: 2px;
   }
-  .fluids-gantt-inner { padding: 10px 12px 12px; }
+  .fluids-gantt-inner {
+    padding: 10px 12px 12px;
+    min-width: calc(var(--gantt-label-w) + var(--gantt-track-w) + 24px);
+    box-sizing: border-box;
+  }
   .fluids-gantt-head {
     display: flex; align-items: stretch;
     margin-bottom: 4px; padding-bottom: 4px;
     border-bottom: 1px solid var(--line);
   }
   .fluids-gantt-head-spacer { flex-shrink: 0; }
+  .fluids-gantt-label,
+  .fluids-gantt-head-spacer.fluids-gantt-label {
+    width: var(--gantt-label-w);
+    min-width: var(--gantt-label-w);
+    max-width: var(--gantt-label-w);
+  }
   .fluids-gantt-times {
-    display: flex; flex-shrink: 0; position: relative;
+    display: flex; position: relative;
+    flex: 1 1 auto;
+    min-width: var(--gantt-track-w);
   }
   .fluids-gantt-time {
     flex: 1; text-align: center;
@@ -1332,7 +1390,7 @@
   .fluids-gantt-label {
     flex-shrink: 0;
     display: flex; align-items: center;
-    padding: 10px 12px 10px 4px;
+    padding: 10px 12px 10px 14px;
     border-right: 1px solid var(--line);
     box-sizing: border-box;
   }
@@ -1343,16 +1401,17 @@
   }
   .fluids-gantt-track {
     position: relative;
-    flex-shrink: 0;
+    flex: 1 1 auto;
+    min-width: var(--gantt-track-w);
     min-height: 52px;
-    padding: 10px 96px 28px 10px;
+    padding: 10px var(--gantt-gutter) 28px 10px;
     box-sizing: border-box;
     background: var(--white-100);
     overflow: visible;
   }
   .fluids-gantt-grid-lines {
     position: absolute;
-    top: 10px; right: 96px; bottom: 28px; left: 10px;
+    top: 10px; right: var(--gantt-gutter); bottom: 28px; left: 10px;
     display: flex; pointer-events: none;
   }
   .fluids-gantt-grid-line {
@@ -1360,6 +1419,12 @@
     border-right: 1px solid var(--line);
   }
   .fluids-gantt-grid-line:last-child { border-right: none; }
+  /* Rows whose volumes print under the bar need room, or the next row covers them */
+  .fluids-gantt-row--below-labels .fluids-gantt-track {
+    min-height: 68px;
+    padding-bottom: 36px;
+  }
+  .fluids-gantt-row--below-labels .fluids-gantt-grid-lines { bottom: 36px; }
   .fluids-gantt-segment-wrap {
     position: absolute;
     top: 10px;
@@ -1886,11 +1951,21 @@
       border-radius: 999px;
     }
     .dashboard-view:not(.flows-mobile) .record-view.record-view-shell {
-      flex: 0 0 auto;
+      flex: 1 0 auto;
       min-height: min-content;
       overflow: visible;
       display: flex;
       flex-direction: column;
+    }
+    /* Wide viewports: charts share the leftover height instead of leaving a blank band */
+    .dashboard-view:not(.flows-mobile) .record-view-shell .record-subpanel.active,
+    .dashboard-view:not(.flows-mobile) .record-view-shell .record-flowsheet-stack {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashboard-view:not(.flows-mobile) .record-view-shell .record-fluids-meds-row {
+      flex: 1 0 auto;
     }
     #tabForm.tab-content.active {
       margin: 0;
