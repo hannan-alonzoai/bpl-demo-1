@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { STAFFING } from '../../../data/flows';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { FluidsGanttChart } from '../shared/FluidsGanttChart';
 import { MedicationsGanttChart } from '../shared/MedicationsGanttChart';
 import { Flowsheet } from './Flowsheet';
 
-type RecordSub = 'flowsheet' | 'fluids_medications' | 'staffing';
+type RecordSub = 'flowsheet' | 'fluids_medications';
 
 interface Props {
   currentStageIdx: number;
@@ -17,7 +16,6 @@ interface Props {
 const MOBILE_SUBS: { id: RecordSub; label: string; mobileLabel: string }[] = [
   { id: 'flowsheet', label: 'Flowsheet', mobileLabel: 'Flowsheet' },
   { id: 'fluids_medications', label: 'Fluids & Medications', mobileLabel: 'Fluids & Meds' },
-  { id: 'staffing', label: 'Staffing', mobileLabel: 'Staffing' },
 ];
 
 function FluidsCard() {
@@ -120,24 +118,6 @@ export function RecordTab({
       >
         <FluidsCard />
         <MedicationsCard />
-      </div>
-
-      <div className={`record-subpanel${recordSub === 'staffing' ? ' active' : ''}`} hidden={recordSub !== 'staffing'}>
-        <div className="record-card record-card-staff">
-          <div className="record-card-header">
-            <h3>Staffing</h3>
-          </div>
-          <div className="record-card-body">
-            <div className="staff-mobile-list">
-              {STAFFING.map(s => (
-                <div className="staff-mobile-row" key={s.name}>
-                  <span className="staff-mobile-name">{s.name}</span>
-                  <span className="staff-mobile-time">{s.time.split('→')[0].trim()}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
